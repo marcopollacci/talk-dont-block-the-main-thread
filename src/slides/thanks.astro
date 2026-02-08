@@ -1,0 +1,80 @@
+---
+import { Image } from "astro:assets";
+import me from "../img/me.png";
+import fourtyFactory from "../img/40factory.svg";
+const { qrLink, urlLink, qrLinkRating, QuestionsSlide, meReloaded } =
+  Astro.props;
+---
+
+<p-slide>
+  <img
+    alt="thatsall"
+    src="/img/thatsall.gif"
+    style="--image-start-size: 100%"
+    class="alter-image-size"
+  />
+</p-slide>
+<p-slide class="center">
+  <h2 style="margin-block-end: 0.3em">You can see this slide on</h2>
+  {
+    !qrLink ? (
+      <p-note class="to-do" style="margin-block-end: 0.5em">
+        adding qr image!
+      </p-note>
+    ) : (
+      <p-note style="margin-block-end: 0.5em">
+        <Image src={qrLink} alt="qrcode slide" class="alter-image-size" />
+      </p-note>
+    )
+  }
+  {
+    !urlLink ? (
+      <p-note class="to-do">
+        <a href="">adding link</a>
+      </p-note>
+    ) : (
+      <p-note>
+        <a href={urlLink}>{urlLink}</a>
+      </p-note>
+    )
+  }
+</p-slide>
+{QuestionsSlide && <QuestionsSlide />}
+<p-slide class="two-columns">
+  <p-note class="text-cover my-data my-presentation">
+    <h5 class="text-cover">Thank you again!</h5>
+    <Image
+      src={meReloaded || me}
+      class="my-face alter-image-size"
+      alt="me"
+      style="--image-start-size: 6em"
+    />
+
+    <span>Marco Pollacci</span>
+    <span>Senior Frontend Developer</span>
+    <div role="generic">
+      <span>@</span>
+      <Image
+        src={fourtyFactory}
+        alt="40factory logo"
+        class="alter-image-size"
+        style="--image-start-size: .6em"
+      />
+    </div>
+  </p-note>
+  <p-note class="text-cover my-data my-presentation">
+    <h5>Leave some feedback</h5>
+    {
+      !qrLinkRating ? (
+        <span class="to-do">adding qr image!</span>
+      ) : (
+        <Image
+          src={qrLinkRating}
+          style="--image-start-size: 8.5em; background-color: #ffffff"
+          alt="qrcode slide"
+          class="alter-image-size"
+        />
+      )
+    }
+  </p-note>
+</p-slide>

@@ -1,0 +1,39 @@
+.presentation-nav {
+  position: fixed;
+  bottom: 0.5rem;
+  right: 0;
+  display: flex;
+
+  button {
+    position: relative;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0.45em;
+      left: 0.45em;
+      width: 0.707em;
+      height: 0.1em;
+      background: currentColor;
+      transform-origin: 0.05em 0.05em;
+    }
+  }
+
+  .previous::before {
+    transform: rotate(45deg);
+  }
+  .previous::after {
+    transform: rotate(-45deg);
+  }
+  .next::before {
+    transform: rotate(135deg);
+  }
+  .next::after {
+    transform: rotate(-135deg);
+  }
+}

@@ -1,0 +1,48 @@
+---
+import { Image } from "astro:assets";
+import me from "../img/me.png";
+import qrLink from "../img/qr_link.svg";
+import fourtyFactory from "../img/40factory.svg";
+import gka from "../img/gitkraken_ambassador.webp";
+const { meReloaded } = Astro.props;
+---
+
+<p-slide class="two-columns" autoplay>
+  <p-note
+    style="position: relative;"
+    class="text-cover my-data my-presentation"
+  >
+    <h5>Hello Folks!</h5>
+    <Image
+      src={meReloaded || me}
+      class="my-face alter-image-size"
+      alt="me"
+      style="--image-start-size: 6em"
+    />
+    <span>Marco Pollacci</span>
+    <span>Senior Frontend Developer</span>
+    <div role="generic">
+      <span>@</span>
+      <Image
+        src={fourtyFactory}
+        alt="40factory logo"
+        class="alter-image-size"
+        style="--image-start-size: .6em"
+      />
+    </div>
+    <p-fragment>
+      <Image
+        src={gka}
+        alt="gka"
+        style="--image-start-size: 2.5em;position: absolute;inset-inline-end: 0;inset-block-start: 1em;"
+        class="alter-image-size"
+      />
+    </p-fragment>
+  </p-note>
+  <Image
+    style="--image-start-size: 10.5em"
+    class="alter-image-size"
+    src={qrLink}
+    alt="qr"
+  />
+</p-slide>

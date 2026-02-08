@@ -1,0 +1,15 @@
+---
+const prodMode = import.meta.env.PROD;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Something</title>
+    {prodMode && <script> location.href = "https://marcopollacci.it";</script>}
+  </head>
+  <body>
+    {!prodMode && <h1>Dev Mode</h1>}
+  </body>
+</html>

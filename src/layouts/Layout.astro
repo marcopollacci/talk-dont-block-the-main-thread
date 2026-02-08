@@ -1,0 +1,108 @@
+---
+import "p-slides/css/p-slides.css";
+import "../styles/main.scss";
+import "../styles/presentation.scss";
+import SpeakerMode from "../components/SpeakerMode.astro";
+import { Image } from "astro:assets";
+import { Font } from "astro:assets";
+import comingSoon from "../img/coming-soon.png";
+const { canRender, favIcon, metaData } = Astro.props;
+const bodyAttributes = canRender ? undefined : "coming-soon";
+const fontsToPreload = [
+  "--talk-marco-graphik-semibold",
+  "--talk-marco-graphik-regular",
+  "--talk-marco-graphik-medium",
+] as const;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href={favIcon} />
+    {fontsToPreload.map((cssVariable) => <Font cssVariable={cssVariable} />)}
+    <link href="/css/prism-one-light.css" rel="stylesheet" />
+    <meta name="description" content={metaData.description} />
+
+    <meta property="og:title" content={metaData.title} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{metaData.title}</title>
+  </head>
+  <body coming-soon={bodyAttributes}>
+    <p-deck>
+      <slot />
+    </p-deck>
+    {
+      !canRender && (
+        <Image src={comingSoon} alt="coming soon" class="coming-soon" />
+      )
+    }
+    <div
+      aria-valuemax="100"
+      aria-valuemin="0"
+      aria-valuenow="0"
+      class="presentation-progress"
+      role="progressbar"
+      title="Presentation progress"
+    >
+    </div>
+    <div class="presentation-toolbar" role="toolbar">
+      {!import.meta.env.PROD && <SpeakerMode />}
+      <button
+        aria-label="Toggle fullscreen mode"
+        class="fullscreen"
+        title="Toggle fullscreen mode"
+        type="button"
+      >
+        <svg viewBox="0 0 1 1">
+          <g fill="none" stroke="currentColor" stroke-width="0.1">
+            <path
+              d="M.05 .3v-.25h.25M.7 .05h.25v.25M.95 .7v.25h-.25M.3 .95h-.25v-.25"
+            ></path>
+            <path
+              d="M.05 .3h.25v-.25M.7 .05v.25h.25M.95 .7h-.25v.25M.3 .95v-.25h-.25"
+            ></path>
+          </g>
+        </svg>
+      </button>
+    </div>
+    {
+      canRender && (
+        <nav class="presentation-nav">
+          <button
+            aria-label="Go backward"
+            class="previous"
+            title="Go backward"
+            type="button"
+          />
+          <button
+            aria-label="Go forward"
+            class="next"
+            title="Go forward"
+            type="button"
+          />
+        </nav>
+      )
+    }
+  </body><script src="../js/main.js"></script>
+  <script src="../js/presentation.js"></script>
+  <script src="../js/deck.js"></script>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+<script>
+  import { registerElements, setStyleRoot } from "p-slides";
+  import "../vendor/prismjs/prism.js";
+  import "../vendor/prismjs/components/prism-typescript.js";
+  import "../vendor/prismjs/components/prism-scss.js";
+  setStyleRoot("/css/");
+  registerElements().then(() => console.log("Done!"));
+</script>

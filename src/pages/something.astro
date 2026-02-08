@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import CoverSomething from "../slides/cover-something.astro";
+import Cover from "../slides/cover.astro";
+import Thanks from "../slides/thanks.astro";
+import favicon from '../img/favicon.svg';
+const favIcon = favicon.src;
+const canRender = import.meta.env.DEV || new Date("2050-12-31") < new Date();
+const metaData = {
+  title: 'Something',
+  description: 'Talk di Marco Pollacci',
+};
+---
+<Layout canRender={canRender} favIcon={favIcon} metaData={metaData}>
+  <CoverSomething />
+  {canRender && (
+    <Cover />
+    <Thanks />
+  )}
+</Layout>

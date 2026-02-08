@@ -1,0 +1,47 @@
+@use "core/props.scss";
+@use "core/deck.scss";
+@use "core/nav.scss";
+@use "core/toolbar.scss";
+@use "core/progress.scss";
+
+:root {
+  font-family: var(--talk-marco-graphik-regular);
+}
+
+:fullscreen {
+  .presentation-toolbar,
+  .presentation-nav {
+    display: none;
+  }
+}
+
+[electron] {
+  .presentation-toolbar,
+  .presentation-nav {
+    display: none;
+  }
+}
+
+body {
+  margin: 0;
+}
+
+em {
+  color: var(--brand-color);
+}
+
+.presentation-toolbar,
+.presentation-nav {
+  button {
+    border: none;
+    border-radius: 0;
+    background: none;
+    padding: 0;
+    margin: 0.25em;
+    cursor: pointer;
+    width: 1em;
+    height: 1em;
+    font-size: 3rem;
+    color: var(--controls-color);
+  }
+}
