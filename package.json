@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev:something": "astro dev --open /something/",
+    "dev:refs-2026": "astro dev --open /reggio-emilia-full-stack-2026/",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",

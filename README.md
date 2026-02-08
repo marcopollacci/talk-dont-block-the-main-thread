@@ -1,6 +1,6 @@
-# Some beautiful title
+# Don’t Block the Main Thread: A Journey into Web Workers (with a Touch of Angular)
 
-Slides for what?.
+Slides for talk about Web Workers and Angular
 
 Originally conceived for the what?.
 

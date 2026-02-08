@@ -7,8 +7,8 @@ import favicon from '../img/favicon.svg';
 const favIcon = favicon.src;
 const canRender = import.meta.env.DEV || new Date("2050-12-31") < new Date();
 const metaData = {
-  title: 'Something',
-  description: 'Talk di Marco Pollacci',
+  title: 'Don\'t block the main thread',
+  description: 'How to keep your web app responsive and performant by avoiding long tasks on the main thread.',
 };
 ---
 <Layout canRender={canRender} favIcon={favIcon} metaData={metaData}>
