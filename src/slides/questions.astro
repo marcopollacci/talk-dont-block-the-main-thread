@@ -1,0 +1,17 @@
+<p-slide>
+  <h5 style="margin-block-end: 1em" class="center">
+    <span class="main-gradient">Questions?</span> 🤔
+  </h5>
+  <pre
+    class="small-line"
+    data-label-file="questions.js">
+    <code is:raw class="language-javascript"> 
+      self.onmessage = async (event) => {
+        const { data: question } = event;
+        
+        const answer = await answer(question);
+        self.postMessage(`The answer is: ${answer}`);
+      };
+    </code>
+   </pre>
+</p-slide>

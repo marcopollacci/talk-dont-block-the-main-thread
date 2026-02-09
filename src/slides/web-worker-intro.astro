@@ -1,0 +1,113 @@
+---
+import { Image } from "astro:assets";
+import consoleLog from "../img/console_log_worker.png";
+import sofarSogood from "../img/sofar-sogood.jpg";
+import PNotes from "../components/PNotes.astro";
+---
+
+<p-slide class="center">
+  <h1>⚙️ <span class="main-gradient">Web Workers</span> ⚙️</h1>
+</p-slide>
+<p-slide>
+  <ul style="line-height: 1.8em">
+    <li>🐣 <span class="main-sub-gradient">Born in 2009</span></li>
+    <p-fragment
+      ><li>
+        🧮 <span class="main-sub-gradient">Multi-threaded code execution</span>
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>
+        🔒 <span class="main-sub-gradient">Fully isolated</span>
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>
+        ✅ <span class="main-sub-gradient">Not framework related</span>
+      </li></p-fragment
+    >
+  </ul>
+  <PNotes>
+    <p>
+      Fully isolated: a web worker cannot access the DOM and main thread, but
+      can only send and receive messages
+    </p>
+    <p>
+      Not framework related: a web worker can be used in any JavaScript
+      environment
+    </p>
+  </PNotes>
+</p-slide>
+<p-slide class="cover">
+  <h1>Let's see how it works</h1>
+  <span class="center">👀</span>
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line"
+    data-label-file="worker.js">
+ <code is:raw class="language-javascript"> 
+  self.onmessage = (event) => {
+    console.log("Worker received:", event.data);
+    // Do heavy stuff
+    self.postMessage(`Hello from worker!`);
+  };
+</code>
+</pre>
+  <p-fragment
+    ><span
+      style="--circle-sketch-height: 1.8em; position: absolute; inset-block-end: 8em; width: 4em; inset-inline-start: 6.5em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+  <p-fragment
+    ><span
+      style="--circle-sketch-height: 1.8em; position: absolute; inset-block-end: 5.7em; width: 5em; inset-inline-start: 3.5em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line language-javascript"
+    data-label-file="main.js">
+    <p-fragment><code class="language-javascript">
+  const worker = new Worker("worker.js");</code></p-fragment>
+
+  <p-fragment><code is:raw class="language-javascript">worker.onmessage = (event) => {
+    console.log("Main thread received:", event.data);
+    // Do some other stuff
+   };</code></p-fragment>
+  <p-fragment><code class="language-javascript">
+   // Starting point
+   worker.postMessage("Hello Web Day!");</code></p-fragment>
+  </pre>
+  <PNotes>
+    Web Worker in the browser is native—in the sense that: It is managed by the
+    browser underlying engine (like V8 in Chrome, SpiderMonkey in Firefox, or
+    JavaScriptCore in Safari). The worker runs in its own OS-level thread,
+    separate from the main UI thread. This allows it to perform operations
+    concurrently without blocking the main thread. So, when you create a new
+    Worker(...), the browser spins up a separate thread using native system APIs
+    under the hood. However, from the JavaScript developer’s perspective, Web
+    Workers are not threads you control directly—you just post messages back and
+    forth using postMessage() and onmessage.
+  </PNotes>
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center">◝(ᵔᗜᵔ)◜</h4>
+  <Image
+    src={consoleLog}
+    alt="console log worker"
+    class="alter-image-size"
+    style="--image-start-size: 3.5em"
+  />
+</p-slide>
+<p-slide>
+  <Image
+    src={sofarSogood}
+    alt="sofar sogood meme"
+    class="alter-image-size"
+    style="--image-start-size: 8em"
+  />
+</p-slide>

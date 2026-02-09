@@ -1,0 +1,316 @@
+---
+import PNotes from "../components/PNotes.astro";
+---
+
+<p-slide>
+  <h3><span class="main-gradient">Let's go further</span> ᯓ🏃🏻‍♀️‍➡️</h3>
+</p-slide>
+<p-slide>
+  <code style="width: fit-content" class="language-javascript"
+    >self.onmessage = (event) => {};</code
+  >
+</p-slide>
+<p-slide>
+  <code style="width: fit-content" class="language-javascript mid-dimension"
+    >self.onmessage = (event) => {};</code
+  >
+  <ul style="margin-block-start: 0.5em">
+    <p-fragment><li>📌 data</li></p-fragment>
+    <p-fragment><li>📌 origin</li></p-fragment>
+    <p-fragment><li>📌 source</li></p-fragment>
+    <p-fragment><li>📌 ports</li></p-fragment>
+  </ul>
+  <PNotes>
+    <p><b is:raw>-->all of these properties are read-only<--</b></p>
+    <ul style="font-size: 0.8em">
+      <li style="margin-block-end: 0.5em">
+        data: The data sent from the main thread to the web worker
+      </li>
+      <li style="margin-block-end: 0.5em">
+        origin: Indicates the origin of the message, i.e., the URL of the
+        context that sent the message
+      </li>
+      <li style="margin-block-end: 0.5em">
+        source: Represents the context that sent the message. In the case of Web
+        Workers, this property is usually null because messages come from the
+        main thread or other Workers, not from windows or iframes
+      </li>
+      <li style="margin-block-end: 0.5em">
+        ports: An array of MessagePort objects associated with the message.
+        MessagePort are used for advanced two-way communication between threads
+      </li>
+    </ul>
+  </PNotes>
+</p-slide>
+<p-slide>
+  <code style="width: fit-content" class="language-javascript"
+    >postMessage(message, transfer)</code
+  >
+</p-slide>
+<p-slide class="center">
+  <code style="width: fit-content" class="language-javascript mid-dimension"
+    >postMessage(message, transfer)</code
+  >
+  <div
+    class="flex two-columns-divided-vertically"
+    style="margin-block-start: 1em"
+  >
+    <div>
+      <p>💬 <span class="main-sub-gradient">message</span></p>
+      <p-fragment
+        ><p>📨 will be in the data field in the message object</p></p-fragment
+      >
+      <p-fragment><p>🚩 required</p></p-fragment>
+    </div>
+    <div>
+      <p>🚚 <span class="main-gradient">transfer</span></p>
+      <p-fragment
+        ><p>
+          🚌 only transferable objects like ArrayBuffer or ImageBitmap
+        </p></p-fragment
+      >
+      <p-fragment><p>😶‍🌫️ optional</p></p-fragment>
+    </div>
+  </div>
+  <PNotes>
+    <p>
+      By default, when you use postMessage(message), the message is copied into
+      the Worker's context (or the main thread) by structured cloning mechanism.
+      But if you want to improve performance, you can transfer specific types of
+      data instead of copying them
+    </p>
+    <ul style="font-size: 0.8em">
+      <li>ArrayBuffer</li>
+      <li>ImageBitmap</li>
+      <li>OffscreenCanvas</li>
+      <li>ReadableStream, WritableStream, TransformStream</li>
+    </ul>
+  </PNotes>
+</p-slide>
+<p-slide>
+  <code style="width: fit-content" class="language-javascript"
+    >worker.onerror = (event) => {};</code
+  >
+</p-slide>
+<p-slide>
+  <code style="width: fit-content" class="language-javascript mid-dimension"
+    >worker.onerror = (event) => {};</code
+  >
+  <ul class="space" style="margin-block-start: 0.7em">
+    <p-fragment><li>⛔ ErrorEvent</li></p-fragment>
+    <p-fragment
+      ><li>
+        💬 Optional string on <span class="main-sub-gradient">message</span> properties
+        <pre
+          style="margin-block-start: 1em; border-radius: 0.5em; box-shadow: inset 0 0 0.09em rgba(0, 0, 0, 0.25)"><code is:raw class="language-javascript">worker.onerror = (event) => { 
+  console.log(event.message);
+};</code></pre>
+      </li></p-fragment
+    >
+  </ul>
+</p-slide>
+<p-slide>
+  <h3>
+    🤝🏻 <span class="main-gradient">Web Worker - Practical Use Cases</span>
+  </h3>
+  <ul style="--web-day-ul-space: 0.1em" class="space mid-dimension">
+    <li>🖼️ Image compression and processing</li>
+    <p-fragment><li>🧾 CSV data processing and formatting</li></p-fragment>
+    <p-fragment><li>🧮 Complex algorithms</li></p-fragment>
+  </ul>
+</p-slide>
+<p-slide>
+  <h3><span class="main-gradient">Let's go further</span> ᯓᯓ🏃🏻‍♀️‍➡️🏃🏻‍♀️‍➡️</h3>
+</p-slide>
+<p-slide>
+  <h2>🤝🏻 <span class="main-gradient">Shared Worker</span></h2>
+  <PNotes>
+    Dedicated Workers are the most common: They are created from a single page
+    with new Worker(). Each instance is independent (if you open two tabs of the
+    same app, you will have two distinct Web Workers). Perfect for operations
+    tied only to the current page (e.g., file parsing or heavy calculations).
+  </PNotes>
+</p-slide>
+<p-slide>
+  <h3>🤝🏻 <span class="main-gradient">Shared Worker</span></h3>
+  <ul style="--web-day-ul-space: 0.2em" class="space mid-dimension">
+    <li>
+      🌍 <span class="main-sub-gradient">Can be shared</span> across multiple tabs
+      of the same origin
+    </li>
+    <p-fragment
+      ><li>
+        😎 <span class="main-sub-gradient">Keep alive</span> until all tabs are closed
+        (even if the page is reloaded)
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>
+        💬 Communicate through the <span class="main-sub-gradient"
+          >MessagePort API</span
+        >
+      </li></p-fragment
+    >
+  </ul>
+  <PNotes>
+    <p>
+      MessagePort API:
+      https://developer.mozilla.org/en-US/docs/Web/API/MessagePort : similar to
+      postMessage but more powerful and flexible
+    </p>
+  </PNotes>
+</p-slide>
+<p-slide>
+  <h3>
+    🤝🏻 <span class="main-gradient">Shared Worker - Practical Use Cases</span>
+  </h3>
+  <ul style="--web-day-ul-space: 0.1em" class="space mid-dimension">
+    <li>
+      🗣️ Cross-tab communication through the <span class="main-sub-gradient"
+        >MessagePort API</span
+      >
+    </li>
+    <p-fragment><li>🗃️ Shared Cache or Data Storage</li></p-fragment>
+    <p-fragment><li>👥 Session Management</li></p-fragment>
+  </ul>
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line"
+    data-label-file="shared-worker.js">
+ <code is:raw class="language-javascript" style="font-size: 0.76em;"> 
+    const clients = [];
+    
+    self.onconnect = (event) => {
+      const [port] = event.ports;
+      clients.push(port);
+      port.postMessage("Worker connected");
+      port.onmessage = (e) => {
+        clients.forEach((client) =>
+          client.postMessage(
+            `New client connected with message: "${e.data}"`
+          )
+        );
+      };
+    };</code>
+</pre>
+  <p-fragment
+    ><span
+      style="--circle-sketch-height: 1.4em; position: absolute; inset-block-end: 8.3em; width: 8em; inset-inline-start: 1.9em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line language-javascript"
+    data-label-file="main.js">
+    <code is:raw class="language-javascript">
+    const sharedWorker = new SharedWorker("shared-worker.js");
+    sharedWorker.port.start();
+
+    sharedWorker.port.onmessage = (e) => {
+      console.log(e.data);
+    };
+
+    sharedWorker.port.postMessage("Hello from Tab 1");</code>
+  </pre>
+  <p-fragment
+    ><span
+      style="--circle-sketch-height: 1.8em; position: absolute; inset-block-end: 8.3em; width: 5em; inset-inline-start: 5.9em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+</p-slide>
+<p-slide>
+  <h2>⛓️‍💥 <span class="main-gradient">when client disconnect</span></h2>
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line language-javascript"
+    data-label-file="main.js">
+    <code is:raw class="language-javascript" style="font-size: 0.92em;">
+  const clients = [];
+  self.onconnect = (event) => {
+    // ...other stuff
+    port.onclose = () => {
+      clients.splice(clients.indexOf(port), 1);
+      clients.forEach((client) =>
+        client.postMessage(
+          `Client disconnected. Total clients remaining: ${clients.length}`
+        )
+      );
+    };
+  }</code></pre>
+  <PNotes>
+    <p>
+      When the client disconnects (closing the tab or window), the onclose event
+      is triggered.
+    </p>
+    <p>
+      The worker removes the client from the list and broadcasts a "Client
+      disconnected" message to all remaining clients.
+    </p>
+  </PNotes>
+</p-slide>
+<p-slide class="center">
+  <h2><span class="main-gradient">Web Worker limitations</span> ❌</h2>
+</p-slide>
+<p-slide>
+  <ul class="space" style="line-height: 1em">
+    <li>❌ <span class="main-sub-gradient">No access to the DOM</span></li>
+    <p-fragment
+      ><li>
+        ❌
+        <span class="main-sub-gradient"
+          >No access to global variables like <code style="font-size: 0.8em"
+            >window</code
+          >, <code style="font-size: 0.8em">document</code>, or
+          <code style="font-size: 0.8em">parent</code></span
+        >
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>
+        ❌
+        <span class="main-sub-gradient"
+          >No synchronous APIs like <code style="font-size: 0.8em">alert()</code
+          >, <code style="font-size: 0.8em">confirm()</code>, or
+          <code style="font-size: 0.8em">prompt()</code></span
+        >
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>
+        ❌ <span class="main-sub-gradient">No access to storage APIs</span>
+      </li></p-fragment
+    >
+  </ul>
+  <PNotes>
+    <ul style="font-size: 0.8em">
+      <li>
+        ❌ Some APIs like localStorage, sessionStorage, and cookies are not
+        accessible. IndexedDB is only partially available.
+      </li>
+      <li>
+        ❌ No synchronous import of ES modules - Modules must be imported
+        explicitly and asynchronously (importScripts() works only in classic
+        workers, not module workers).
+      </li>
+      <li>
+        ❌ Restricted access to certain JavaScript APIs - Web Workers cannot use
+        WebRTC, CanvasRenderingContext2D (except OffscreenCanvas), some
+        security-related APIs, and other browser-specific features.
+      </li>
+    </ul>
+  </PNotes>
+</p-slide>
+<style lang="scss">
+  .two-columns-divided-vertically {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+  }
+</style>

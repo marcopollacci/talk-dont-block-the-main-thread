@@ -5,8 +5,8 @@
     <g transform="translate(0,0)">
       <defs>
         <linearGradient gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="29" y2="29" id="g1">
-          <stop offset="0%" stop-color="#000" />
-          <stop offset="100%" stop-color="#a0a0a0" />
+          <stop offset="0%" stop-color="#1d99fd" />
+          <stop offset="100%" stop-color="#ff00f7" />
         </linearGradient>
       </defs>
       <path fill-rule="evenodd"

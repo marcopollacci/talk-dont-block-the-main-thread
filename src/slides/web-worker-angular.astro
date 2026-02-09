@@ -1,0 +1,359 @@
+---
+import { Image } from "astro:assets";
+import PNotes from "../components/PNotes.astro";
+import angularLogo from "../img/angular-logo.png";
+---
+
+<p-slide class="center">
+  <Image
+    src={angularLogo}
+    alt="angular logo"
+    class="alter-image-size"
+    style="--image-start-size: 6.5em"
+  />
+  <h3 class="main-gradient" style="margin-block-start: 0.3em">
+    Angular Web Workers
+  </h3>
+</p-slide>
+<p-slide class="cover" style="position: relative">
+  <h1 class="main-sub-gradient">
+    Angular CLI allows us to generate new Web Worker
+  </h1>
+</p-slide>
+<p-slide>
+  <h3 style="margin-block-end: 0.9em">
+    ⚙️ <span class="main-sub-gradient">Angular CLI</span>
+  </h3>
+  <ul class="space" style="--web-day-ul-space: 0.2em; font-weight: 100">
+    <li>🆕 <span class="main-gradient">Create new file</span></li>
+    <p-fragment
+      ><li>
+        🆕 Create new file <span class="main-gradient"
+          >tsconfig.worker.json</span
+        >
+        <i>(only first time)</i>
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>
+        🔄 Update <span class="main-gradient">angular.json</span>
+        <i>(only first time)</i>
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>
+        🔄 <span class="main-gradient">Update</span> class file only if web worker
+        has the same name
+      </li></p-fragment
+    >
+  </ul>
+  <PNotes>
+    <p>
+      last point example:<br />
+      <u>worker-test</u>.service.ts --> <u>worker-test</u>.worker.ts
+    </p>
+  </PNotes>
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em">
+    ⚙️ <span class="main-sub-gradient">Angular CLI</span>
+  </h4>
+  <pre
+    class="small-line"
+    data-label-file="terminal">
+    <code is:raw class="language-markdown">
+      ng g web-worker services/worker-test
+      
+      </code><p-fragment><code is:raw class="language-javascript">CREATE src/app/services/worker-test.worker.ts (157 bytes)</code></p-fragment>
+      <p-fragment><code is:raw class="language-javascript">CREATE tsconfig.worker.json (334 bytes)</code></p-fragment>
+      <p-fragment><code is:raw class="language-javascript">UPDATE angular.json (2946 bytes)</code></p-fragment>
+      <p-fragment><code is:raw class="language-javascript">UPDATE src/app/services/worker-test.service.ts (537 bytes)</code></p-fragment>
+    </pre>
+  <PNotes>
+    <p>
+      <b>angular.json:</b> new property WebWorkerTsConfig inside build --> options
+      that refer to tsconfig.worker.json
+    </p>
+  </PNotes>
+</p-slide>
+<p-slide>
+  <pre
+    class="small-line"
+    data-label-file="worker-test.worker.ts">
+    <code is:raw class="language-javascript">
+      /// &lt;reference lib="webworker" />
+
+      addEventListener('message', ({ data }) => {
+        const response = `worker response to ${data}`;
+        postMessage(response);
+      });
+
+    </code>
+    </pre>
+  <PNotes>
+    The /// &lt;reference lib="webworker" /> directive is a TypeScript
+    declaration that tells the compiler to include the type definitions specific
+    to Web Workers. <br /><br />What is it for? By default, TypeScript uses DOM
+    types, which include APIs like document, window, etc. However, Web Workers
+    do not have access to these APIs (for example, window does not exist in a
+    worker). In Angular, when you create a Web Worker, this directive ensures
+    that TypeScript uses the correct set of types, providing only the APIs
+    available in a Web Worker, such as postMessage, onmessage, and other global
+    objects typical of a worker.
+  </PNotes>
+</p-slide>
+<p-slide>
+  <pre
+    class="small-line"
+    data-label-file="worker-test.worker.ts">
+    <code is:raw class="language-javascript mid-dimension">
+      // ...
+      export class WorkerTestService {
+        constructor() { }
+      }
+      </code>
+    <p-fragment><code is:raw class="language-javascript mid-dimension">if (typeof Worker !== 'undefined') {
+        // Create a new
+        const worker = new Worker(new URL('./worker-test.worker', import.meta.url));</code></p-fragment>
+      <p-fragment><code is:raw class="language-javascript mid-dimension">worker.onmessage = ({ data }) => {
+          console.log(`page got message: ${data}`);
+        };
+        worker.postMessage('hello');</code></p-fragment>
+    <p-fragment><code is:raw class="language-javascript mid-dimension">} else {
+        // Web Workers are not supported in this environment.
+        // You should add a fallback so that your program still executes correctly.
+      }</code></p-fragment>
+    </pre>
+</p-slide>
+<p-slide autoplay timing="600" class="center">
+  <h1 class="main-gradient">Let's see some example code!</h1>
+  <p-fragment
+    ><img
+      src="/img/omg.gif"
+      alt="omg"
+      class="alter-image-size"
+      style="--image-start-size: 6em"
+    /></p-fragment
+  >
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line"
+    data-label-file="worker-test.worker.ts">
+    <code is:raw class="language-javascript">
+      addEventListener('message', ({ data }) => {
+        heavyTask();
+        postMessage(`done "${data}" task`);
+      });
+    </code>
+  </pre>
+  <p-fragment
+    ><span
+      style="--circle-sketch-height: 1.3em; position: absolute; inset-block-end: 6.9em; width: 6em; inset-inline-start: 3em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+</p-slide>
+<p-slide follow-fragments autoplay timing="100">
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <p-fragment></p-fragment>
+  <pre
+    class="small-line"
+    data-label-file="worker-test.worker.ts">
+    <code is:raw class="language-javascript">
+      //...
+      export class WorkerTestService {
+        #worker!: Worker;
+        
+        constructor() {
+          this.createWorker();
+        }
+      
+        createWorker() {
+          this.#worker = new Worker(
+            new URL('./worker-test.worker.ts', import.meta.url)
+          );
+        }
+      </code>
+      <p-fragment no-autoplay><code is:raw class="language-javascript">doHeavyWork(data: string): Observable&lt;string> {
+          return new Observable((observer) => {
+            this.#worker.onmessage = ({ data }: MessageEvent&lt;string>) => {
+              observer.next(data);
+              observer.complete();
+            };
+            this.#worker.onerror = (error) => observer.error(error);
+            this.#worker.postMessage(data);
+          });
+        }
+      }</code></p-fragment>
+    </pre>
+  <p-fragment no-autoplay
+    ><span
+      style="--circle-sketch-height: 2.3em; position: absolute; inset-block-end: 8em; width: 8em; inset-inline-start: 5em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+  <p-fragment no-autoplay
+    ><span
+      style="--circle-sketch-height: 2.3em; position: absolute; inset-block-end: 6.2em; width: 8em; inset-inline-start: 15em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line"
+    data-label-file="home.component.ts">
+    <code is:raw class="language-javascript">
+      // ...
+      export class HomeComponent {
+        readonly #workerService = inject(WorkerTestService);
+        
+        startHeavyWorkInWorker() {
+          this.#workerService
+            .doHeavyWork('daje')
+            .subscribe((data) => console.log(data)); // done "daje" task
+        }
+      }</code>
+  </pre>
+  <p-fragment
+    ><span
+      style="--circle-sketch-height: 2em; position: absolute; inset-block-end: 4.7em; width: 6em; inset-inline-start: 4em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+</p-slide>
+<p-slide class="center">
+  <h2 style="margin-block-end: 0.5em">
+    <span class="main-sub-gradient">Web Worker Pool</span>
+  </h2>
+  <span style="font-size: 1.4em">📚</span>
+</p-slide>
+<p-slide>
+  <h3>📚 <span class="main-sub-gradient">Web Worker Pool</span></h3>
+  <ul class="space" style="--web-day-ul-space: 0.2em; font-weight: 100">
+    <li>♻️ <span class="main-gradient">Reduced Overhead</span></li>
+
+    <p-fragment
+      ><li>
+        💪 <span class="main-gradient">Efficient Resource Management</span>
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>🎢 <span class="main-gradient">Scalability</span></li></p-fragment
+    >
+  </ul>
+  <PNotes>
+    <span style="font-size: 0.8em"
+      >A Web Worker Pool is a technique where you create and manage a group (or
+      "pool") of pre-initialized Web Workers that are ready to handle tasks on
+      demand. Instead of creating and destroying Web Workers dynamically (which
+      is resource-intensive), the pool maintains a set of workers that can be
+      reused, improving performance and efficiency.</span
+    >
+    <ul style="font-size: 0.8em">
+      <li>
+        Reduced Overhead: Creating a Web Worker is expensive in terms of time
+        and resources. A pool avoids repeatedly creating and destroying workers.
+      </li>
+      <li>
+        Efficient Resource Management: Workers are reused, preventing memory
+        leaks and excessive resource consumption.
+      </li>
+      <li>
+        Scalability: You can control the number of active workers, ensuring the
+        application adapts to
+      </li>
+      the device's capabilities.
+    </ul>
+  </PNotes>
+</p-slide>
+<p-slide class="center">
+  <h3 style="margin-block-end: 0.5em">
+    <span class="main-sub-gradient">How Does a Web Worker Pool Work?</span>
+  </h3>
+  <span style="font-size: 1.4em">( ꩜ ᯅ ꩜;)</span>
+</p-slide>
+<p-slide>
+  <h4><span class="main-sub-gradient">Pool worker loop</span> 🔁</h4>
+  <div class="hand-drawing-horizontal center">
+    <p-fragment><span data-box>Pool Initialization</span></p-fragment>
+    <p-fragment
+      ><span data-arrow data-right></span>
+      <span data-box>Task Assignment</span></p-fragment
+    >
+    <p-fragment
+      ><span data-arrow data-right></span>
+      <span data-box>Worker Release</span></p-fragment
+    >
+  </div>
+</p-slide>
+<p-slide follow-fragments>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line"
+    data-label-file="worker-pool.service.ts">
+    <code is:raw class="mid-dimension language-javascript">
+  const POOL_SIZE = 4;
+  export class WorkerPoolService {
+    #workers: Worker[] = [];
+
+    constructor() {
+      this.createPoolWorkers();
+    }
+    </code><p-fragment><code is:raw class="mid-dimension language-javascript">createPoolWorkers() {
+        for (let i = 0; i < POOL_SIZE; i++) {
+          const worker = new Worker(
+            new URL('./worker-test.worker.ts', import.meta.url)
+          );
+          this.#increaseWorkerPool(worker);
+        }
+    }</code></p-fragment><p-fragment><code is:raw class="mid-dimension language-javascript">
+    #increaseWorkerPool(worker: Worker) {
+      this.#workers.push(worker);
+    }
+  }</code></p-fragment>
+    </pre>
+  <p-fragment
+    ><span
+      style="--circle-sketch-height: 1.3em; position: absolute; inset-block-end: 8.5em; width: 5em; inset-inline-start: 6em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+</p-slide>
+<p-slide follow-fragments>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line"
+    data-label-file="worker-pool.service.ts">
+    <code is:raw class="mid-dimension language-javascript">
+    export class WorkerPoolService {
+      //...
+      getWorker(data: string): Observable&lt;string> | null {
+        const worker = this.#workers.pop();
+        if (!worker) return null;
+        return new Observable((observer) => {
+          worker.onmessage = ({ data }: MessageEvent&lt;string>) => {
+            observer.next(data);
+            observer.complete();
+            this.#increaseWorkerPool(worker);
+          };
+          worker.onerror = (error) => observer.error(error);
+          worker.postMessage(data);
+        });
+      }
+    }</code></pre>
+  <p-fragment
+    ><span
+      style="--circle-sketch-height: 1.3em; position: absolute; inset-block-end: 8.2em; width: 5em; inset-inline-start: 6em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+  <p-fragment
+    ><span
+      style="--circle-sketch-height: 1.3em; position: absolute; inset-block-end: 4.6em; width: 7em; inset-inline-start: 3.5em; z-index: 1"
+      class="circle-sketch-highlight"></span></p-fragment
+  >
+</p-slide>
+<style lang="scss">
+  .hand-drawing-horizontal p-fragment,
+  .hand-drawing-horizontal {
+    gap: 0;
+  }
+</style>

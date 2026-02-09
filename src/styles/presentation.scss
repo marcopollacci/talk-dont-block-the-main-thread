@@ -53,8 +53,8 @@
   --brand-color-ant: #f60;
   --sketchy-arrow-width: 0.1em;
   --sketchy-arrow-tip-size: 20;
-  --starting-point-gradient: #fafafa;
-  --ending-point-gradient: #000000;
+  --starting-point-gradient: #1d99fd;
+  --ending-point-gradient: #ff00f7;
 }
 
 p-deck::after {
@@ -72,7 +72,8 @@ p-deck::after {
 p-fragment.landing {
   position: absolute;
   transform: scale(3);
-  transition: opacity var(--fragment-duration, 300ms),
+  transition:
+    opacity var(--fragment-duration, 300ms),
     transform var(--fragment-duration, 300ms);
 
   &[aria-hidden="false"],
@@ -246,13 +247,6 @@ pre {
 
   img {
     height: 4em;
-  }
-
-  > img {
-    filter: invert(1) hue-rotate(180deg);
-    height: 200%;
-    transform: translate(25%, -10%);
-    opacity: 0.5;
   }
 }
 
@@ -495,8 +489,39 @@ a {
   }
 }
 
+.main-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--starting-point-gradient),
+    var(--ending-point-gradient)
+  );
+  background-clip: text;
+  font-family: var(--talk-marco-graphik-semibold);
+  -webkit-text-fill-color: transparent;
+}
+
+.text-sub-section,
+.main-sub-gradient {
+  background: linear-gradient(90deg, #ff00d8, #ff542f);
+  background-clip: text;
+  font-family: var(--talk-marco-graphik-semibold);
+  -webkit-text-fill-color: transparent;
+}
+
+cite[data-loop] {
+  --cite-margin-block-start: 0.8em;
+  text-align: center;
+  font-style: normal;
+  color: #6f6d6d;
+  margin-block-start: var(--cite-margin-block-start);
+  font-size: 0.3em;
+}
+
 .text-cover {
-  @include mixins.gradientText(#000, #a0a0a0);
+  @include mixins.gradientText(
+    var(--starting-point-gradient),
+    var(--ending-point-gradient)
+  );
 }
 
 .text-sub-section {
@@ -596,28 +621,28 @@ pre[data-label-file]::after {
   }
   --color-border: #000000;
   span {
-    &[box] {
+    &[data-box] {
       padding: 0.5em;
       background: transparent;
       outline: none;
       border: 2px solid var(--color-border);
       border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
     }
-    &[arrow] {
+    &[data-arrow] {
       font-size: 2.5em;
-      &[left]:before {
+      &[data-left]:before {
         content: "\27F5";
       }
-      &[right]:before {
+      &[data-right]:before {
         content: "\27F6";
       }
-      &[up]:before {
+      &[data-up]:before {
         content: "\2191";
       }
-      &[down]:before {
+      &[data-down]:before {
         content: "\2193";
       }
-      &[up-down]:before {
+      &[data-up-down]:before {
         content: "\21F5";
       }
     }

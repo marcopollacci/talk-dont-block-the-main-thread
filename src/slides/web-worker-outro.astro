@@ -1,0 +1,56 @@
+---
+import PNotes from "../components/PNotes.astro";
+---
+
+<p-slide class="center" autoplay timing="800">
+  <h1>🙅‍♂️ <span class="main-gradient">Common Pitfalls</span></h1>
+  <p-fragment
+    ><h4
+      class="main-sub-gradient"
+      style="padding-inline-end: 0.5em; text-align: end; font-style: italic"
+    >
+      What Could Go Wrong? <span
+        style="-webkit-text-fill-color: initial; font-style: normal">🌚</span
+      >
+    </h4></p-fragment
+  >
+</p-slide>
+<p-slide>
+  <ul class="space" style="line-height: 1em">
+    <li>❌ <span class="main-sub-gradient">Too Many Workers</span></li>
+    <p-fragment
+      ><li>
+        ❌
+        <span class="main-sub-gradient">Passing Large Data Objects</span>
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>
+        ❌
+        <span class="main-sub-gradient">Memory and performance impact</span>
+      </li></p-fragment
+    >
+    <p-fragment
+      ><li>
+        ❌ <span class="main-sub-gradient"
+          >Using Workers for Small, Frequent Tasks</span
+        >
+      </li></p-fragment
+    >
+  </ul>
+  <PNotes>
+    <ul style="font-size: 0.8em">
+      <li>
+        Creating a new Web Worker for every small operation can overload the
+        system: ✅ Reuse Workers instead of creating a new one each time; ✅ Use
+        a Worker Pool
+      </li>
+      <li>Passing Large Data Objects: use transfer parameter in postMessge</li>
+      <li>
+        ❌ Communication overhead - Data exchange with the main thread happens
+        asynchronously via postMessage(), which can introduce complexity and
+        performance overhead.
+      </li>
+    </ul>
+  </PNotes>
+</p-slide>

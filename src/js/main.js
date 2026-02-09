@@ -61,7 +61,7 @@ function toggleNavButtons(event) {
     view with a smooth animation, ensuring that the element is centered within its container and is as
     close to the viewport as possible. */
     if (hasTargetAttribute) {
-      event.detail.fragment.scrollIntoView({
+      event.detail.fragment?.scrollIntoView({
         behavior: "smooth",
         block: "center",
         inline: "nearest",
@@ -92,7 +92,7 @@ deck.addEventListener("p-slides.slidechange", ({ detail: { slide } }) => {
   setTimeout(() => {
     deck.style.setProperty(
       "--current-slide-bg",
-      getComputedStyle(slide).backgroundColor
+      getComputedStyle(slide).backgroundColor,
     );
   });
 });

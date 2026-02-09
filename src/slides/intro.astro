@@ -1,0 +1,119 @@
+---
+import { Image } from "astro:assets";
+import octo from "../img/octo-multi.png";
+import PNotes from "../components/PNotes.astro";
+---
+
+<p-slide class="center" autoplay timing="550">
+  <h2 style="margin-block-end: 0.2em" class="main-gradient">
+    What is Multithreading?
+  </h2>
+  <p-fragment
+    ><Image
+      src={octo}
+      alt="octo multitasking"
+      class="alter-image-size"
+      style="--image-start-size: 6em"
+    /></p-fragment
+  >
+</p-slide>
+<p-slide class="center blockquote">
+  <blockquote>
+    <p>
+      In computer architecture, multithreading is the ability of a central
+      processing unit (CPU) (or a single core in a multi-core processor)
+      <b>to provide multiple threads</b> of execution.
+    </p>
+  </blockquote>
+  <cite
+    ><a
+      href="https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)"
+      target="_blank"
+      >https://en.wikipedia.org/wiki/Multithreading_(computer_architecture)</a
+    ></cite
+  >
+</p-slide>
+<p-slide class="cover center">
+  <div class="text-sub-section">
+    <h3 style="margin-block-end: 0">And what about thread management in</h3>
+    <h3 style="margin-block-start: 1rem">Web Browsers?</h3>
+  </div>
+  🤔
+</p-slide>
+<p-slide class="center">
+  <p>
+    Web browsers are complex applications that handle a variety of tasks
+    simultaneously
+  </p>
+  <div
+    style="margin-block-start: 1em; margin-inline: auto; text-align: start"
+    class="mid-dimension grid"
+  >
+    <p-fragment>👉 Rendering web pages</p-fragment>
+    <p-fragment>👉 Executing JavaScript</p-fragment>
+    <p-fragment>👉 Managing network requests</p-fragment>
+    <p-fragment>👉 Handling user input</p-fragment>
+  </div>
+  <p-notes>
+    Thread Management in Web Browsers Web browsers are complex applications that
+    handle a variety of tasks simultaneously, such as rendering web pages,
+    executing JavaScript, managing network requests, and handling user input. To
+    manage these tasks efficiently, modern web browsers use a combination of
+    single-threaded and multi-threaded architectures. The list is not
+    exhaustive, but it highlights the importance of thread management in web
+    browsers.
+  </p-notes>
+</p-slide>
+<p-slide>
+  <h3 class="center heading-with-emoji"><span>Single-Threaded</span> 🛣</h3>
+  <p-fragment>📍 JavaScript Execution</p-fragment>
+  <p-fragment>📍 Event Handling</p-fragment>
+  <p-fragment>📍 Rendering</p-fragment>
+  <p-fragment>📍 DOM Manipulation</p-fragment>
+  <p-notes> All the above tasks can be performed in main thread. </p-notes>
+</p-slide>
+<p-slide>
+  <h3 class="center heading-with-emoji"><span>Multi-Threaded</span> 🛣 🛣</h3>
+  <p-fragment>🚀 Networking</p-fragment>
+  <p-fragment>🚀 GPU Acceleration</p-fragment>
+  <p-fragment>🚀 HTML5 APIs (WebRTC, Web Audio API, File API)</p-fragment>
+  <p-fragment>🚀 <b>Web worker</b></p-fragment>
+  <PNotes>
+    <ul>
+      <li>
+        Networking: Internally, these use multiple threads for handling network
+        I/O.
+      </li>
+      <li>
+        GPU: Rendering and compositing tasks are often offloaded to the GPU,
+        which uses multiple threads internally
+      </li>
+      <li>
+        HTML5 APIs: APIs like WebRTC, Web Audio API, and File API often use
+        multiple threads internally
+      </li>
+      <li>Web worker: Web workers can also use multiple threads internally</li>
+    </ul>
+  </PNotes>
+</p-slide>
+<p-slide>
+  <h3 style="--justify-content: flex-start" class="heading-with-emoji">
+    🌰 <span>In a nutshell</span>
+  </h3>
+  <p-fragment style="margin-block-end: 2rem"
+    ><p class="mid-dimension">
+      Web browsers employ a hybrid approach to thread management.
+    </p></p-fragment
+  >
+  <p-fragment class="mid-dimension">
+    <p style="margin-block-end: 1rem">
+      📣 <b>Single-Threaded</b>: JavaScript execution on the main thread,
+      managed by an event loop.
+    </p>
+    <p>
+      📣 <b>Multi-Threaded</b>: Use of Web Workers for background tasks, and
+      multi-threaded browser engine components for rendering, networking, and
+      GPU acceleration.
+    </p>
+  </p-fragment>
+</p-slide>

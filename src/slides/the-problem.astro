@@ -1,0 +1,74 @@
+---
+import { Image } from "astro:assets";
+import freezing from "../img/freezing-man.png";
+import spongy from "../img/problem-solution.jpg";
+import PNotes from "../components/PNotes.astro";
+---
+
+<p-slide class="center" autoplay timing="550">
+  <h2 class="main-gradient">The Freezing problem</h2>
+  <p-fragment
+    ><Image
+      src={freezing}
+      alt="freezing man"
+      class="alter-image-size"
+      style="--image-start-size: 7em"
+    /></p-fragment
+  >
+</p-slide>
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center main-gradient">
+    The Event Loop
+  </h4>
+  <img
+    src="/img/event-loop.gif"
+    alt="event loop"
+    class="alter-image-size"
+    style="border-radius: 0.3em; --image-start-size: 8em"
+  />
+  <cite data-loop
+    ><a
+      href="https://dev.to/arslanyounis/how-javascript-event-loop-works-5604"
+      target="_blank">credits: Arslan Younis</a
+    ></cite
+  >
+  <PNotes>
+    Event Loop order:
+    <p>Synchronous Code Execution</p>
+    <p>Microtasks Execution (promise callbacks)</p>
+    <p>Macro Task Execution (setTimeout, setInterval)</p>
+  </PNotes>
+</p-slide>
+<p-slide>
+  <h1 class="center main-sub-gradient">BUT</h1>
+</p-slide>
+<p-slide autoplay time="800">
+  <h4 style="margin-block-end: 0.5em" class="center main-sub-gradient">
+    The Synchronous code
+  </h4>
+  <p-fragment timing-start="900">
+    <pre
+      class="small-line"
+      data-label-file="heavy-task.js">
+    <code is:raw class="language-javascript" style="font-size: 0.76em;"> 
+      const heavyTask = () => {
+        for (let i = 0; i < 10000000000; i++) {
+          //do something useful
+        }
+      };</code>
+   </pre>
+  </p-fragment>
+  <p-fragment timing-start="1400"
+    ><h4 style="margin-block-start: 0.5em" class="center main-sub-gradient">
+      block the call stack!
+    </h4></p-fragment
+  >
+</p-slide>
+<p-slide>
+  <Image
+    src={spongy}
+    alt="problem solution meme spongbob"
+    class="alter-image-size"
+    style="border-radius: 0.3em; --image-start-size: 8em"
+  />
+</p-slide>
