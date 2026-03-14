@@ -68,6 +68,9 @@ function toggleNavButtons(event) {
       });
     }
   }
+  if (Object.keys(navButtons).length === 0) {
+    return;
+  }
   navButtons.previous.disabled = deck.atStart;
   navButtons.next.disabled = deck.atEnd;
 }
