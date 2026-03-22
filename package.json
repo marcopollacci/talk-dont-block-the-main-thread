@@ -20,6 +20,6 @@
     "husky": "^9.1.7",
     "sass": "^1.98.0",
     "sharp": "^0.34.5",
-    "vite-plugin-static-copy": "^3.3.0"
+    "vite-plugin-static-copy": "^3.4.0"
   }
 }
