@@ -18,7 +18,7 @@
   "devDependencies": {
     "@types/node": "^25.5.0",
     "husky": "^9.1.7",
-    "sass": "^1.98.0",
+    "sass": "^1.99.0",
     "sharp": "^0.34.5",
     "vite-plugin-static-copy": "^4.0.0"
   }
