@@ -12,7 +12,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "astro": "^6.1.2",
+    "astro": "^6.1.5",
     "p-slides": "^1.5.1"
   },
   "devDependencies": {
