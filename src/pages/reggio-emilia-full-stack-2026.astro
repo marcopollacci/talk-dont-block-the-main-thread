@@ -1,43 +1,52 @@
 ---
+import favicon from "../img/favicon.svg";
+import qrRating from "../img/qr_rating_refs2026.png";
+import qrSlide from "../img/qr_slide_refs2026.png";
 import Layout from "../layouts/Layout.astro";
+import CoverRefs2026 from "../slides/cover-refs2026.astro";
 import Cover from "../slides/cover.astro";
+import Intro from "../slides/intro.astro";
+import Questions from "../slides/questions.astro";
 import Thanks from "../slides/thanks.astro";
-import favicon from '../img/favicon.svg';
-import CoverRefs2026 from '../slides/cover-refs2026.astro';
-import Intro from '../slides/intro.astro';
-import TheProblem from '../slides/the-problem.astro';
-import WebWorkerIntro from '../slides/web-worker-intro.astro';
-import WebWorkerDeep from '../slides/web-worker-deep.astro';
-import WebWorkerAngular from '../slides/web-worker-angular.astro';
-import WebWorkerOutro from '../slides/web-worker-outro.astro';
-import qrRating from '../img/qr_rating_refs2026.png';
-import qrSlide from '../img/qr_slide_refs2026.png';
-import Questions from '../slides/questions.astro';
+import TheProblem from "../slides/the-problem.astro";
+import WebWorkerAngular from "../slides/web-worker-angular.astro";
+import WebWorkerDeep from "../slides/web-worker-deep.astro";
+import WebWorkerIntro from "../slides/web-worker-intro.astro";
+import WebWorkerOutro from "../slides/web-worker-outro.astro";
 const favIcon = favicon.src;
 const canRender = import.meta.env.DEV || new Date("2026-05-12") < new Date();
 const metaData = {
-  title: 'Don\'t block the main thread',
-  description: 'How to avoiding long tasks on the main thread.',
+  title: "Don't block the main thread",
+  description: "How to avoiding long tasks on the main thread.",
 };
 ---
-<Layout canRender={canRender} favIcon={favIcon} metaData={metaData}>
+
+<Layout {canRender} {favIcon} {metaData}>
   <CoverRefs2026 />
-  {canRender && (
-    <Cover />
-    <Intro />
-    <TheProblem />
-    <WebWorkerIntro />
-    <WebWorkerDeep />
-    <WebWorkerAngular />
-    <WebWorkerOutro />
-    <Thanks QuestionsSlide={Questions} qrLinkRating={qrRating} qrLink={qrSlide} urlLink="https://talk-dont-block-the-main-thread.marcotalk.dev/reggio-emilia-full-stack-2026/" />
-  )}
+  {
+    canRender && (
+      <>
+        <Cover />
+        <Intro />
+        <TheProblem />
+        <WebWorkerIntro />
+        <WebWorkerDeep />
+        <WebWorkerAngular />
+        <WebWorkerOutro />
+        <Thanks
+          QuestionsSlide={Questions}
+          qrLinkRating={qrRating}
+          qrLink={qrSlide}
+          urlLink="https://talk-dont-block-the-main-thread.marcotalk.dev/reggio-emilia-full-stack-2026/"
+        />
+      </>
+    )
+  }
 </Layout>
 <style lang="scss" is:global>
-    ul.space {
+  ul.space {
     display: flex;
     flex-direction: column;
     row-gap: 1.5rem;
   }
 </style>
-  
