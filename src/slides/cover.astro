@@ -1,7 +1,6 @@
 ---
 import { Image } from "astro:assets";
 import fourtyFactory from "../img/40factory.svg";
-import gka from "../img/gitkraken_ambassador.webp";
 import me from "../img/me.png";
 import qrLink from "../img/qr_link.svg";
 const { meReloaded } = Astro.props;
@@ -30,14 +29,6 @@ const { meReloaded } = Astro.props;
         style="--image-start-size: .6em"
       />
     </div>
-    <p-fragment>
-      <Image
-        src={gka}
-        alt="gka"
-        style="--image-start-size: 2.5em;position: absolute;inset-inline-end: 0;inset-block-start: 1em;"
-        class="alter-image-size"
-      />
-    </p-fragment>
   </p-note>
   <Image
     style="--image-start-size: 10.5em"
