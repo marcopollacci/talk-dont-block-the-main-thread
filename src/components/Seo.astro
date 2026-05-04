@@ -1,0 +1,34 @@
+---
+const {
+  title,
+  description,
+  image,
+  canonical,
+  type = "website",
+  locale = "en_US",
+  site,
+} = Astro.props;
+
+const url = canonical
+  ? new URL(canonical, site).toString()
+  : new URL(Astro.url.pathname, site).toString();
+
+const imageUrl = new URL(`/img/${image}`, site).toString();
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+
+<link rel="canonical" href={url} />
+
+<meta property="og:type" content={type} />
+<meta property="og:locale" content={locale} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+<meta property="og:image" content={imageUrl} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />

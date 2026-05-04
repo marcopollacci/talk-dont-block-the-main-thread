@@ -18,6 +18,8 @@ const canRender = import.meta.env.DEV || new Date("2026-05-12") < new Date();
 const metaData = {
   title: "Don't block the main thread",
   description: "How to avoiding long tasks on the main thread.",
+  image: "og-image.png",
+  site: "https://talk-dont-block-the-main-thread.marcotalk.dev/reggio-emilia-full-stack-2026/",
 };
 ---
 
@@ -37,7 +39,7 @@ const metaData = {
           QuestionsSlide={Questions}
           qrLinkRating={qrRating}
           qrLink={qrSlide}
-          urlLink="https://talk-dont-block-the-main-thread.marcotalk.dev/reggio-emilia-full-stack-2026/"
+          urlLink={metaData.site}
         />
       </>
     )
