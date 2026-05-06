@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import fourtyFactory from "../img/40factory.svg";
 import me from "../img/me.png";
-const { qrLink, urlLink, qrLinkRating, QuestionsSlide, meReloaded } =
+const { qrLink, urlLink, qrLinkRating, QuestionsSlide, meReloaded, RepoSlide } =
   Astro.props;
 ---
 
@@ -39,6 +39,7 @@ const { qrLink, urlLink, qrLinkRating, QuestionsSlide, meReloaded } =
     )
   }
 </p-slide>
+{RepoSlide && <RepoSlide />}
 {QuestionsSlide && <QuestionsSlide />}
 <p-slide class="two-columns">
   <p-note class="text-cover my-data my-presentation">
