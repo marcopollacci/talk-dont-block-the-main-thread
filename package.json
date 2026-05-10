@@ -16,7 +16,7 @@
     "p-slides": "^1.5.1"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.6.2",
     "husky": "^9.1.7",
     "sass": "^1.99.0",
     "sharp": "^0.34.5",
