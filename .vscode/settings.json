@@ -1,10 +1,30 @@
 {
-  "conventionalCommits.scopes": ["project"],
+  "conventionalCommits.scopes": ["project", "refs"],
   "[astro]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
-  }
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#f1dc34",
+    "activityBar.background": "#f1dc34",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#0a9586",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#f1dc34",
+    "statusBar.background": "#e2cb10",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#b2a00d",
+    "statusBarItem.remoteBackground": "#e2cb10",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#e2cb10",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#e2cb1099",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#e2cb10"
 }

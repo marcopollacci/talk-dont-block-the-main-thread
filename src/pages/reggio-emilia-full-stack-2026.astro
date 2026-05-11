@@ -1,7 +1,7 @@
 ---
-import favicon from "../img/favicon.svg";
 import qrRating from "../img/qr_rating_refs2026.png";
 import qrSlide from "../img/qr_slide_refs2026.png";
+import refsFav from "../img/refs_fav.svg";
 import Layout from "../layouts/Layout.astro";
 import CoverRefs2026 from "../slides/cover-refs2026.astro";
 import Cover from "../slides/cover.astro";
@@ -14,7 +14,7 @@ import WebWorkerAngular from "../slides/web-worker-angular.astro";
 import WebWorkerDeep from "../slides/web-worker-deep.astro";
 import WebWorkerIntro from "../slides/web-worker-intro.astro";
 import WebWorkerOutro from "../slides/web-worker-outro.astro";
-const favIcon = favicon.src;
+const favIcon = refsFav.src;
 const canRender = import.meta.env.DEV || new Date("2026-05-12") < new Date();
 const metaData = {
   title: "Don't block the main thread",
