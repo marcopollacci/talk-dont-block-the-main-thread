@@ -1,5 +1,5 @@
 <p-slide class="center" autoplay="true" timing="550">
-  <h2><span class="main-gradient">Angular 22: enter the Signals </span>🚦</h2>
+  <h2 style="margin-block-end: 0;"><span class="main-gradient">Angular 22: enter the Signals </span>🚦</h2>
   <h4 p-fragment p-effect="from below" style="font-style: italic">
     <span class="main-sub-gradient">Do we still need Observables? </span>🤨
   </h4>
@@ -8,7 +8,7 @@
 <p-slide>
   <h3>😶‍🌫️ <span class="main-gradient">Zoneless by default</span></h3>
   <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
-    <li>
+    <li p-fragment p-effect="zoom">
       ⚡ <span class="main-sub-gradient">OnPush</span> is the default change
       detection strategy
     </li>
@@ -16,17 +16,13 @@
       🚫 No more <span class="main-sub-gradient">Zone.js</span> patching your
       async callbacks
     </li>
-    <p-fragment p-effect="highlight red">
-      <li>
-        ⚠️ <code>worker.onmessage</code> updating a plain property
-        <span class="main-sub-gradient"> won't refresh the UI</span>
-      </li>
-    </p-fragment>
-    <p-fragment p-effect="highlight green">
-      <li>
-        ✅ Writing into a <span class="main-sub-gradient">signal</span> will
-      </li>
-    </p-fragment>
+    <li p-fragment p-effect="from right">
+      ⚠️ <code>worker.onmessage</code> updating a plain property
+      <span class="main-sub-gradient"> won't refresh the UI</span>
+    </li>
+    <li p-fragment p-effect="from below">
+      ✅ Writing into a <span class="main-sub-gradient">signal</span> will
+    </li>
   </ul>
 </p-slide>
 
@@ -118,16 +114,23 @@
 </p-slide>
 
 <p-slide class="center">
-  <div class="two-columns" style="margin-block-start: 1em">
-    <p-note>
-      <p>🌊 <span class="main-gradient">Observable / rxResource</span></p>
-      <p p-fragment p-effect="from left">📡 Streams: progress %, chunked results</p>
-      <p p-fragment p-effect="from left">🔁 Multiple messages from the worker</p>
-    </p-note>
-    <p-note>
-      <p>🧃 <span class="main-sub-gradient">resource()</span></p>
-      <p p-fragment p-effect="from right">📨 One-shot request / response</p>
-      <p p-fragment p-effect="from right">🎁 Loading &amp; error states built-in</p>
-    </p-note>
-  </div>
+  <h3 style="margin-block-end: 0.5em">
+    <span class="main-gradient">resource()</span> in a nutshell
+  </h3>
+  <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
+    <li p-fragment p-effect="from right">
+      📨 Perfect for <span class="main-sub-gradient">one-shot</span> request /
+      response work — loading &amp; error states built-in
+    </li>
+    <li p-fragment p-effect="zoom">
+      🌊 Still reach for <span class="main-sub-gradient"
+        >Observable / rxResource</span
+      > when you need streams or multiple emissions
+    </li>
+    <li p-fragment p-effect="from below">
+      🧭 Pick based on the <span class="main-sub-gradient"
+        >shape of your data</span
+      >, not habit
+    </li>
+  </ul>
 </p-slide>
