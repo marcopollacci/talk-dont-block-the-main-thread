@@ -1,0 +1,220 @@
+---
+import PNotes from "../components/PNotes.astro";
+---
+
+<p-slide autoplay="true" timing="800">
+  <h4 style="margin-block-end: 0.5em" class="center">
+    Remember our heavy task? 🤔
+  </h4>
+  <pre
+    class="small-line"
+    data-label-file="heavy-task.js">
+    <code is:raw class="language-javascript">
+  const heavyTask = () => {
+    for (let i = 0; i < 10000000000; i++) {
+      //do something useful
+    }
+  };</code>
+  </pre>
+  <p-fragment timing-start="1200">
+    <h4 style="margin-block-start: 0.5em" class="center">
+      Cute. <span class="main-sub-gradient">Now meet the real one</span> 🤖
+    </h4>
+  </p-fragment>
+  <PNotes>
+    <p>Callback to the opening: the fake for loop was the tutorial version.</p>
+    <p>
+      In 2026 the heavy task your users will actually hit is AI inference
+      running locally in the browser.
+    </p>
+  </PNotes>
+</p-slide>
+
+<p-slide>
+  <h3>🤗 <span class="main-gradient">transformers.js</span></h3>
+  <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
+    <li p-fragment p-effect="from right">
+      🧠 <span class="main-sub-gradient">Hugging Face models</span> directly in the
+      browser — no server
+    </li>
+    <li p-fragment p-effect="from left">
+      🔌 Runs on <span class="main-sub-gradient">ONNX Runtime</span> — WASM (CPU)
+      or WebGPU
+    </li>
+    <li p-fragment p-effect="zoom">
+      📦 Model downloaded once, then
+      <span class="main-sub-gradient"> cached by the browser</span>
+    </li>
+    <li p-fragment p-effect="from right">
+      ✈️ Works <span class="main-sub-gradient">offline</span> — no API keys, no per-token
+      billing
+    </li>
+  </ul>
+  <PNotes>
+    <p>Official Hugging Face library, mirrors the Python transformers API.</p>
+    <p>
+      v4 shipped in Feb 2026 with a new WebGPU runtime written in C++ with the
+      ONNX Runtime team.
+    </p>
+    <p>
+      Models are ONNX conversions, thousands ready on the Hub. Quantized
+      sentiment model ≈ 65MB.
+    </p>
+  </PNotes>
+</p-slide>
+
+<p-slide>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line"
+    data-label-file="sentiment.js">
+    <code is:raw class="language-javascript">
+  import { pipeline } from '@huggingface/transformers';
+
+
+  const classifier = await pipeline('sentiment-analysis');</code>
+    <p-fragment><code is:raw class="language-javascript">
+  const result = await classifier('I love web workers!');</code></p-fragment><p-fragment><code is:raw class="language-javascript">
+  // [{ label: 'POSITIVE', score: 0.9998 }]</code>
+    </p-fragment>
+  </pre>
+  <PNotes>
+    <p>
+      pipeline() does everything: download, cache, tokenization, inference,
+      post-processing.
+    </p>
+    <p>
+      Tasks: sentiment, embeddings, translation, Whisper speech-to-text, image
+      classification…
+    </p>
+  </PNotes>
+</p-slide>
+
+<p-slide>
+  <h3>📍 <span class="main-gradient">But where does it run?</span></h3>
+  <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
+    <li p-fragment p-effect="from left">
+      🧮 <span class="main-sub-gradient">WASM backend</span>: inference runs on
+      <b>the thread that calls it</b>
+    </li>
+    <li p-fragment p-effect="zoom">
+      💀 Call it from the main thread →
+      <span class="main-sub-gradient">it IS heavyTask()</span>, for real
+    </li>
+    <li p-fragment p-effect="from right">
+      ⚡ <span class="main-sub-gradient">WebGPU</span> helps, but tokenization &amp;
+      post-processing stay on CPU
+    </li>
+    <li p-fragment p-effect="from left">
+      📣 Every official HF demo runs the pipeline
+      <span class="main-sub-gradient"> inside a Web Worker</span>
+    </li>
+  </ul>
+  <PNotes>
+    <p>
+      This is the bridge: not my personal hack, it's the canonical pattern of
+      the library.
+    </p>
+    <p>
+      WebGPU global support ~70%, automatic fallback to WASM — so the blocking
+      path is the one most users may hit.
+    </p>
+  </PNotes>
+</p-slide>
+
+<p-slide follow-fragments>
+  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
+  <pre
+    class="small-line"
+    data-label-file="ai.worker.ts">
+    <code is:raw class="language-javascript">
+  /// &lt;reference lib="webworker" />
+  import { pipeline } from '@huggingface/transformers';
+
+  const classifier = await pipeline(
+    'sentiment-analysis',
+    'Xenova/distilbert-base-uncased-finetuned-sst-2-english',
+    { dtype: 'q8' }
+  );</code>
+    <p-fragment>
+      <code is:raw class="language-javascript">
+  addEventListener('message', async ({ data }) => {
+    const result = await classifier(data); // 🤖 the REAL heavy task
+    postMessage(result);
+  });</code>
+    </p-fragment>
+  </pre>
+  <p
+    p-fragment
+    p-effect="from below"
+    class="center mid-dimension"
+    style="margin-block-start: 0.5em"
+  >
+    😏 Same worker, same <code>postMessage</code>, same
+    <span class="main-sub-gradient"> resource()</span> pattern as before
+  </p>
+  <PNotes>
+    <p>
+      Structurally identical to worker-test.worker.ts from earlier — only
+      heavyTask() changed.
+    </p>
+    <p>
+      In Angular: prompt in a signal → resource() → this worker → isLoading()
+      while the model crunches. Zero new architecture.
+    </p>
+  </PNotes>
+</p-slide>
+
+<p-slide>
+  <iframe
+    src="/demo/ai-live-demo.html"
+    title="AI inference live demo: main thread vs worker"
+    style="width: 92%; aspect-ratio: 16 / 9; border: 1px solid #e4e4ee; border-radius: 0.3em; background: #fff; margin-inline: auto; display: block;"
+  ></iframe>
+  <PNotes>
+    <p>Click INSIDE the iframe first, then [2] worker → [1] main.</p>
+    <p>
+      While main runs, spam the click button — clicks replay all at once when
+      the thread frees up.
+    </p>
+    <p>
+      The ball is rAF-driven on purpose: a CSS animation runs on the compositor
+      and would keep moving even with a blocked main thread.
+    </p>
+    <p>Click OUTSIDE the iframe before using arrow keys to advance the deck.</p>
+  </PNotes>
+</p-slide>
+
+<p-slide>
+  <h3>🎒 <span class="main-gradient">Good to know</span></h3>
+  <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
+    <li p-fragment p-effect="zoom">
+      📥 First load downloads the model —
+      <span class="main-sub-gradient">show progress</span>
+      (<code>progress_callback</code>) and pre-cache
+    </li>
+    <li p-fragment p-effect="from right">
+      🎚️ <span class="main-sub-gradient">Quantization</span> (<code
+        >dtype: 'q8'</code
+      >/<code>'q4'</code>) — smaller download, less RAM
+    </li>
+    <li p-fragment p-effect="from left">
+      🚚 Tensors are <code>ArrayBuffer</code>s —
+      <span class="main-sub-gradient">transferable objects</span>, remember?
+    </li>
+  </ul>
+  <PNotes>
+    <p>
+      Pre-cache tip: load the pipeline once on app bootstrap (or a service
+      worker) so users never wait on click.
+    </p>
+    <p>
+      The transfer bullet ties back to the postMessage(message, transfer) slide
+      — this is where it stops being theoretical.
+    </p>
+    <p>
+      Close the section by pointing at Davide's talk: I show WHERE this stuff
+      must run, he shows WHAT LLMs can do with it.
+    </p>
+  </PNotes>
+</p-slide>

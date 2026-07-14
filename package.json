@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev:refs-2026": "astro dev --open /reggio-emilia-full-stack-2026/",
+    "dev:angular-day-2026": "astro dev --open /angular-day-2026/",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
