@@ -41,7 +41,7 @@ p-slide.debug {
 }
 
 @supports (font: -apple-system-body) and (-webkit-appearance: none) {
-  ul:has(p-fragment) {
+  ul:has(p-fragment, [p-fragment]) {
     --safary-ul-fragment-direction: column;
     display: flex;
     flex-direction: var(--safary-ul-fragment-direction);

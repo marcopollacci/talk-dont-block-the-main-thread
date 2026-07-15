@@ -26,26 +26,18 @@ import angularLogo from "../img/angular-logo.png";
   </h3>
   <ul class="space" style="--web-day-ul-space: 0.2em; font-weight: 100">
     <li>🆕 <span class="main-gradient">Create new file</span></li>
-    <p-fragment
-      ><li>
-        🆕 Create new file <span class="main-gradient"
-          >tsconfig.worker.json</span
-        >
-        <i>(only first time)</i>
-      </li></p-fragment
-    >
-    <p-fragment
-      ><li>
-        🔄 Update <span class="main-gradient">angular.json</span>
-        <i>(only first time)</i>
-      </li></p-fragment
-    >
-    <p-fragment
-      ><li>
-        🔄 <span class="main-gradient">Update</span> class file only if web worker
-        has the same name
-      </li></p-fragment
-    >
+    <li p-fragment p-effect="from left">
+      🆕 Create new file <span class="main-gradient">tsconfig.worker.json</span>
+      <i>(only first time)</i>
+    </li>
+    <li p-fragment p-effect="from right">
+      🔄 Update <span class="main-gradient">angular.json</span>
+      <i>(only first time)</i>
+    </li>
+    <li p-fragment p-effect="zoom">
+      🔄 <span class="main-gradient">Update</span> class file only if web worker
+      has the same name
+    </li>
   </ul>
   <PNotes>
     <p>

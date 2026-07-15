@@ -15,10 +15,10 @@ import PNotes from "../components/PNotes.astro";
     >self.onmessage = (event) => {};</code
   >
   <ul style="margin-block-start: 0.5em">
-    <p-fragment><li>📌 data</li></p-fragment>
-    <p-fragment><li>📌 origin</li></p-fragment>
-    <p-fragment><li>📌 source</li></p-fragment>
-    <p-fragment><li>📌 ports</li></p-fragment>
+    <li p-fragment p-effect="from left">📌 data</li>
+    <li p-fragment p-effect="from right">📌 origin</li>
+    <li p-fragment p-effect="from below">📌 source</li>
+    <li p-fragment p-effect="zoom">📌 ports</li>
   </ul>
   <PNotes>
     <p><b is:raw>-->all of these properties are read-only<--</b></p>
@@ -57,19 +57,17 @@ import PNotes from "../components/PNotes.astro";
   >
     <div>
       <p>💬 <span class="main-sub-gradient">message</span></p>
-      <p-fragment
-        ><p>📨 will be in the data field in the message object</p></p-fragment
-      >
-      <p-fragment><p>🚩 required</p></p-fragment>
+      <p p-fragment p-effect="from left">
+        📨 will be in the data field in the message object
+      </p>
+      <p p-fragment p-effect="zoom">🚩 required</p>
     </div>
     <div>
       <p>🚚 <span class="main-gradient">transfer</span></p>
-      <p-fragment
-        ><p>
-          🚌 only transferable objects like ArrayBuffer or ImageBitmap
-        </p></p-fragment
-      >
-      <p-fragment><p>😶‍🌫️ optional</p></p-fragment>
+      <p p-fragment p-effect="from right">
+        🚌 only transferable objects like ArrayBuffer or ImageBitmap
+      </p>
+      <p p-fragment p-effect="zoom">😶‍🌫️ optional</p>
     </div>
   </div>
   <PNotes>
@@ -97,16 +95,14 @@ import PNotes from "../components/PNotes.astro";
     >worker.onerror = (event) => {};</code
   >
   <ul class="space" style="margin-block-start: 0.7em">
-    <p-fragment><li>⛔ ErrorEvent</li></p-fragment>
-    <p-fragment
-      ><li>
-        💬 Optional string on <span class="main-sub-gradient">message</span> properties
-        <pre
-          style="margin-block-start: 1em; border-radius: 0.5em; box-shadow: inset 0 0 0.09em rgba(0, 0, 0, 0.25)"><code is:raw class="language-javascript">worker.onerror = (event) => { 
+    <li p-fragment p-effect="from left">⛔ ErrorEvent</li>
+    <li p-fragment p-effect="from right">
+      💬 Optional string on <span class="main-sub-gradient">message</span> properties
+      <pre
+        style="margin-block-start: 1em; border-radius: 0.5em; box-shadow: inset 0 0 0.09em rgba(0, 0, 0, 0.25)"><code is:raw class="language-javascript">worker.onerror = (event) => {
   console.log(event.message);
 };</code></pre>
-      </li></p-fragment
-    >
+    </li>
   </ul>
 </p-slide>
 <p-slide>
@@ -115,8 +111,8 @@ import PNotes from "../components/PNotes.astro";
   </h3>
   <ul style="--web-day-ul-space: 0.1em" class="space mid-dimension">
     <li>🖼️ Image compression and processing</li>
-    <p-fragment><li>🧾 CSV data processing and formatting</li></p-fragment>
-    <p-fragment><li>🧮 Complex algorithms</li></p-fragment>
+    <li p-fragment p-effect="from below">🧾 CSV data processing and formatting</li>
+    <li p-fragment p-effect="zoom">🧮 Complex algorithms</li>
   </ul>
 </p-slide>
 <p-slide>
@@ -138,19 +134,15 @@ import PNotes from "../components/PNotes.astro";
       🌍 <span class="main-sub-gradient">Can be shared</span> across multiple tabs
       of the same origin
     </li>
-    <p-fragment
-      ><li>
-        😎 <span class="main-sub-gradient">Keep alive</span> until all tabs are closed
-        (even if the page is reloaded)
-      </li></p-fragment
-    >
-    <p-fragment
-      ><li>
-        💬 Communicate through the <span class="main-sub-gradient"
-          >MessagePort API</span
-        >
-      </li></p-fragment
-    >
+    <li p-fragment p-effect="zoom">
+      😎 <span class="main-sub-gradient">Keep alive</span> until all tabs are closed
+      (even if the page is reloaded)
+    </li>
+    <li p-fragment p-effect="from below">
+      💬 Communicate through the <span class="main-sub-gradient"
+        >MessagePort API</span
+      >
+    </li>
   </ul>
   <PNotes>
     <p>
@@ -170,8 +162,8 @@ import PNotes from "../components/PNotes.astro";
         >MessagePort API</span
       >
     </li>
-    <p-fragment><li>🗃️ Shared Cache or Data Storage</li></p-fragment>
-    <p-fragment><li>👥 Session Management</li></p-fragment>
+    <li p-fragment p-effect="from right">🗃️ Shared Cache or Data Storage</li>
+    <li p-fragment p-effect="from left">👥 Session Management</li>
   </ul>
 </p-slide>
 <p-slide>
@@ -260,32 +252,26 @@ import PNotes from "../components/PNotes.astro";
 <p-slide>
   <ul class="space" style="line-height: 1em">
     <li>❌ <span class="main-sub-gradient">No access to the DOM</span></li>
-    <p-fragment
-      ><li>
-        ❌
-        <span class="main-sub-gradient"
-          >No access to global variables like <code style="font-size: 0.8em"
-            >window</code
-          >, <code style="font-size: 0.8em">document</code>, or
-          <code style="font-size: 0.8em">parent</code></span
-        >
-      </li></p-fragment
-    >
-    <p-fragment
-      ><li>
-        ❌
-        <span class="main-sub-gradient"
-          >No synchronous APIs like <code style="font-size: 0.8em">alert()</code
-          >, <code style="font-size: 0.8em">confirm()</code>, or
-          <code style="font-size: 0.8em">prompt()</code></span
-        >
-      </li></p-fragment
-    >
-    <p-fragment
-      ><li>
-        ❌ <span class="main-sub-gradient">No access to storage APIs</span>
-      </li></p-fragment
-    >
+    <li p-fragment p-effect="from right">
+      ❌
+      <span class="main-sub-gradient"
+        >No access to global variables like <code style="font-size: 0.8em"
+          >window</code
+        >, <code style="font-size: 0.8em">document</code>, or
+        <code style="font-size: 0.8em">parent</code></span
+      >
+    </li>
+    <li p-fragment p-effect="from left">
+      ❌
+      <span class="main-sub-gradient"
+        >No synchronous APIs like <code style="font-size: 0.8em">alert()</code
+        >, <code style="font-size: 0.8em">confirm()</code>, or
+        <code style="font-size: 0.8em">prompt()</code></span
+      >
+    </li>
+    <li p-fragment p-effect="zoom">
+      ❌ <span class="main-sub-gradient">No access to storage APIs</span>
+    </li>
   </ul>
   <PNotes>
     <ul style="font-size: 0.8em">

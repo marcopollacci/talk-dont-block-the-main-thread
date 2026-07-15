@@ -49,10 +49,10 @@ import octo from "../img/octo-multi.png";
     style="margin-block-start: 1em; margin-inline: auto; text-align: start"
     class="mid-dimension grid"
   >
-    <p-fragment>👉 Rendering web pages</p-fragment>
-    <p-fragment>👉 Executing JavaScript</p-fragment>
-    <p-fragment>👉 Managing network requests</p-fragment>
-    <p-fragment>👉 Handling user input</p-fragment>
+    <p-fragment p-effect="from left">👉 Rendering web pages</p-fragment>
+    <p-fragment p-effect="from right">👉 Executing JavaScript</p-fragment>
+    <p-fragment p-effect="zoom">👉 Managing network requests</p-fragment>
+    <p-fragment p-effect="from below">👉 Handling user input</p-fragment>
   </div>
   <p-notes>
     Thread Management in Web Browsers Web browsers are complex applications that
@@ -66,18 +66,18 @@ import octo from "../img/octo-multi.png";
 </p-slide>
 <p-slide>
   <h3 class="center heading-with-emoji"><span>Single-Threaded</span> 🛣</h3>
-  <p-fragment>📍 JavaScript Execution</p-fragment>
-  <p-fragment>📍 Event Handling</p-fragment>
-  <p-fragment>📍 Rendering</p-fragment>
-  <p-fragment>📍 DOM Manipulation</p-fragment>
+  <p-fragment p-effect="from right">📍 JavaScript Execution</p-fragment>
+  <p-fragment p-effect="from left">📍 Event Handling</p-fragment>
+  <p-fragment p-effect="zoom">📍 Rendering</p-fragment>
+  <p-fragment p-effect="from below">📍 DOM Manipulation</p-fragment>
   <p-notes> All the above tasks can be performed in main thread. </p-notes>
 </p-slide>
 <p-slide>
   <h3 class="center heading-with-emoji"><span>Multi-Threaded</span> 🛣 🛣</h3>
-  <p-fragment>🚀 Networking</p-fragment>
-  <p-fragment>🚀 GPU Acceleration</p-fragment>
-  <p-fragment>🚀 HTML5 APIs (WebRTC, Web Audio API, File API)</p-fragment>
-  <p-fragment>🚀 <b>Web worker</b></p-fragment>
+  <p-fragment p-effect="zoom">🚀 Networking</p-fragment>
+  <p-fragment p-effect="from below">🚀 GPU Acceleration</p-fragment>
+  <p-fragment p-effect="from right">🚀 HTML5 APIs (WebRTC, Web Audio API, File API)</p-fragment>
+  <p-fragment p-effect="from left">🚀 <b>Web worker</b></p-fragment>
   <PNotes>
     <ul>
       <li>
@@ -100,11 +100,14 @@ import octo from "../img/octo-multi.png";
   <h3 style="--justify-content: flex-start" class="heading-with-emoji">
     🌰 <span>In a nutshell</span>
   </h3>
-  <p-fragment style="margin-block-end: 2rem"
-    ><p class="mid-dimension">
-      Web browsers employ a hybrid approach to thread management.
-    </p></p-fragment
+  <p
+    p-fragment
+    p-effect="from below"
+    style="margin-block-end: 2rem"
+    class="mid-dimension"
   >
+    Web browsers employ a hybrid approach to thread management.
+  </p>
   <p-fragment class="mid-dimension">
     <p style="margin-block-end: 1rem">
       📣 <b>Single-Threaded</b>: JavaScript execution on the main thread,

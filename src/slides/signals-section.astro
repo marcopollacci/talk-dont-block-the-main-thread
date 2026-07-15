@@ -8,7 +8,7 @@
 <p-slide>
   <h3>😶‍🌫️ <span class="main-gradient">Zoneless by default</span></h3>
   <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
-    <li p-fragment p-effect="zoom">
+    <li p-fragment p-effect="from right">
       ⚡ <span class="main-sub-gradient">OnPush</span> is the default change
       detection strategy
     </li>
@@ -16,7 +16,7 @@
       🚫 No more <span class="main-sub-gradient">Zone.js</span> patching your
       async callbacks
     </li>
-    <li p-fragment p-effect="from right">
+    <li p-fragment p-effect="zoom">
       ⚠️ <code>worker.onmessage</code> updating a plain property
       <span class="main-sub-gradient"> won't refresh the UI</span>
     </li>
@@ -33,15 +33,15 @@
     <li p-fragment p-effect="from left">
       📦 Async data <span class="main-sub-gradient">inside the signal graph</span>
     </li>
-    <li p-fragment p-effect="from right">
+    <li p-fragment p-effect="zoom">
       🔁 Re-runs automatically when its
       <span class="main-sub-gradient">params signal</span> changes
     </li>
-    <li p-fragment p-effect="zoom">
+    <li p-fragment p-effect="from below">
       🎁 <code>isLoading()</code>, <code>error()</code>,
       <code>value()</code> — <span class="main-sub-gradient">for free</span>
     </li>
-    <li p-fragment p-effect="from below">
+    <li p-fragment p-effect="from right">
       🙅‍♂️ No subscribe, no unsubscribe,
       <span class="main-sub-gradient">no leaks</span>
     </li>
@@ -118,16 +118,16 @@
     <span class="main-gradient">resource()</span> in a nutshell
   </h3>
   <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
-    <li p-fragment p-effect="from right">
+    <li p-fragment p-effect="zoom">
       📨 Perfect for <span class="main-sub-gradient">one-shot</span> request /
       response work — loading &amp; error states built-in
     </li>
-    <li p-fragment p-effect="zoom">
+    <li p-fragment p-effect="from below">
       🌊 Still reach for <span class="main-sub-gradient"
         >Observable / rxResource</span
       > when you need streams or multiple emissions
     </li>
-    <li p-fragment p-effect="from below">
+    <li p-fragment p-effect="from right">
       🧭 Pick based on the <span class="main-sub-gradient"
         >shape of your data</span
       >, not habit
