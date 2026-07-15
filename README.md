@@ -9,6 +9,7 @@ Built on top of [P-Slides](https://github.com/MaxArt2501/p-slides)!
 # Url Slide
 
 - [12/05/2026 - Reggio Emilia Full Stack](https://talk-dont-block-the-main-thread.marcotalk.dev/reggio-emilia-full-stack-2026/)
+- [20/11/2026 - Angular Day](https://talk-dont-block-the-main-thread.marcotalk.dev/angular-day-2026/)
 
 ## Building
 

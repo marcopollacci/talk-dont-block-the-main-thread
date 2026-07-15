@@ -2,7 +2,7 @@ export function listenGroupFragment(el, nameFragment) {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach(() => {
       const elements = document.querySelectorAll(
-        `[group-fragment="${nameFragment}"]`
+        `[group-fragment="${nameFragment}"]`,
       );
       elements.forEach((el, index, nodeList) => {
         const ariaHidden = el.getAttribute("aria-hidden");
@@ -28,15 +28,18 @@ export function listenSlideAutoplay(el) {
       const timing = mutation.target.getAttribute("timing-fragment") || 100;
       if (!isVisibile) return;
       const elements = el.querySelectorAll(
-        `p-fragment:not([no-autoplay]), [p-fragment]:not([no-autoplay])`
+        `p-fragment:not([no-autoplay]), [p-fragment]:not([no-autoplay])`,
       );
       elements.forEach((el, index) => {
         const ariaHidden = el.getAttribute("aria-hidden");
         const timingStart = el.getAttribute("timing-start");
         if (ariaHidden === "true") {
-          setTimeout(() => {
-            el.setAttribute("aria-hidden", "false");
-          }, (+timingStart || +defaultTiming) + timing * index);
+          setTimeout(
+            () => {
+              el.setAttribute("aria-hidden", "false");
+            },
+            (+timingStart || +defaultTiming) + timing * index,
+          );
         }
       });
     });
@@ -66,6 +69,26 @@ export function listenSlideFollowFragment(el) {
   });
 }
 
+export function listenIframeKeyTrigger(el) {
+  const key = el.getAttribute("iframe-key");
+  const iframe = el.closest("p-slide")?.querySelector("iframe");
+  if (!iframe) return;
+  let wasVisible = el.getAttribute("aria-hidden") === "false";
+  const observer = new MutationObserver(() => {
+    const isVisible = el.getAttribute("aria-hidden") === "false";
+    if (isVisible && !wasVisible) {
+      iframe.contentDocument?.dispatchEvent(
+        new KeyboardEvent("keydown", { key, bubbles: true }),
+      );
+    }
+    wasVisible = isVisible;
+  });
+  observer.observe(el, {
+    attributes: true,
+    attributeFilter: ["aria-hidden"],
+  });
+}
+
 document.querySelectorAll(`p-slide[autoplay]`).forEach((el) => {
   listenSlideAutoplay(el);
 });
@@ -78,4 +101,12 @@ document
   .querySelectorAll(`p-slide[follow-fragments] p-fragment`)
   .forEach((el) => {
     listenSlideFollowFragment(el);
+  });
+
+document
+  .querySelectorAll(
+    `p-fragment[iframe-key], [p-fragment][iframe-key][aria-hidden="true"]`,
+  )
+  .forEach((el) => {
+    listenIframeKeyTrigger(el);
   });
