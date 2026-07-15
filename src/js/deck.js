@@ -9,5 +9,5 @@ styleHeader.innerHTML = `header { display: flex;
 
 window.onload = () => {
   const headerSpeackerAside = document.querySelector("p-deck");
-  headerSpeackerAside.shadowRoot.appendChild(styleHeader);
+  headerSpeackerAside?.shadowRoot?.appendChild(styleHeader);
 };

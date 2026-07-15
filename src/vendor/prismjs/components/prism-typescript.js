@@ -1,3 +1,5 @@
+import { Prism } from "../prism.js";
+
 (function (Prism) {
 
 	Prism.languages.typescript = Prism.languages.extend('javascript', {
