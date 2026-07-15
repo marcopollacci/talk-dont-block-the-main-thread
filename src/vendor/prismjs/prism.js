@@ -1944,3 +1944,5 @@ Prism.languages.js = Prism.languages.javascript;
 	};
 
 }());
+
+export { Prism };
