@@ -1,0 +1,274 @@
+/* Plain HTML elements inside slides */
+@layer content {
+  /* Images: set the size inline, e.g. style="--size: 6em; --width: 10em" */
+  p-slide img {
+    block-size: var(--size, auto);
+    inline-size: var(--width, auto);
+  }
+
+  code {
+    font-family: var(--font-code, monospace);
+  }
+
+  /* Inline code */
+  :not(pre) > code {
+    padding: 0 0.25em;
+    border-radius: 0.25em;
+    background-color: color-mix(
+      in oklch,
+      var(--brand-color-ant) 10%,
+      transparent
+    );
+    box-shadow: inset 0 0 0.05em
+      color-mix(in oklch, var(--ink) 25%, transparent);
+
+    pre & {
+      box-shadow: none;
+    }
+  }
+
+  /* Code blocks: <CodeWindow>. Shiki sets data-language and both palettes
+     as custom props, the theme's color-scheme picks one */
+  pre[data-language] {
+    background-color: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
+    margin: 0.5em 0;
+    padding: 1em;
+    border-radius: 0.3em;
+    overflow: auto;
+    font-family: var(
+      --font-code,
+      "Fira Code",
+      "Fira Mono",
+      Menlo,
+      Consolas,
+      "DejaVu Sans Mono",
+      monospace
+    );
+    font-size: 50%;
+    line-height: 1.5;
+    text-align: start;
+    white-space: pre;
+    tab-size: 2;
+    hyphens: none;
+
+    &[size="small"] {
+      font-size: 40%;
+    }
+
+    /* Without a title bar: a soft inset edge instead of the window chrome */
+    &:not([data-label-file]) {
+      border-radius: 0.5em;
+      box-shadow: inset 0 0 0.09em
+        color-mix(in oklch, var(--ink) 25%, transparent);
+    }
+
+    /* A single line of code (an API signature): as wide as its code */
+    &:is([size="big"], [size="full"]) {
+      inline-size: fit-content;
+      margin: 0;
+      padding: 0.2em 0.3em;
+      border-radius: 0.3em;
+      box-shadow: inset 0 0 0.05em
+        color-mix(in oklch, var(--ink) 25%, transparent);
+    }
+
+    &[size="big"] {
+      font-size: 70%;
+      margin-block-end: 0.5em;
+    }
+
+    /* As big as the slide text */
+    &[size="full"] {
+      font-size: 100%;
+    }
+
+    &,
+    span {
+      color: light-dark(var(--shiki-light), var(--shiki-dark));
+    }
+
+    ::selection {
+      background: var(--selection-color);
+    }
+
+    /* <CodeWindow lines="N">: shows N lines, scrolls to follow the fragments */
+    > code[follow-fragments] {
+      display: block;
+      max-block-size: calc(
+        var(--lines) * 1lh + 1.5em + 1.1em / var(--code-scale, 1)
+      );
+      overflow-y: auto;
+      scrollbar-width: thin;
+
+      &:focus-visible {
+        outline: 0.1em solid var(--brand-color);
+        outline-offset: -0.1em;
+      }
+    }
+  }
+
+  :is(pre, code)[dense] {
+    line-height: 1.1em;
+  }
+
+  /* <pre data-label-file="main.css">: editor window with title bar */
+  pre[data-label-file] {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0.5em;
+    border: var(--window-border);
+    border-radius: var(--window-radius);
+    box-shadow: var(--window-shadow);
+    /* Long code scrolls inside <code> (lines="N"), never the whole window */
+    overflow-y: hidden;
+
+    /* Inner padding: a blank line above and below, code indented.
+       <CodeWindow scale indent> resize the code only, not the title bar */
+    > code {
+      display: block;
+      --tail-lines: var(--tail, 1);
+      padding: 1.5em 1ch
+        calc(
+          min(var(--tail-lines), 1) * 1.1em / var(--code-scale, 1) +
+            max(var(--tail-lines) - 1, 0) * 1lh
+        )
+        var(--indent, 2ch);
+      font-size: calc(var(--code-scale, 1) * 1em);
+    }
+
+    &::before {
+      content: attr(data-label-file);
+      display: block;
+      inline-size: 100%;
+      padding: 0.5em 1em;
+      border-block-end: 1px solid var(--line-color);
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+      background: var(--window-titlebar-bg);
+      font-family: var(--font-caption, inherit);
+      font-size: 0.7em;
+      text-align: center;
+      color: var(--window-titlebar-color);
+    }
+
+    /* Window buttons: start of the title bar, and an optional end set */
+    &::after,
+    > code::before {
+      content: var(--window-controls) / "";
+      position: absolute;
+      top: 0.5em;
+      inset-inline-start: 1em;
+      font-size: 0.7em;
+      color: var(--window-titlebar-color);
+    }
+    > code::before {
+      content: var(--window-controls-end) / "";
+      inset-inline: auto 1em;
+    }
+
+    p-slide[aria-hidden="false"] & {
+      p-fragment {
+        &[aria-hidden="true"][aria-current="false"] {
+          opacity: 0.2;
+        }
+        &[aria-hidden="false"] {
+          opacity: 1;
+        }
+      }
+
+      code {
+        white-space: pre;
+      }
+    }
+  }
+
+  /* Quotes: <figure><blockquote>…</blockquote><figcaption><cite>…</cite></figcaption></figure> */
+  blockquote {
+    position: relative;
+    margin: 0;
+    padding: 1.2em;
+    font-size: 0.5em;
+    line-height: 1.4;
+
+    b {
+      font-weight: 700;
+    }
+
+    &::before,
+    &::after {
+      position: absolute;
+      inline-size: 4rem;
+      block-size: 4rem;
+      font-size: 5em;
+      color: var(--faint-color);
+    }
+    &::before {
+      content: "“" / "";
+      inset-inline-start: -0.1em;
+      top: -0.3em;
+    }
+    &::after {
+      content: "”" / "";
+      inset-inline-end: 0;
+      bottom: 0.15em;
+    }
+  }
+
+  figure:has(> blockquote) {
+    margin: 0;
+
+    figcaption {
+      margin-inline-start: 1em;
+      font-size: 0.5em;
+      line-height: 3;
+      text-align: start;
+
+      a {
+        color: inherit;
+      }
+    }
+  }
+
+  /* Slide heading block with a brand accent */
+  p-slide > header {
+    margin: 0 0 0.5em;
+    padding: 0.5em;
+    border-inline-start: var(--brand-color) solid 0.15em;
+  }
+
+  /* Browser support matrix: <table support> */
+  table[support] {
+    inline-size: 12em;
+    margin: auto;
+    border-collapse: collapse;
+    font-size: 150%;
+
+    img {
+      block-size: 2em;
+      filter: saturate(0) drop-shadow(0.1em 0.1em 0.1em oklch(0 0 0 / 0.33));
+    }
+
+    th {
+      border-block-end: 0.1em solid;
+    }
+
+    :is(td, th) {
+      padding: 0.5em;
+      text-align: center;
+
+      &:not(:first-child) {
+        border-inline-start: 0.1em solid;
+      }
+    }
+
+    span {
+      font-size: 150%;
+    }
+
+    caption {
+      margin-block-end: 0.5em;
+      font-family: "Old Newspaper Types", serif;
+      font-size: 60%;
+    }
+  }
+}

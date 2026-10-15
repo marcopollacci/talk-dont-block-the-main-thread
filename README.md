@@ -9,6 +9,7 @@ Built on top of [P-Slides](https://github.com/MaxArt2501/p-slides)!
 # Url Slide
 
 - [12/05/2026 - Reggio Emilia Full Stack](https://talk-dont-block-the-main-thread.marcotalk.dev/reggio-emilia-full-stack-2026/)
+- [20/11/2026 - Angular Day](https://talk-dont-block-the-main-thread.marcotalk.dev/angular-day-2026/)
 
 ## Building
 
@@ -17,10 +18,12 @@ Node.js >= 20.x is required.
 To start the presentation in development mode:
 
 1. Clone the repository;
-2. `npm i` / `pnpm i`
-3. `npm run dev` / `pnpm run dev`
+2. `pnpm i`
+3. `pnpm dev:angular-day-2026` (or `pnpm dev:refs-2026`)
 
-Or `npm run build` / `pnpm run build` to just build it, then serve `/dist` with your HTTP server of choice.
+Or `pnpm build` to just build it, then serve `/dist` with your HTTP server of choice.
+
+`pnpm lint` runs `astro check` and Prettier.
 
 ## Tests
 

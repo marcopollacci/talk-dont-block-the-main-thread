@@ -1,0 +1,31 @@
+---
+// Meme with captions overlaid as real text (AGENTS.md §3.2).
+// Each caption is a child <span caption style="--x: 50%; --y: 20%">,
+// centred on (--x, --y) of the image; <code> inside for code captions.
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+interface Props {
+  src: ImageMetadata;
+  /** Describes the template, not the captions (they are real text) */
+  alt: string;
+  /** Image height, as in style="--size: …" */
+  size?: string;
+  /** Caption font size, relative to the slide text */
+  captionSize?: string;
+  /** Caption background: "transparent" when they sit on a light area */
+  captionBg?: string;
+}
+
+const { src, alt, size = "8em", captionSize, captionBg } = Astro.props;
+const vars = [
+  `--size: ${size}`,
+  captionSize && `--caption-size: ${captionSize}`,
+  captionBg && `--caption-bg: ${captionBg}`,
+];
+---
+
+<figure meme style={vars.filter(Boolean).join("; ")}>
+  <Image {src} {alt} />
+  <slot />
+</figure>

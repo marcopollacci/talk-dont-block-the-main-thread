@@ -1,0 +1,131 @@
+/* Registered so the Houdini worklet (public/js/sketchy-arrow.js) gets typed values */
+@property --sketchy-arrow-width {
+  syntax: "<length>";
+  initial-value: 1px;
+  inherits: true;
+}
+@property --sketchy-arrow-tip-spread {
+  syntax: "<angle>";
+  initial-value: 45deg;
+  inherits: true;
+}
+@property --sketchy-arrow-tip-size {
+  syntax: "<number>";
+  initial-value: 40;
+  inherits: true;
+}
+@property --sketchy-arrow-point-approx {
+  syntax: "<number>";
+  initial-value: 3;
+  inherits: true;
+}
+@property --sketchy-arrow-count {
+  syntax: "<integer>";
+  initial-value: 3;
+  inherits: true;
+}
+@property --sketchy-arrow-color {
+  syntax: "<color>";
+  initial-value: black;
+  inherits: true;
+}
+@property --sketchy-arrow-random-seed {
+  syntax: "<integer>";
+  initial-value: 1234;
+  inherits: true;
+}
+
+@layer tokens {
+  /* Light theme defaults. A theme (src/styles/themes/*.css) redefines the
+     source palette; the derived tokens follow by themselves. Any token can
+     still be overridden per talk: <Layout tokens={{ "--brand-color": … }}> */
+  :root {
+    color-scheme: light;
+
+    /* p-slides */
+    --slide-debug: 0;
+    --slide-aspect-ratio: calc(16 / 9);
+    --slide-font-size: 4;
+    --slide-print-width: 297mm;
+    --slide-bg: var(--surface);
+    --fragment-duration: calc(300ms + 1200ms * var(--slide-debug));
+
+    /* Source palette: what a theme defines */
+    --surface: white;
+    --ink: black;
+    /* Slide text: p-slides' own #222 in light, usually var(--ink) elsewhere */
+    --text-color: #222;
+    --brand-color: oklch(0.449 0.156 330.7);
+    --brand-color-ant: oklch(0.696 0.204 43.5);
+    --alert-color: oklch(0.628 0.258 29.2);
+    --info-color: blue;
+
+    /* Gradient text: override per slide with --gradient-from / --gradient-to */
+    /* Talk palette: blue → magenta (lightest point ≥ 3:1 on white) */
+    --gradient-from: oklch(0.65 0.18 249.6);
+    --gradient-to: oklch(0.697 0.318 330.1);
+    --gradient-sub-from: oklch(0.68 0.299 337.3);
+    --gradient-sub-to: oklch(0.677 0.213 33.7);
+    --gradient-cover-from: var(--gradient-from);
+    --gradient-cover-to: var(--gradient-to);
+
+    /* Derived from ink and surface: a theme overrides them only to fix
+       contrast */
+    --muted-color: color-mix(in oklch, var(--ink) 60%, var(--surface));
+    --soft-color: color-mix(in oklch, var(--ink) 46%, var(--surface));
+    --controls-color: color-mix(in oklch, var(--ink) 40%, var(--surface));
+    --faint-color: color-mix(in oklch, var(--ink) 33%, var(--surface));
+    --line-color: color-mix(in oklch, var(--ink) 17%, var(--surface));
+    --selection-color: color-mix(in oklch, var(--ink) 8%, var(--surface));
+    /* White on dark brands, black on light ones (event colours too) */
+    --on-brand: oklch(
+      from var(--brand-color) clamp(0, (0.62 - l) * 999, 1) 0 0
+    );
+
+    /* Shape and texture: a theme can change the look, not just the colours */
+    --font-body: var(--font-graphik), system-ui, sans-serif;
+    --font-heading: var(--font-body);
+    /* --font-caption: title bars (slide, code window); unset inherits */
+    /* --font-code: unset keeps the browser's monospace for <code> and the
+       Fira stack for code windows; a theme sets it for all code */
+    /* Outside the slides (letterbox): unset follows the current slide */
+    /* --backdrop: teal; */
+    --slide-pattern: none;
+    --slide-frame: none;
+    /* Optional title bar across the top of every slide (content string,
+       e.g. var(--talk-title), set by Layout.astro) */
+    --slide-titlebar: none;
+    --slide-titlebar-size: 0em;
+    --slide-titlebar-inset: 0em;
+    --slide-titlebar-bg: transparent;
+    --slide-titlebar-color: inherit;
+
+    /* <CodeWindow> */
+    --window-radius: 1em;
+    --window-border: 1px solid var(--line-color);
+    --window-shadow: none;
+    --window-titlebar-bg: transparent;
+    --window-titlebar-color: var(--soft-color);
+    --window-controls: "🔴 🟡 🟢";
+    --window-controls-end: none;
+
+    /* Floating toolbar and nav */
+    --pill-bg: color-mix(in oklch, var(--surface) 72%, transparent);
+    --pill-line: color-mix(in oklch, var(--ink) 8%, transparent);
+    --pill-icon: color-mix(in oklch, var(--ink) 58%, var(--surface));
+    --pill-hover: color-mix(in oklch, var(--ink) 7%, transparent);
+    --pill-shadow: 0 0.25rem 1rem oklch(0 0 0 / 0.12);
+    --pill-radius: 999px;
+    --control-radius: 50%;
+
+    --sketchy-arrow-color: var(--ink);
+    --sketchy-arrow-width: 0.1em;
+    --sketchy-arrow-tip-size: 20;
+
+    --entrance-easing: cubic-bezier(0.3, 1.21, 0.79, 0.91);
+
+    background-color: var(--backdrop, var(--surface));
+    color: var(--ink);
+    font-family: var(--font-body);
+  }
+}

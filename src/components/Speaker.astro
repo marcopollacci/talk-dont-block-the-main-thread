@@ -1,0 +1,56 @@
+---
+import { Image } from "astro:assets";
+import fourtyFactory from "../img/40factory.svg";
+import me from "../img/me.png";
+const { heading, meReloaded } = Astro.props;
+---
+
+<p-note card gradient="cover">
+  <h5>{heading}</h5>
+  <figure>
+    <Image
+      src={meReloaded || me}
+      alt="Illustrated portrait of Marco Pollacci"
+      style="--size: 6em"
+    />
+    <figcaption>
+      <span>Marco Pollacci</span>
+      <span>Senior Frontend Developer</span>
+      <span>
+        <span>@</span>
+        <Image src={fourtyFactory} alt="40factory" style="--size: 0.6em" />
+      </span>
+    </figcaption>
+  </figure>
+</p-note>
+
+<style>
+  figure,
+  figcaption {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: inherit;
+    margin: 0;
+  }
+
+  figure > img {
+    margin-inline: 1em;
+  }
+
+  figcaption > span:not(:last-child) {
+    font-size: 0.5em;
+    line-height: 0.55;
+  }
+
+  /* "@ company logo" */
+  figcaption > span:last-child {
+    display: flex;
+    align-items: center;
+    column-gap: 0.2rem;
+
+    > span {
+      font-size: 0.7em;
+    }
+  }
+</style>

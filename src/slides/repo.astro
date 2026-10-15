@@ -4,10 +4,14 @@ import qrRepo from "../img/qr_repo.png";
 const repoLink = "https://github.com/marcopollacci/web-worker-angular-example";
 ---
 
-<p-slide class="center">
+<p-slide layout="center">
   <h2 style="margin-block-end: 0.3em">You can see the code on</h2>
   <p-note style="margin-block-end: 0.5em">
-    <Image src={qrRepo} alt="qrcode slide" class="alter-image-size" />
+    <Image
+      src={qrRepo}
+      alt="QR code to the demo repository"
+      style="--size: 8em"
+    />
   </p-note>
   <p-note>
     <a href={repoLink}>{repoLink}</a>

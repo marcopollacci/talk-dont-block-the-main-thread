@@ -7,9 +7,9 @@ const prodMode = import.meta.env.PROD;
   <head>
     <meta charset="UTF-8" />
     <title>Something</title>
-    {prodMode && <script> location.href = "https://marcopollacci.it";</script>}
+    {prodMode && <script>
+      location.href = "https://marcopollacci.it";
+    </script>}
   </head>
-  <body>
-    {!prodMode && <h1>Dev Mode</h1>}
-  </body>
+  <body>{!prodMode && <h1>Dev Mode</h1>}</body>
 </html>

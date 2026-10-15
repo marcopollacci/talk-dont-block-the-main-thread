@@ -1,111 +1,189 @@
 ---
-import "p-slides/css/p-slides.css";
-import "../styles/main.scss";
-import "../styles/presentation.scss";
-import SpeakerMode from "../components/SpeakerMode.astro";
-import { Image } from "astro:assets";
+import "../styles/index.css";
 import { Font } from "astro:assets";
-import comingSoon from "../img/coming-soon.png";
 import Seo from "../components/Seo.astro";
-const { canRender, favIcon, metaData } = Astro.props;
-const bodyAttributes = canRender ? undefined : "coming-soon";
-const fontsToPreload = [
-  "--talk-marco-graphik-semibold",
-  "--talk-marco-graphik-regular",
-  "--talk-marco-graphik-medium",
-] as const;
+import GridMode from "../components/GridMode.astro";
+import SpeakerMode from "../components/SpeakerMode.astro";
+import ThemeSwitch from "../components/ThemeSwitch.astro";
+
+// One file per theme in src/styles/themes/: a new theme = a new file + its
+// name here (this order is the dev picker's order)
+const THEMES = ["light", "angularday"] as const;
+type Theme = (typeof THEMES)[number];
+
+interface Props {
+  canRender: boolean;
+  /** Day the slides unlock (same date as canRender, e.g. "2026-11-20"):
+   *  the coming soon page counts down to it */
+  releaseDate?: string;
+  favIcon: string;
+  metaData: Record<string, string>;
+  /** Slot length, drives the pace traffic light in speaker mode */
+  talkMinutes?: number;
+  theme?: Theme;
+  /** Event colours: primary drives the brand and the sub gradient start,
+   *  secondary (defaults to primary) the accent and the gradient end */
+  accent?: { primary: string; secondary?: string };
+  /** Per-talk token overrides, e.g. { "--brand-color": "oklch(…)" }.
+   *  They win over the theme and over accent */
+  tokens?: Record<`--${string}`, string>;
+}
+
+const {
+  canRender,
+  releaseDate,
+  favIcon,
+  metaData,
+  talkMinutes,
+  theme = "light",
+  accent,
+  tokens,
+} = Astro.props;
+
+// Read at build time only: the page ships just the chosen theme's CSS
+const themeFiles = import.meta.glob<string>("../styles/themes/*.css", {
+  query: "?inline",
+  import: "default",
+  eager: true,
+});
+const themes = Object.fromEntries(
+  Object.entries(themeFiles).map(([path, css]) => [
+    path.match(/([^/]+)\.css$/)![1],
+    css,
+  ]),
+);
+if (!(theme in themes)) {
+  throw new Error(
+    `Unknown theme "${theme}". Available: ${Object.keys(themes).join(", ")}`,
+  );
+}
+for (const name of Object.keys(themes)) {
+  if (!THEMES.includes(name as Theme)) {
+    throw new Error(`Theme file "${name}.css" is missing from THEMES`);
+  }
+}
+
+const accentTokens = accent && {
+  "--brand-color": accent.primary,
+  "--gradient-sub-from": accent.primary,
+  "--brand-color-ant": accent.secondary ?? accent.primary,
+  "--gradient-sub-to": accent.secondary ?? accent.primary,
+};
+const rootStyle = {
+  // A theme can print it, e.g. win311's window caption
+  "--talk-title": JSON.stringify(metaData.title ?? ""),
+  ...accentTokens,
+  ...tokens,
+};
+// Coming soon: the unlock day, in words (UTC, like new Date("YYYY-MM-DD"))
+const releaseLabel =
+  releaseDate &&
+  new Date(releaseDate).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
+// Dev keeps every theme, scoped by [data-theme], for the theme switcher
+const themeCss = import.meta.env.PROD
+  ? themes[theme]
+  : Object.values(themes).join("\n");
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme={theme} style={rootStyle}>
   <head>
-    <Seo {...metaData} />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <Seo {...metaData} />
     <link rel="icon" type="image/svg+xml" href={favIcon} />
-    {fontsToPreload.map((cssVariable) => <Font cssVariable={cssVariable} />)}
-    <link href="/css/prism-one-light.css" rel="stylesheet" />
-    <title>{metaData.title}</title>
+    <Font cssVariable="--font-graphik" />
+    <style is:inline set:html={themeCss}></style>
   </head>
-  <body coming-soon={bodyAttributes}>
-    <p-deck>
+  <body coming-soon={canRender ? undefined : ""}>
+    <p-deck id="deck" talk-minutes={talkMinutes}>
       <slot />
     </p-deck>
-    {
-      !canRender && (
-        <Image src={comingSoon} alt="coming soon" class="coming-soon" />
-      )
-    }
+    {/* Dev renders it hidden too: ?coming-soon previews it (scripts/deck.js) */}
+    {(!canRender || import.meta.env.DEV) && (
+      <main release aria-label="Coming soon" hidden={canRender}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4.5" y="10.5" width="15" height="10" rx="2.5" />
+          <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+          <circle cx="12" cy="15.5" r="1.25" />
+        </svg>
+        {/* Filled in by scripts/deck.js; the date below works without JS */}
+        <p countdown role="timer" hidden />
+        <p>
+          {releaseLabel ? (
+            <>
+              Slides unlock on{" "}
+              <time datetime={releaseDate}>{releaseLabel}</time>
+            </>
+          ) : (
+            "Slides coming soon"
+          )}
+        </p>
+      </main>
+    )}
     <div
-      aria-valuemax="100"
-      aria-valuemin="0"
-      aria-valuenow="0"
-      class="presentation-progress"
       role="progressbar"
-      title="Presentation progress"
-    >
-    </div>
-    <div class="presentation-toolbar" role="toolbar">
+      aria-label="Presentation progress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    ></div>
+    <aside aria-hidden="true">↻ Rotate your phone for a better view</aside>
+    <div role="toolbar" aria-label="Presentation controls">
+      {/* Grid overview ships in the build too, speaker mode stays dev-only */}
+      <GridMode />
       {!import.meta.env.PROD && <SpeakerMode />}
+      {!import.meta.env.PROD && <ThemeSwitch themes={THEMES} />}
       <button
-        aria-label="Toggle fullscreen mode"
-        class="fullscreen"
-        title="Toggle fullscreen mode"
         type="button"
+        commandfor="deck"
+        command="--fullscreen"
+        aria-label="Toggle fullscreen mode"
+        title="Toggle fullscreen mode"
       >
-        <svg viewBox="0 0 1 1">
+        <svg viewBox="0 0 1 1" aria-hidden="true">
           <g fill="none" stroke="currentColor" stroke-width="0.1">
-            <path
-              d="M.05 .3v-.25h.25M.7 .05h.25v.25M.95 .7v.25h-.25M.3 .95h-.25v-.25"
-            ></path>
-            <path
-              d="M.05 .3h.25v-.25M.7 .05v.25h.25M.95 .7h-.25v.25M.3 .95v-.25h-.25"
-            ></path>
+            <path d="M.05 .3v-.25h.25M.7 .05h.25v.25M.95 .7v.25h-.25M.3 .95h-.25v-.25"></path>
+            <path d="M.05 .3h.25v-.25M.7 .05v.25h.25M.95 .7h-.25v.25M.3 .95v-.25h-.25"></path>
           </g>
         </svg>
       </button>
     </div>
-    {
-      canRender && (
-        <nav class="presentation-nav">
-          <button
-            aria-label="Go backward"
-            class="previous"
-            title="Go backward"
-            type="button"
-          />
-          <button
-            aria-label="Go forward"
-            class="next"
-            title="Go forward"
-            type="button"
-          />
-        </nav>
-      )
-    }
-  </body><script src="../js/main.js"></script>
-  <script src="../js/presentation.js"></script>
-  <script src="../js/deck.js"></script>
+    {canRender && (
+      <nav aria-label="Slides">
+        <button
+          type="button"
+          commandfor="deck"
+          command="--previous"
+          aria-label="Go backward"
+          title="Go backward"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7"></path>
+          </svg>
+        </button>
+        <output aria-live="polite"></output>
+        <button
+          type="button"
+          commandfor="deck"
+          command="--next"
+          aria-label="Go forward"
+          title="Go forward"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </nav>
+    )}
+    <script>
+      import "../scripts/deck.js";
+    </script>
+  </body>
 </html>
-
-<style>
-  html,
-  body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-  }
-</style>
-<script>
-  import { registerElements, setStyleRoot } from "p-slides";
-  import "../vendor/prismjs/prism.js";
-  // Components must be imported after prism.js
-  import "../vendor/prismjs/components/prism-scss.js";
-  import "../vendor/prismjs/components/prism-typescript.js";
-  setStyleRoot("/css/");
-  registerElements().then(() => console.log("Done!"));
-</script>
-<style lang="scss" is:global>
-  @use "sass:meta";
-  @import url("p-slides/css/effects.css");
-</style>

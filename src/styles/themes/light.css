@@ -1,0 +1,26 @@
+/* Light: white slides, purple brand, blue → magenta gradient (this talk's
+   look). Same palette as the defaults in tokens.css, spelled out so the dev
+   theme picker can preview it */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --surface: white;
+  --ink: black;
+  --text-color: #222;
+  --brand-color: oklch(0.449 0.156 330.7);
+  --brand-color-ant: oklch(0.696 0.204 43.5);
+  --alert-color: oklch(0.628 0.258 29.2);
+  --info-color: blue;
+
+  /* Lightest point ≥ 3:1 on white */
+  --gradient-from: oklch(0.65 0.18 249.6);
+  --gradient-to: oklch(0.697 0.318 330.1);
+  --gradient-sub-from: oklch(0.68 0.299 337.3);
+  --gradient-sub-to: oklch(0.677 0.213 33.7);
+  --gradient-cover-from: var(--gradient-from);
+  --gradient-cover-to: var(--gradient-to);
+
+  /* Darker muted text and lighter controls than the derived mix */
+  --muted-color: oklch(0.402 0 0);
+  --controls-color: oklch(0.6 0 0);
+}

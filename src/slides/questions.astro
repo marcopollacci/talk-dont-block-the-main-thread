@@ -1,17 +1,17 @@
+---
+import CodeWindow from "../components/CodeWindow.astro";
+---
+
 <p-slide>
-  <h5 style="margin-block-end: 1em" class="center">
-    <span class="main-gradient">Questions?</span> 🤔
+  <h5 layout="center" style="margin-block-end: 1em">
+    <span gradient>Questions?</span> <span aria-hidden="true">🤔</span>
   </h5>
-  <pre
-    class="small-line"
-    data-label-file="questions.js">
-    <code is:raw class="language-javascript"> 
-      self.onmessage = async (event) => {
-        const { data: question } = event;
-        
-        const answer = await answer(question);
-        self.postMessage(`The answer is: ${answer}`);
-      };
-    </code>
-   </pre>
+  <CodeWindow indent={6} tail={2} is:raw file="questions.js" lang="js">
+    self.onmessage = async (event) => {
+      const { data: question } = event;
+
+      const reply = await answer(question);
+      self.postMessage(`The answer is: ${reply}`);
+    };
+  </CodeWindow>
 </p-slide>

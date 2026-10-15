@@ -1,74 +1,169 @@
 ---
 import { Image } from "astro:assets";
+import CodeWindow from "../components/CodeWindow.astro";
 import PNotes from "../components/PNotes.astro";
 import freezing from "../img/freezing-man.png";
 import spongy from "../img/problem-solution.jpg";
+import MainThread from "../components/MainThread.astro";
+import WhoWins from "../components/WhoWins.astro";
+const { playful = true } = Astro.props;
 ---
 
-<p-slide class="center" autoplay timing="550">
-  <h2 class="main-gradient">The Freezing problem</h2>
-  <p-fragment
-    ><Image
+<p-slide layout="center" autoplay timing="550">
+  <h2 gradient>The Freezing problem</h2>
+  <p-fragment>
+    <Image
       src={freezing}
-      alt="freezing man"
-      class="alter-image-size"
-      style="--image-start-size: 7em"
-    /></p-fragment
-  >
+      alt="A man frozen in a block of ice"
+      style="--size: 7em"
+    />
+  </p-fragment>
 </p-slide>
 <p-slide>
-  <h4 style="margin-block-end: 0.5em" class="center main-gradient">
+  <h4 layout="center" gradient style="margin-block-end: 0.5em">
     The Event Loop
   </h4>
-  <img
-    src="/img/event-loop.gif"
-    alt="event loop"
-    class="alter-image-size"
-    style="border-radius: 0.3em; --image-start-size: 8em"
-  />
-  <cite data-loop
-    ><a
-      href="https://dev.to/arslanyounis/how-javascript-event-loop-works-5604"
-      target="_blank">credits: Arslan Younis</a
-    ></cite
-  >
+  <figure>
+    <img
+      src="/img/event-loop.gif"
+      alt="Animation of the JavaScript event loop moving tasks from the queues to the call stack"
+      style="--size: 8em; border-radius: 0.3em"
+    />
+    <figcaption>
+      <cite>
+        <a
+          href="https://dev.to/arslanyounis/how-javascript-event-loop-works-5604"
+          target="_blank"
+        >
+          credits: Arslan Younis
+        </a>
+      </cite>
+    </figcaption>
+  </figure>
   <PNotes>
-    Event Loop order:
-    <p>Synchronous Code Execution</p>
-    <p>Microtasks Execution (promise callbacks)</p>
-    <p>Macro Task Execution (setTimeout, setInterval)</p>
+    Event Loop, one turn:
+    <p>1. Run one task (a script, a click handler, a setTimeout callback)</p>
+    <p>2. Run ALL microtasks (promise callbacks, queueMicrotask)</p>
+    <p>3. Maybe render: rAF callbacks, style, layout, paint</p>
+    <p>
+      The point for this talk: rendering only happens between tasks, so a long
+      task delays every frame and every input.
+    </p>
   </PNotes>
 </p-slide>
 <p-slide>
-  <h1 class="center main-sub-gradient">BUT</h1>
+  <h1 layout="center" gradient="sub">
+    BUT
+  </h1>
 </p-slide>
-<p-slide autoplay time="800">
-  <h4 style="margin-block-end: 0.5em" class="center main-sub-gradient">
+<p-slide autoplay timing="800">
+  <h4 layout="center" gradient="sub" style="margin-block-end: 0.5em">
     The Synchronous code
   </h4>
   <p-fragment timing-start="900">
-    <pre
-      class="small-line"
-      data-label-file="heavy-task.js">
-    <code is:raw class="language-javascript" style="font-size: 0.76em;"> 
+    <CodeWindow is:raw file="heavy-task.js" lang="js" scale={0.76} indent={6}>
       const heavyTask = () => {
         for (let i = 0; i < 10000000000; i++) {
           //do something useful
         }
-      };</code>
-   </pre>
+      };
+    </CodeWindow>
   </p-fragment>
-  <p-fragment timing-start="1400"
-    ><h4 style="margin-block-start: 0.5em" class="center main-sub-gradient">
-      block the call stack!
-    </h4></p-fragment
+  <p-fragment timing-start="1400">
+    <h4 layout="center" gradient="sub" style="margin-block-start: 0.5em">
+      blocks the main thread!
+    </h4>
+  </p-fragment>
+  {playful && (
+    <>
+      <p-fragment frozen-page no-autoplay>
+        <span role="img" aria-label="Fake browser dialog: Page Unresponsive">
+          <b>Page Unresponsive</b>
+          <span>
+            You can wait for it to become responsive or exit the page.
+          </span>
+          <span dialog-buttons aria-hidden="true">
+            <span>Exit page</span>
+            <span>Wait</span>
+          </span>
+        </span>
+      </p-fragment>
+      <MainThread
+        mood="🥶"
+        line="did you see that? I was frozen"
+        frozen="3,000 ms"
+        no-autoplay
+      />
+    </>
+  )}
+  <PNotes>
+    <p>
+      Next click is the fake freeze: the deck greys out and a "Page
+      Unresponsive" dialog shows up. Act surprised, stare at the laptop, sigh,
+      wait 2 seconds. Then click: the Main Thread complains.
+    </p>
+    <p>It is CSS only: the deck never really blocks, arrows keep working.</p>
+  </PNotes>
+</p-slide>
+{playful ? (
+  <WhoWins
+    round={1}
+    question="Which one keeps the page responsive?"
+    winner="none"
+    verdict="Nobody wins: both run on the main thread"
   >
-</p-slide>
-<p-slide>
-  <Image
-    src={spongy}
-    alt="problem solution meme spongbob"
-    class="alter-image-size"
-    style="border-radius: 0.3em; --image-start-size: 8em"
-  />
-</p-slide>
+    <CodeWindow is:raw slot="a" file="a.js" lang="js" dense>
+        btn.onclick = async () => {
+          await new Promise((ok) => {
+            heavyTask();
+            ok();
+          });
+        };
+      </CodeWindow>
+    <CodeWindow is:raw slot="b" file="b.js" lang="js" dense>
+        btn.onclick = () => {
+          setTimeout(heavyTask, 0);
+        };
+      </CodeWindow>
+    <PNotes slot="notes">
+      <p>Show of hands: A? B? Pause, let them argue.</p>
+      <p>
+        A: the Promise executor runs synchronously, right now. "async" is not
+        "parallel": the click handler blocks for the whole loop.
+      </p>
+      <p>
+        B: setTimeout only postpones it. The click handler returns, then the
+        next macrotask is heavyTask, on the same thread → frozen again.
+      </p>
+      <p>The punchline: we need another thread. → Web Workers.</p>
+    </PNotes>
+  </WhoWins>
+) : (
+  <p-slide>
+    <Image
+      src={spongy}
+      alt="SpongeBob meme: the problem and the solution"
+      style="--size: 8em; border-radius: 0.3em"
+    />
+  </p-slide>
+)}
+
+<style>
+  /* Credits under the event loop animation */
+  figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+  }
+
+  figcaption {
+    margin-block-start: 0.8em;
+    font-size: 0.3em;
+    color: var(--soft-color);
+
+    cite {
+      font-style: normal;
+    }
+  }
+</style>

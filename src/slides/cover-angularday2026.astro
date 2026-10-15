@@ -1,0 +1,20 @@
+---
+import { Image } from "astro:assets";
+import angularday from "../img/ANGULARDAY-logo.svg";
+---
+
+<p-slide cover>
+  <h1>Don't Block the Main Thread</h1>
+  <p-note layout="center">
+    <h6>How to avoid long tasks on the main thread</h6>
+  </p-note>
+  <Image
+    src={angularday}
+    alt="Angular Day logo"
+    style="margin-block-start: 3rem; background-color: white"
+  />
+  <footer layout="center" gradient="sub">
+    <span>Marco Pollacci</span>
+    <span>20/11/2026 - Verona</span>
+  </footer>
+</p-slide>

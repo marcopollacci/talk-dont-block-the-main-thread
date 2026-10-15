@@ -1,0 +1,212 @@
+@layer deck {
+  p-deck {
+    color: var(--text-color);
+    /* The shadow :host sets 0.5s: slide transitions stay off unless debugging */
+    --sliding-duration: calc(2000ms * var(--slide-debug));
+
+    &:is(:not([mode]), [mode="presentation"]) {
+      transition: background-color var(--sliding-duration)
+        var(--sliding-duration);
+      background-color: var(--backdrop, var(--current-slide-bg, transparent));
+    }
+
+    &[mode="speaker"] {
+      p-slide:not([aria-current="page"]) {
+        transform: scale(calc(1 - var(--speaker-next-scale)));
+        top: calc(var(--speaker-next-scale) * -50%);
+        left: calc(var(--speaker-next-scale) * 50% - 50%);
+        opacity: 0.5;
+      }
+      p-slide[aria-current="page"] {
+        transform: scale(var(--speaker-next-scale));
+        top: calc(50% - var(--speaker-next-scale) * 50%);
+        left: calc(var(--speaker-next-scale) * 50% - 50%);
+        opacity: 1;
+
+        :is(
+            p-fragment,
+            [p-fragment]
+          )[aria-hidden="true"][aria-current="false"] {
+          opacity: 0.5;
+        }
+
+        /* p-effect parks unrevealed fragments off the slide (translate,
+           scale 0): keep them in place so the preview above can show them */
+        [p-effect]:is(
+          :is(p-fragment, [p-fragment])[aria-hidden="true"],
+          [aria-hidden="true"] *
+        ) {
+          --fragment-progress: 1;
+        }
+
+        /* A fragment revealed live ([replay], see scripts/deck.js) plays the
+           entrance the audience sees, instead of just losing its ghost look */
+        @media (prefers-reduced-motion: no-preference) {
+          :is(p-fragment, [p-fragment])[replay]:not([p-effect], [landing]) {
+            animation: speaker-fade-in var(--fragment-duration);
+          }
+          [p-effect]:is([replay], [replay] *):not(
+              :is(p-fragment, [p-fragment])[aria-hidden="true"] *
+            ) {
+            animation: speaker-effect var(--fragment-duration);
+          }
+          p-fragment[landing][replay] {
+            animation: speaker-landing var(--fragment-duration);
+          }
+        }
+      }
+    }
+
+    /* <p-fragment none>: keeps its space, only toggles visibility */
+    &:not([mode="speaker"]) p-fragment[none] {
+      visibility: hidden;
+      &[aria-hidden="false"] {
+        visibility: visible;
+      }
+    }
+
+    /* Grid: slides as numbered cards on a dark board. p-slides moves the
+       highlight with the arrows (Enter opens it) and on hover */
+    &[mode="grid"] {
+      --grid-gap: 1.5cqw;
+      --grid-highlight-color: var(--brand-color);
+      /* The thin light ring keeps dark slides apart from the board */
+      --card-shadow:
+        0 0 0 1px oklch(1 0 0 / 0.22), 0 0.3cqw 1.2cqw oklch(0 0 0 / 0.45);
+      /* p-slides sizes the grid to its content: fill the screen anyway */
+      min-block-size: 100dvh;
+      align-content: start;
+      background: oklch(0.25 0 0);
+      /* Side bands host the floating controls, the last row scrolls clear */
+      padding: var(--grid-gap) 5.5rem 6rem;
+      scroll-padding-block: 2rem 6rem;
+
+      p-slide {
+        border-radius: 0.6cqw;
+        box-shadow: var(--card-shadow);
+        cursor: pointer;
+
+        &::before {
+          content: counter(slide);
+          position: absolute;
+          inset: auto auto 0.6cqw 0.6cqw;
+          z-index: 1;
+          padding: 0.2em 0.55em;
+          border-radius: 0.4em;
+          background: oklch(0.2 0 0 / 0.8);
+          color: white;
+          font-size: calc(var(--slide-width) / 22);
+          font-variant-numeric: tabular-nums;
+          line-height: 1.2;
+          opacity: 1;
+          pointer-events: none;
+        }
+      }
+
+      /* Same scope as p-slides: hover wins over the keyboard highlight */
+      &:not(:has(p-slide:hover)) p-slide,
+      p-slide:hover {
+        border-radius: 0.6cqw;
+        box-shadow:
+          0 0 0 calc(var(--grid-gap) * var(--is-highlighted, 0) / 3)
+            var(--grid-highlight-color),
+          var(--card-shadow);
+
+        &::before {
+          background: color-mix(
+            in oklch,
+            var(--brand-color) calc(var(--is-highlighted, 0) * 100%),
+            oklch(0.2 0 0 / 0.8)
+          );
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        p-slide {
+          transition:
+            translate 200ms ease-out,
+            box-shadow 200ms ease-out;
+
+          &:hover {
+            translate: 0 -0.4cqw;
+          }
+        }
+      }
+    }
+  }
+
+  @keyframes speaker-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes speaker-effect {
+    from {
+      --fragment-progress: 0;
+    }
+    to {
+      --fragment-progress: 1;
+    }
+  }
+
+  @keyframes speaker-landing {
+    from {
+      opacity: 0;
+      scale: 3;
+    }
+  }
+
+  p-slide {
+    position: relative;
+    background-color: var(--slide-bg);
+    background-image: var(--slide-pattern);
+    box-shadow: var(--slide-frame);
+    padding-block-start: calc(
+      1em + var(--slide-titlebar-size) + var(--slide-titlebar-inset)
+    );
+
+    /* Theme title bar (--slide-titlebar), e.g. win311's window caption */
+    &::after {
+      content: var(--slide-titlebar) / "";
+      position: absolute;
+      inset: var(--slide-titlebar-inset) var(--slide-titlebar-inset) auto;
+      /* Sized on its own font: 1em / 0.6 = --slide-titlebar-size */
+      font-size: calc(var(--slide-titlebar-size) * 0.6);
+      block-size: calc(1em / 0.6);
+      background: var(--slide-titlebar-bg);
+      color: var(--slide-titlebar-color);
+      font-family: var(--font-caption, inherit);
+      line-height: calc(1 / 0.6);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* <p-slide follow-fragments>: content taller than the slide scrolls,
+       deck.js keeps the last revealed fragment in view */
+    &[follow-fragments] {
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    &[debug] {
+      box-shadow:
+        inset 0 0 0 1em red,
+        inset 0 0 0 1.1em green;
+    }
+  }
+
+  /* Sibling fragments with group-fragment replace each other:
+     only the last revealed one stays on screen */
+  [group-fragment]:has(~ [group-fragment][aria-hidden="false"]) {
+    display: none;
+  }
+
+  /* Safari doesn't lay out fragments inside lists as list items */
+  @supports (font: -apple-system-body) and (-webkit-appearance: none) {
+    ul:has(p-fragment) {
+      display: flex;
+      flex-direction: var(--safari-ul-fragment-direction, column);
+    }
+  }
+}

@@ -1,0 +1,128 @@
+---
+// Dev-only theme picker (Alt+T). Each entry previews the real theme: its
+// [data-theme] tile picks up that theme's tokens. ↑/↓ try a theme live,
+// Enter or click keeps it, Esc goes back. The build ships only the page's
+// theme, so none of this leaves dev.
+interface Props {
+  /** Theme names, in picker order (THEMES in Layout.astro) */
+  themes: readonly string[];
+}
+
+const { themes } = Astro.props;
+---
+
+<button
+  type="button"
+  popovertarget="theme-menu"
+  aria-label="Choose theme (Alt+T)"
+  title="Choose theme"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle
+      cx="12"
+      cy="12"
+      r="8.5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+    ></circle>
+    <path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"></path>
+  </svg>
+</button>
+<div popover id="theme-menu" role="group" aria-label="Themes">
+  {themes.map((theme) => (
+    <button
+      type="button"
+      commandfor="deck"
+      command="--theme"
+      value={theme}
+      aria-pressed="false"
+    >
+      <span data-theme={theme} aria-hidden="true">
+        Aa
+      </span>{" "}
+      {theme}
+    </button>
+  ))}
+</div>
+
+<style is:inline>
+  /* Inline: ships only where the picker renders (dev), never in the CSS
+     bundle. Unlayered: wins over the toolbar button styles in chrome.css */
+  /* The menu opens beside its button */
+  [popovertarget="theme-menu"] {
+    anchor-name: --theme-button;
+  }
+
+  [popover]:has(> [command="--theme"]) {
+    position: fixed;
+    inset: auto auto 1rem 5rem;
+    max-block-size: min(36rem, calc(100dvh - 2rem));
+    margin: 0;
+    padding: 0.25rem;
+    overflow-y: auto;
+    border: 1px solid var(--pill-line);
+    border-radius: min(var(--pill-radius), 1.5rem);
+    background: color-mix(in oklch, var(--pill-bg), var(--surface) 70%);
+    box-shadow: var(--pill-shadow);
+    color: var(--ink);
+    font:
+      1rem / 1.2 system-ui,
+      sans-serif;
+
+    @supports (position-area: right) {
+      position-anchor: --theme-button;
+      inset: auto;
+      margin-inline-start: 0.5rem;
+      position-area: right span-top;
+      position-try-fallbacks: flip-block;
+    }
+
+    &:popover-open {
+      display: grid;
+      gap: 0.125rem;
+    }
+
+    > button {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      inline-size: 100%;
+      block-size: auto;
+      min-block-size: 2.75rem;
+      padding: 0.25rem 1rem 0.25rem 0.25rem;
+      border-radius: min(var(--pill-radius), 1.25rem);
+      color: inherit;
+      font: inherit;
+      text-align: start;
+
+      &[aria-pressed="true"] {
+        color: var(--on-brand);
+      }
+    }
+
+    /* The tile wears the real theme: [data-theme] gives it its tokens */
+    [data-theme] {
+      display: grid;
+      place-items: center;
+      inline-size: 3rem;
+      block-size: 2.25rem;
+      border-radius: min(var(--pill-radius), 0.75rem);
+      background:
+        linear-gradient(
+            90deg in oklch,
+            var(--gradient-sub-from),
+            var(--gradient-sub-to)
+          )
+          text,
+        var(--surface);
+      box-shadow:
+        inset 0.3rem 0 var(--brand-color),
+        inset 0 0 0 1px var(--pill-line);
+      font-family: var(--font-body);
+      font-size: 1.25rem;
+      font-weight: 700;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+</style>

@@ -1,0 +1,13 @@
+/* Third-party CSS goes in the lowest layer, so unlayered vendor rules
+   never beat the project's own layers */
+@layer vendor, tokens, reset, deck, chrome, content, components;
+
+@import "p-slides/css/p-slides.css" layer(vendor);
+@import "p-slides/css/effects.css" layer(vendor);
+
+@import "./tokens.css";
+@import "./reset.css";
+@import "./deck.css";
+@import "./chrome.css";
+@import "./content.css";
+@import "./components.css";

@@ -2,27 +2,15 @@
 import { defineConfig, fontProviders } from "astro/config";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
-// https://astro.build/config
 export default defineConfig({
+  // Keep the whitespace between inline elements written on separate lines
+  // (emoji + title, text + <code>): compression glues them together
+  compressHTML: false,
   fonts: [
     {
       provider: fontProviders.local(),
-      name: "Graphik Semibold",
-      cssVariable: "--talk-marco-graphik-semibold",
-      options: {
-        variants: [
-          {
-            src: ["./src/fonts/GraphikSemibold.otf"],
-            weight: 700,
-            style: "normal",
-          },
-        ],
-      },
-    },
-    {
-      provider: fontProviders.local(),
-      name: "Graphik Regular",
-      cssVariable: "--talk-marco-graphik-regular",
+      name: "Graphik",
+      cssVariable: "--font-graphik",
       options: {
         variants: [
           {
@@ -30,18 +18,14 @@ export default defineConfig({
             weight: 400,
             style: "normal",
           },
-        ],
-      },
-    },
-    {
-      provider: fontProviders.local(),
-      name: "Graphik Medium",
-      cssVariable: "--talk-marco-graphik-medium",
-      options: {
-        variants: [
           {
             src: ["./src/fonts/GraphikMedium.otf"],
             weight: 500,
+            style: "normal",
+          },
+          {
+            src: ["./src/fonts/GraphikSemibold.otf"],
+            weight: 700,
             style: "normal",
           },
         ],
@@ -52,11 +36,8 @@ export default defineConfig({
     build: {
       rollupOptions: {
         output: {
-          manualChunks: (id) => {
-            if (id.includes("src/vendor")) {
-              return "vendor/[name]";
-            }
-          },
+          // p-slides derives event names from class names (new.target.name)
+          keepNames: true,
         },
       },
     },

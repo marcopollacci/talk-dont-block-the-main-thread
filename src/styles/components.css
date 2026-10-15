@@ -1,0 +1,913 @@
+/* Attribute API for slides. Full reference: AGENTS.md § "Attribute reference" */
+@layer components {
+  /* ---------- Layout ---------- */
+
+  /* <p-slide layout="two-columns [top]"> */
+  [layout~="two-columns"] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    align-items: center;
+    column-gap: 1em;
+
+    &[layout~="top"] {
+      align-content: start;
+      align-items: start;
+      padding-block-start: 1.5em;
+    }
+  }
+
+  [layout~="columns"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(5em, 1fr));
+    align-items: center;
+    gap: 1em;
+  }
+
+  /* <div layout="grid" style="--rows: 2; --columns: 3"> */
+  [layout~="grid"] {
+    display: grid;
+    grid-template-rows: repeat(var(--rows, 1), 1fr);
+    grid-template-columns: repeat(var(--columns, 2), 1fr);
+    gap: 1em;
+  }
+
+  [layout~="quote"] {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+  }
+
+  [layout~="center"] {
+    text-align: center;
+  }
+
+  [justify="start"] {
+    justify-content: flex-start;
+  }
+  [justify="center"] {
+    justify-content: center;
+  }
+  [justify="end"] {
+    justify-content: flex-end;
+  }
+  [justify="around"] {
+    justify-content: space-around;
+  }
+  [align="center"] {
+    align-items: center;
+  }
+  [self="start"] {
+    align-self: start;
+  }
+  [self="center"] {
+    align-self: center;
+  }
+  [self="end"] {
+    align-self: end;
+  }
+
+  /* Centred column of heading + content, e.g. speaker or feedback QR */
+  [card] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375em;
+    text-align: center;
+
+    > :is(h5, h6) {
+      margin-block-end: 0;
+    }
+
+    > span {
+      font-size: 0.5em;
+      line-height: 0.55;
+    }
+  }
+
+  [unpadded] {
+    padding: 0;
+  }
+
+  /* ---------- Covers ---------- */
+
+  /* <p-slide cover>, cover="internal" | "internal-sub" | "sub-section" */
+  p-slide[cover] {
+    h1 {
+      margin-block-start: 0;
+      font-size: 1.3em;
+      text-align: center;
+    }
+
+    a {
+      color: oklch(1 0 0 / 0.8);
+    }
+
+    small {
+      display: block;
+    }
+
+    figure {
+      margin: 0;
+    }
+
+    img {
+      block-size: var(--size, 4em);
+    }
+
+    /* Speaker name and date, pinned to the bottom */
+    > footer {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      translate: -50% -50%;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      font-size: 0.4em;
+
+      > :first-child {
+        margin-block-end: 0.3em;
+      }
+    }
+  }
+
+  p-slide[cover="internal"] {
+    text-align: center;
+  }
+
+  p-slide[cover="internal-sub"] :is(h1, h2, h3, h4, h5, h6) {
+    text-align: var(--text-align, center);
+  }
+
+  p-slide[cover="sub-section"] h1 {
+    font-size: 0.9em;
+  }
+
+  /* ---------- Text ---------- */
+
+  /* Gradient text: <h2 gradient>, gradient="sub" | "cover" */
+  [gradient],
+  p-slide:is([cover], [cover="internal"]) h1,
+  p-slide[cover="internal"] :is(h2, h3, h4, h5, h6),
+  p-slide:is([cover="internal-sub"], [cover="sub-section"])
+    :is(h1, h2, h3, h4, h5, h6) {
+    --from: var(--gradient-from);
+    --to: var(--gradient-to);
+    background: linear-gradient(90deg in oklch, var(--from), var(--to));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* Room for glyphs that overhang their box (italic, bold "?" and ")"):
+       the gradient only paints inside the padding box. Same position */
+    padding-inline: 0.15em;
+    margin-inline: -0.15em;
+    font-weight: 700;
+  }
+
+  [gradient="sub"],
+  p-slide:is([cover="internal-sub"], [cover="sub-section"])
+    :is(h1, h2, h3, h4, h5, h6) {
+    --from: var(--gradient-sub-from);
+    --to: var(--gradient-sub-to);
+  }
+
+  [gradient="cover"] {
+    --from: var(--gradient-cover-from);
+    --to: var(--gradient-cover-to);
+  }
+
+  [tone="muted"] {
+    color: var(--muted-color);
+  }
+  [tone="invert"] {
+    color: var(--surface);
+  }
+
+  [weight="medium"] {
+    font-weight: 500;
+  }
+  [uppercase] {
+    text-transform: uppercase;
+  }
+
+  [text="small"] {
+    font-size: 0.5em;
+  }
+  [text="mid"] {
+    margin-block-end: 0.5em;
+    font-size: 0.7em;
+
+    li {
+      margin-block-end: 0.6em;
+    }
+  }
+
+  [spacing="more"] {
+    line-height: var(--spacing, 1.3em);
+  }
+
+  /* Heading with a leading emoji kept outside the gradient:
+     <h2 with-emoji><span aria-hidden="true">🎤</span> <span>Title</span></h2> */
+  [with-emoji] {
+    display: flex;
+    align-items: flex-end;
+    justify-content: var(--justify-content, center);
+    gap: 0.3em;
+
+    span:not([aria-hidden="true"]) {
+      --from: var(--gradient-sub-from);
+      --to: var(--gradient-sub-to);
+      background: linear-gradient(90deg in oklch, var(--from), var(--to));
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      /* Room for glyphs that overhang their box (italic, bold "?" and ")"):
+         the gradient only paints inside the padding box. Same position */
+      padding-inline: 0.15em;
+      margin-inline: -0.15em;
+      font-weight: 700;
+    }
+  }
+
+  [attention] {
+    font-weight: bold;
+
+    &::before {
+      content: " ⚠️ " / "Warning: ";
+      color: var(--alert-color);
+    }
+    &::after {
+      content: " ⚠️ " / "";
+      color: var(--alert-color);
+    }
+  }
+
+  /* Authoring placeholder, also inside gradient text */
+  [todo] {
+    margin: 0.5em;
+    padding: 0.3em;
+    border: 1px solid var(--alert-color);
+    font-weight: bold;
+    color: var(--alert-color);
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+
+  [js] {
+    padding: 0 0.25em;
+    background-color: oklch(0.896 0.182 101.2);
+    color: black;
+  }
+
+  [file-badge] {
+    position: absolute;
+    inline-size: fit-content;
+    padding: 0.1em 0.6em;
+    border: 1px solid var(--info-color);
+    border-radius: 1em;
+  }
+
+  /* Hand-drawn circle around a word */
+  [sketch-circle] {
+    --sketch-height: 1em;
+    --sketch-border-width: 2px;
+    --sketch-border-color: oklch(0.731 0.161 60.5);
+    position: relative;
+    left: 0.5em;
+    font-weight: 500;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      left: -0.5em;
+      inline-size: 100%;
+      block-size: var(--sketch-height);
+      padding: 0.1em 0.25em;
+      border: var(--sketch-border-width) solid var(--sketch-border-color);
+      border-radius: 50%;
+      opacity: 0.7;
+    }
+    /* Skewed bottom stroke */
+    &::before {
+      top: -0.1em;
+      border-right-color: transparent;
+      rotate: 2deg;
+    }
+    /* Skewed top stroke */
+    &::after {
+      top: 0.1em;
+      border-left-color: transparent;
+      border-top-color: transparent;
+      rotate: -1deg;
+    }
+  }
+
+  /* ---------- Lists ---------- */
+
+  ul[density="long"] {
+    font-size: 0.5em;
+
+    li {
+      margin-block-end: var(--li-margin-block-end, 0.3em);
+    }
+  }
+
+  /* Column with wide gaps between items */
+  ul[density="spaced"] {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.6em;
+  }
+
+  [density="loose"] li {
+    margin-block-end: 0.6em;
+  }
+
+  [list="compact"] :is(h5, h6) {
+    margin-block: 0;
+  }
+
+  ul[links] {
+    align-self: center;
+    margin-block-start: 0.5em;
+    font-size: 70%;
+
+    li:not(:first-child) {
+      margin-block-start: inherit;
+    }
+
+    a {
+      display: block;
+      inline-size: fit-content;
+      padding-inline-start: 1.75em;
+    }
+  }
+
+  [info] {
+    inline-size: 8em;
+    margin: 2em 2em 0;
+    text-align: center;
+
+    img {
+      block-size: 1em;
+      vertical-align: middle;
+    }
+  }
+
+  [final-link] {
+    a {
+      color: var(--brand-color);
+    }
+
+    img {
+      display: block;
+      block-size: 7em;
+      margin: 1em auto 0;
+    }
+  }
+
+  /* ---------- Media ---------- */
+
+  img[inline] {
+    block-size: var(--size, 1.5em);
+    vertical-align: middle;
+  }
+
+  /* Background media: full-media, full-media="x" | "y" | "bleed" */
+  [full-media] {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+
+    &[full-media~="x"] {
+      top: auto;
+      block-size: auto;
+    }
+    &[full-media~="y"] {
+      left: auto;
+      inline-size: auto;
+    }
+    p-deck:not([mode="speaker"]) &[full-media~="bleed"] {
+      padding: 0;
+    }
+  }
+
+  [shadow] {
+    box-shadow: 0 0 0.5em oklch(0 0 0 / 0.5);
+  }
+
+  [sepia] {
+    filter: contrast(0.65) sepia(1) hue-rotate(-15deg) saturate(0.7)
+      brightness(0.92);
+  }
+
+  [banner] {
+    position: absolute;
+    top: 50%;
+    inset-inline: 0;
+    z-index: 10;
+    translate: 0 -50%;
+    background-color: oklch(0 0 0 / 0.5);
+    color: white;
+    text-shadow: 0 0.1em 0.2em oklch(0 0 0 / 0.5);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* fade-borders="x" | "y" | "both" */
+  [fade-borders] {
+    --fade-x: linear-gradient(
+      to right,
+      transparent,
+      black var(--fade-border-width, 1em),
+      black calc(100% - var(--fade-border-width, 1em)),
+      transparent
+    );
+    --fade-y: linear-gradient(
+      to bottom,
+      transparent,
+      black var(--fade-border-width, 1em),
+      black calc(100% - var(--fade-border-width, 1em)),
+      transparent
+    );
+  }
+  [fade-borders="x"] {
+    mask-image: var(--fade-x);
+  }
+  [fade-borders="y"] {
+    mask-image: var(--fade-y);
+  }
+  [fade-borders="both"] {
+    mask-image: var(--fade-x), var(--fade-y);
+    mask-composite: intersect;
+  }
+
+  /* ---------- Hand drawing ---------- */
+
+  /* hand-drawing (column) | hand-drawing="row"; children: <span box>, <span arrow down> */
+  [hand-drawing],
+  [hand-drawing] p-fragment {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    row-gap: 0.3em;
+  }
+
+  [hand-drawing="row"],
+  [hand-drawing="row"] p-fragment {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.5em;
+  }
+
+  [hand-drawing] {
+    --color-border: var(--ink);
+
+    [box] {
+      padding: 0.5em;
+      border: 2px solid var(--color-border);
+      border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+      background: transparent;
+    }
+
+    [arrow] {
+      font-size: 2.5em;
+
+      &[left]::before {
+        content: "\27F5" / "";
+      }
+      &[right]::before {
+        content: "\27F6" / "";
+      }
+      &[up]::before {
+        content: "\2191" / "";
+      }
+      &[down]::before {
+        content: "\2193" / "";
+      }
+      &[up-down]::before {
+        content: "\21F5" / "";
+      }
+    }
+  }
+
+  /* ---------- Animations ---------- */
+
+  p-fragment[landing] {
+    position: absolute;
+    scale: 3;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        opacity var(--fragment-duration, 300ms),
+        scale var(--fragment-duration, 300ms);
+    }
+
+    &[aria-hidden="false"],
+    p-deck[mode="speaker"] & {
+      scale: 1;
+    }
+  }
+
+  /* Visible until revealed, then fades out */
+  :is(p-fragment, [p-fragment])[invert] {
+    &[aria-hidden="true"] {
+      opacity: 1;
+    }
+    &[aria-hidden="false"] {
+      opacity: 0;
+    }
+  }
+
+  /* enter="above" (shrinks from 3x) | enter="below" (shrinks to 1/3) */
+  [enter] {
+    position: absolute;
+  }
+
+  /* Big animated cross drawn over the element */
+  [big-x] {
+    position: absolute;
+    display: grid;
+    aspect-ratio: 4 / 3;
+
+    &::before,
+    &::after {
+      content: "";
+      grid-area: 1 / 1;
+      padding-inline-end: 100%;
+      background-size: 100% 20%;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-clip: content-box;
+      filter: saturate(0.8);
+    }
+  }
+
+  /* Hand-drawn arrow painted by the Houdini worklet */
+  [sketchy-arrow] {
+    position: absolute;
+    aspect-ratio: 16 / 9;
+    background: paint(sketchy-arrow);
+    filter: drop-shadow(0.075em 0.075em 0 var(--surface));
+    text-align: center;
+  }
+
+  /* ---------- Games and gags ---------- */
+
+  /* <WhoWins>: A/B duel, the revealed [verdict] picks the winner */
+  [duel] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: stretch;
+    column-gap: 0.5em;
+    margin-block: 0.4em;
+  }
+
+  [contender] {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    justify-items: stretch;
+    row-gap: 0.15em;
+
+    > b {
+      justify-self: center;
+      font-size: 0.7em;
+    }
+
+    /* Both code windows as tall as the taller one, code a bit smaller
+       to fit half a slide */
+    > pre {
+      --code-scale: 0.82;
+      block-size: 100%;
+      margin: 0;
+    }
+  }
+
+  [vs] {
+    align-self: center;
+    margin-block-start: 0.5em;
+    font-weight: 800;
+    color: var(--brand-color);
+  }
+
+  [verdict] {
+    white-space: nowrap;
+  }
+
+  /* winner="none": nobody wins, both are dimmed */
+  p-slide:has([verdict][winner="a"][aria-hidden="false"]) [contender="b"],
+  p-slide:has([verdict][winner="b"][aria-hidden="false"]) [contender="a"],
+  p-slide:has([verdict][winner="none"][aria-hidden="false"]) [contender] {
+    /* The loser fades out; the ✗ label stays fully visible */
+    > b::after {
+      content: " ✗" / "";
+    }
+
+    > pre {
+      outline: 0.06em dashed var(--muted-color);
+      outline-offset: 0.1em;
+      opacity: 0.25;
+      filter: grayscale(1);
+    }
+  }
+
+  p-slide:has([verdict][winner="a"][aria-hidden="false"]) [contender="a"],
+  p-slide:has([verdict][winner="b"][aria-hidden="false"]) [contender="b"] {
+    > b::after {
+      content: " 🏆" / "";
+    }
+
+    > pre {
+      outline: 0.08em solid var(--brand-color);
+      outline-offset: 0.1em;
+    }
+  }
+
+  /* Fake freeze: the slide greys out under a "Page Unresponsive" dialog.
+     CSS only, the deck keeps working */
+  p-slide:has(> [frozen-page][aria-hidden="false"])
+    > :not([frozen-page], [main-thread], p-notes) {
+    filter: grayscale(1);
+    opacity: 0.35;
+    transition:
+      opacity var(--fragment-duration, 300ms),
+      filter var(--fragment-duration, 300ms);
+  }
+
+  [frozen-page] {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+
+    > [role="img"] {
+      display: grid;
+      gap: 0.5em;
+      inline-size: 20em;
+      padding: 1em 1.2em;
+      border-radius: 0.5em;
+      background: white;
+      box-shadow: 0 0.2em 1.5em oklch(0 0 0 / 0.3);
+      color: oklch(0.25 0 0);
+      font-size: 0.4em;
+      line-height: 1.3;
+      text-align: start;
+
+      > b {
+        font-size: 1.2em;
+        white-space: nowrap;
+      }
+    }
+
+    [dialog-buttons] {
+      display: flex;
+      justify-content: end;
+      gap: 0.5em;
+      margin-block-start: 0.3em;
+
+      > span {
+        padding: 0.3em 0.9em;
+        border: 0.06em solid oklch(0.8 0 0);
+        border-radius: 1em;
+        color: oklch(0.45 0.18 260);
+        font-size: 0.9em;
+        white-space: nowrap;
+      }
+
+      > :last-child {
+        border-color: transparent;
+        background: oklch(0.45 0.18 260);
+        color: white;
+      }
+    }
+  }
+
+  /* Fake task manager: rows pile up as fragments */
+  [task-manager] {
+    inline-size: 100%;
+    border-collapse: collapse;
+    border: 0.04em solid var(--line-color);
+    border-radius: 0.2em;
+    font-size: 0.42em;
+    font-variant-numeric: tabular-nums;
+
+    caption {
+      padding: 0.4em 0.8em;
+      background: var(--selection-color);
+      font-weight: 700;
+      text-align: start;
+    }
+
+    :is(th, td) {
+      padding: 0.25em 0.8em;
+      text-align: end;
+      white-space: nowrap;
+
+      &:first-child {
+        text-align: start;
+      }
+    }
+
+    th {
+      border-block-end: 0.04em solid var(--line-color);
+      color: var(--muted-color);
+      font-weight: 500;
+    }
+
+    tbody tr:nth-child(even) {
+      background: color-mix(in oklch, var(--ink) 3%, var(--surface));
+    }
+
+    tbody tr:last-child {
+      color: var(--alert-color);
+      font-weight: 700;
+    }
+  }
+
+  /* <Meme>: image with captions overlaid as real text */
+  [meme] {
+    position: relative;
+    inline-size: fit-content;
+    margin: 0 auto;
+
+    > img {
+      display: block;
+      block-size: var(--size, 8em);
+      inline-size: auto;
+      border-radius: 0.2em;
+    }
+  }
+
+  [caption] {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: var(--y, 50%);
+    translate: -50% -50%;
+    padding: 0.1em 0.3em;
+    border-radius: 0.15em;
+    background: var(--caption-bg, oklch(1 0 0 / 0.9));
+    color: oklch(0.2 0 0);
+    font-size: var(--caption-size, 0.42em);
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+
+    code {
+      font-size: 0.95em;
+    }
+  }
+
+  /* <MainThread>: running-gag mascot, bottom-right corner */
+  [main-thread] {
+    position: absolute;
+    /* Above the deck's prev/next buttons (em of the 0.4em font-size) */
+    inset-block-end: 3.4em;
+    inset-inline-end: 1.6em;
+    z-index: 2;
+    display: flex;
+    align-items: end;
+    gap: 0.2em;
+    font-size: 0.4em;
+
+    > [aria-hidden] {
+      font-size: 2.4em;
+      line-height: 1;
+    }
+
+    > [bubble] {
+      display: grid;
+      padding: 0.4em 0.7em;
+      border: 0.08em solid var(--brand-color);
+      border-radius: 0.8em 0.8em 0 0.8em;
+      background: white;
+      color: oklch(0.2 0 0);
+      white-space: nowrap;
+
+      small {
+        color: var(--muted-color);
+        font-size: 0.8em;
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :is([blink], [todo]) {
+      animation: blink 1s steps(1) infinite;
+    }
+
+    [sketchy-arrow] {
+      animation: sketchy 0.3s steps(3) infinite;
+    }
+
+    p-deck:not([mode="speaker"]) {
+      :is(p-fragment[aria-hidden="false"], p-slide[aria-hidden="false"])
+        [enter]:not(p-fragment[aria-hidden="true"] *) {
+        animation: var(--enter-animation) var(--fragment-duration, 300ms)
+          var(--entrance-easing) 1 forwards;
+      }
+    }
+
+    /* Speaker preview: on the slide's arrival, and inside fragments revealed
+       live ([replay], see scripts/deck.js), like the audience sees it */
+    p-deck[mode="speaker"] p-slide[aria-current="page"] {
+      [enter]:not(:is(p-fragment, [p-fragment]) *),
+      [replay] [enter]:not(p-fragment[aria-hidden="true"] *) {
+        animation: var(--enter-animation) var(--fragment-duration, 300ms)
+          var(--entrance-easing) 1 forwards;
+      }
+    }
+
+    [enter="above"] {
+      --enter-animation: enter-above;
+    }
+    [enter="below"] {
+      --enter-animation: enter-below;
+    }
+
+    [big-x]:not(
+      p-fragment[aria-hidden="true"],
+      p-fragment[aria-hidden="true"] *
+    ) {
+      &::before,
+      &::after {
+        animation: big-stroke calc(var(--fragment-duration, 300ms) / 2) ease-in
+          1 forwards;
+      }
+      &::after {
+        animation-delay: calc(var(--fragment-duration, 300ms) / 2);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [big-x]::before,
+    [big-x]::after {
+      padding-inline-end: 0;
+    }
+  }
+
+  @media print {
+    :is([blink], [todo]) {
+      animation: none;
+    }
+  }
+
+  /* visibility, not opacity: a parent's background-clip: text
+     would keep painting the glyphs of a transparent child */
+  @keyframes blink {
+    50% {
+      visibility: visible;
+    }
+    0%,
+    100% {
+      visibility: hidden;
+    }
+  }
+
+  @keyframes enter-above {
+    from {
+      scale: 3;
+    }
+    to {
+      scale: 1;
+    }
+  }
+
+  @keyframes enter-below {
+    from {
+      scale: 1;
+    }
+    to {
+      scale: 0.33333;
+    }
+  }
+
+  @keyframes big-stroke {
+    from {
+      padding-inline-end: 100%;
+    }
+    to {
+      padding-inline-end: 0%;
+    }
+  }
+
+  @keyframes sketchy {
+    from {
+      --sketchy-arrow-random-seed: 20;
+    }
+    to {
+      --sketchy-arrow-random-seed: 40;
+    }
+  }
+}

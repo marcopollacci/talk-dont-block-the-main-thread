@@ -2,41 +2,35 @@
 import PNotes from "../components/PNotes.astro";
 ---
 
-<p-slide class="center" autoplay timing="800">
-  <h1>🙅‍♂️ <span class="main-gradient">Common Pitfalls</span></h1>
-  <p-fragment
-    ><h4
-      class="main-sub-gradient"
-      style="padding-inline-end: 0.5em; text-align: end; font-style: italic"
-    >
-      What Could Go Wrong? <span
-        style="-webkit-text-fill-color: initial; font-style: normal">🌚</span
-      >
-    </h4></p-fragment
+<p-slide layout="center" autoplay timing="800">
+  <h1>
+    <span aria-hidden="true">🙅‍♂️</span> <span gradient>Common Pitfalls</span>
+  </h1>
+  <h4
+    p-fragment
+    p-effect="from below"
+    style="padding-inline-end: 0.5em; text-align: end; font-style: italic"
   >
+    <span gradient="sub">What Could Go Wrong?</span>
+    <span aria-hidden="true" style="font-style: normal">
+      🌚
+    </span>
+  </h4>
 </p-slide>
 <p-slide>
-  <ul class="space" style="line-height: 1em">
-    <li>❌ <span class="main-sub-gradient">Too Many Workers</span></li>
-    <p-fragment
-      ><li>
-        ❌
-        <span class="main-sub-gradient">Passing Large Data Objects</span>
-      </li></p-fragment
-    >
-    <p-fragment
-      ><li>
-        ❌
-        <span class="main-sub-gradient">Memory and performance impact</span>
-      </li></p-fragment
-    >
-    <p-fragment
-      ><li>
-        ❌ <span class="main-sub-gradient"
-          >Using Workers for Small, Frequent Tasks</span
-        >
-      </li></p-fragment
-    >
+  <ul density="spaced" text="mid">
+    <li>
+      ❌ <span gradient="sub">Too Many Workers</span>
+    </li>
+    <li p-fragment p-effect="from right">
+      ❌ <span gradient="sub">Passing Large Data Objects</span>
+    </li>
+    <li p-fragment p-effect="from left">
+      ❌ <span gradient="sub">Memory and performance impact</span>
+    </li>
+    <li p-fragment p-effect="zoom">
+      ❌ <span gradient="sub">Using Workers for Small, Frequent Tasks</span>
+    </li>
   </ul>
   <PNotes>
     <ul style="font-size: 0.8em">
@@ -45,7 +39,7 @@ import PNotes from "../components/PNotes.astro";
         system: ✅ Reuse Workers instead of creating a new one each time; ✅ Use
         a Worker Pool
       </li>
-      <li>Passing Large Data Objects: use transfer parameter in postMessge</li>
+      <li>Passing Large Data Objects: use transfer parameter in postMessage</li>
       <li>
         ❌ Communication overhead - Data exchange with the main thread happens
         asynchronously via postMessage(), which can introduce complexity and

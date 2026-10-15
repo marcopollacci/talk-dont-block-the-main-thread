@@ -1,0 +1,127 @@
+---
+// Editor-style code block, highlighted at build time by Shiki (zero JS).
+// Light and dark palettes ship as custom props: content.css picks one from
+// the theme's color-scheme.
+// Usage: <CodeWindow is:raw file="nav.css" lang="css" fragments="3-5">…</CodeWindow>
+// or pass the source through the `code` prop.
+import { Code } from "astro:components";
+import type { ComponentProps } from "astro/types";
+
+type CodeProps = ComponentProps<typeof Code>;
+
+interface Props {
+  lang?: CodeProps["lang"];
+  /** Filename shown in the window title bar */
+  file?: string;
+  size?: "small" | "big" | "full";
+  dense?: boolean;
+  /** Line ranges revealed one fragment at a time, e.g. "3-5, 8" */
+  fragments?: string;
+  /** Visible lines: the window scrolls and follows the revealed fragments */
+  lines?: number;
+  /** Code size relative to the window (title bar unchanged), e.g. 0.76 */
+  scale?: number;
+  /** Left indent of the code, in characters (default 2) */
+  indent?: number;
+  /** Blank lines below the code (default 1, 0 for none) */
+  tail?: number;
+  code?: string;
+}
+
+const {
+  lang = "plaintext",
+  file,
+  size,
+  dense,
+  fragments,
+  lines,
+  scale,
+  indent,
+  tail,
+  code,
+} = Astro.props;
+
+const raw = code ?? (await Astro.slots.render("default"));
+
+// Drop blank edge lines and the indentation shared by every line
+const rows = raw.replace(/^\s*\n|\n\s*$/g, "").split("\n");
+const shared = Math.min(
+  ...rows.filter((l) => l.trim()).map((l) => l.match(/^\s*/)![0].length),
+);
+const source = rows.map((l) => l.slice(shared)).join("\n");
+
+const ranges = (fragments ?? "")
+  .split(",")
+  .map((r) => r.trim())
+  .filter(Boolean)
+  .map((r) => {
+    const [from, to = from] = r.split("-").map(Number);
+    return [from, to];
+  });
+
+const transformers: CodeProps["transformers"] = [
+  {
+    // Classless output: Shiki's classes and the scroll tabindex go away
+    pre(node) {
+      delete node.properties.class;
+      delete node.properties.tabindex;
+      // Astro drops the `style` attribute when wrap={null}: set it here
+      if (lines) node.properties.style += `; --lines: ${lines}`;
+      if (scale) node.properties.style += `; --code-scale: ${scale}`;
+      if (indent) node.properties.style += `; --indent: ${indent}ch`;
+      if (tail !== undefined) node.properties.style += `; --tail: ${tail}`;
+    },
+    code(node) {
+      delete node.properties.class;
+      if (lines) {
+        // Scrolling box: reachable from the keyboard, followed by deck.js
+        node.properties["follow-fragments"] = "";
+        node.properties.tabindex = 0;
+        node.properties["aria-label"] = file ? `Code: ${file}` : "Code";
+      }
+      if (!ranges.length) return;
+      // children alternate: line, "\n", line, "\n", …
+      const grouped: typeof node.children = [];
+      let line = 0;
+      let fragment: typeof node | null = null;
+      for (const child of node.children) {
+        const isLine = child.type === "element";
+        if (isLine) line++;
+        const range = ranges.find(([from, to]) => line >= from && line <= to);
+        if (isLine && range && line === range[0]) {
+          fragment = {
+            type: "element",
+            tagName: "p-fragment",
+            properties: {},
+            children: [],
+          };
+          grouped.push(fragment);
+        }
+        // The "\n" after a range's last line stays outside the fragment
+        if (fragment && range && (isLine || line < range[1])) {
+          fragment.children.push(child);
+        } else {
+          fragment = null;
+          grouped.push(child);
+        }
+      }
+      node.children = grouped;
+    },
+    line(node) {
+      delete node.properties.class;
+    },
+  },
+];
+---
+
+<Code
+  code={source}
+  {lang}
+  themes={{ light: "one-light", dark: "one-dark-pro" }}
+  defaultColor={false}
+  wrap={null}
+  {transformers}
+  data-label-file={file}
+  {size}
+  {dense}
+/>

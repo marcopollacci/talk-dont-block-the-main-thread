@@ -1,0 +1,229 @@
+/* Adopted inside <p-deck>'s shadow root (see scripts/deck.js) */
+
+/* Speaker sidebar: toolbar, pace box and notes as rounded panels */
+aside {
+  --panel: #161616;
+  --panel-line: oklch(0.3 0 0);
+  --text-soft: oklch(0.8 0 0);
+  gap: 0.15em;
+  padding: 0.15em;
+  background: #000;
+
+  > * {
+    min-width: 0;
+    border-radius: 0.2em;
+    border: 1px solid var(--panel-line);
+    background: var(--panel);
+  }
+}
+
+header {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 0.4em;
+  margin: 0;
+  padding: 0.1em 0.45em;
+  font-size: 75%;
+}
+
+[part~="counter"] {
+  font-size: 75%;
+  font-variant-numeric: tabular-nums;
+}
+
+[part~="timer"] {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+[part~="reset-button"] {
+  margin-inline-end: 0.1em;
+}
+
+button {
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 0.06em solid white;
+    outline-offset: 0.15em;
+  }
+}
+
+[part~="notelist"] {
+  padding: 0.6em 0.8em 0.6em 1.6em;
+  font-size: 45%;
+  line-height: 1.3;
+
+  li + li {
+    margin-block-start: 0.5em;
+  }
+}
+
+/* Pace box under the speaker toolbar (see scripts/deck.js) */
+[part~="pace"] {
+  --pace-off: oklch(0.32 0 0);
+  --pace-ok: oklch(0.78 0.19 145);
+  --pace-warn: oklch(0.84 0.16 85);
+  --pace-bad: oklch(0.68 0.21 28);
+  --pace-color: var(--text-soft);
+  display: grid;
+  gap: 0.5em;
+  flex: 0 0 auto;
+  padding: 0.5em 0.7em;
+  font-size: 40%;
+  border-inline-start: 0.25em solid var(--pace-color);
+
+  dl {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4em;
+    margin: 0;
+  }
+
+  dl > div {
+    padding: 0.3em 0.4em;
+    border-radius: 0.3em;
+    background: #0c0c0c;
+  }
+
+  dt {
+    font-size: 65%;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 110%;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  [stat="drift"] {
+    color: var(--pace-color);
+  }
+
+  [stat="finish"][late] {
+    color: var(--pace-bad);
+  }
+}
+
+[part~="pace-verdict"] {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+
+  strong {
+    font-size: 130%;
+    color: var(--pace-color);
+    white-space: nowrap;
+  }
+}
+
+[part~="pace-light"] {
+  display: flex;
+  gap: 0.25em;
+  padding: 0.25em 0.35em;
+  border-radius: 1em;
+  background: #000;
+
+  i {
+    width: 0.9em;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--pace-off);
+  }
+}
+
+/* Slides done vs time used: a longer slides bar means going too fast */
+[part~="pace-tracks"] {
+  display: grid;
+  gap: 0.3em;
+
+  > div {
+    display: grid;
+    grid-template-columns: 4em minmax(0, 1fr) 3em;
+    align-items: center;
+    gap: 0.6em;
+  }
+
+  b {
+    font-size: 75%;
+    font-weight: 400;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  div > div {
+    height: 0.45em;
+    border-radius: 1em;
+    background: var(--pace-off);
+    overflow: hidden;
+  }
+
+  i {
+    display: block;
+    width: var(--value, 0%);
+    height: 100%;
+    border-radius: inherit;
+    background: white;
+  }
+
+  [track="time"] i {
+    background: var(--pace-color);
+  }
+
+  small {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-soft);
+  }
+}
+
+[pace$="-bad"],
+[pace="over"] {
+  --pace-color: var(--pace-bad);
+
+  [part~="pace-light"] i:nth-child(1) {
+    background: var(--pace-bad);
+    box-shadow: 0 0 0.4em var(--pace-bad);
+  }
+}
+
+[pace$="-warn"] {
+  --pace-color: var(--pace-warn);
+
+  [part~="pace-light"] i:nth-child(2) {
+    background: var(--pace-warn);
+    box-shadow: 0 0 0.4em var(--pace-warn);
+  }
+}
+
+[pace="on-track"] {
+  --pace-color: var(--pace-ok);
+
+  [part~="pace-light"] i:nth-child(3) {
+    background: var(--pace-ok);
+    box-shadow: 0 0 0.4em var(--pace-ok);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [part~="pace-tracks"] i {
+    transition: width 0.4s ease-out;
+  }
+
+  [pace="over"] [part~="pace-light"] i:nth-child(1) {
+    animation: pace-blink 2s steps(2, jump-none) infinite;
+  }
+}
+
+@keyframes pace-blink {
+  to {
+    opacity: 0.35;
+  }
+}

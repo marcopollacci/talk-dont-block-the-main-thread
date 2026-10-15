@@ -1,0 +1,455 @@
+/* Deck chrome outside the slides: toolbar, nav, progress bar, hints */
+@layer chrome {
+  /* Toolbar (left) and slide nav (right): floating glass pills */
+  body > :is([role="toolbar"], nav) {
+    --pill-focus: var(--brand-color);
+    position: fixed;
+    bottom: 1rem;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.25rem;
+    border: 1px solid var(--pill-line);
+    border-radius: var(--pill-radius);
+    background: var(--pill-bg);
+    box-shadow: var(--pill-shadow);
+    backdrop-filter: blur(0.5rem);
+    opacity: 0.55;
+    transition: opacity 300ms;
+
+    &:is(:hover, :focus-within) {
+      opacity: 1;
+    }
+
+    button {
+      display: grid;
+      place-items: center;
+      inline-size: 3.25rem;
+      block-size: 3.25rem;
+      padding: 0;
+      border: none;
+      border-radius: var(--control-radius);
+      background: none;
+      color: var(--pill-icon);
+      cursor: pointer;
+      transition:
+        background-color 200ms,
+        color 200ms;
+
+      &:hover:not(:disabled) {
+        background: var(--pill-hover);
+        color: var(--brand-color);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--pill-focus);
+        outline-offset: 2px;
+      }
+
+      /* Active mode (grid / speaker), synced by scripts/deck.js */
+      &[aria-pressed="true"] {
+        background: var(--brand-color);
+        color: var(--on-brand);
+      }
+
+      &:disabled {
+        cursor: default;
+        opacity: 0.35;
+      }
+    }
+
+    svg {
+      display: block;
+      inline-size: 1.75rem;
+      block-size: 1.75rem;
+    }
+  }
+
+  /* Dark pills over the black speaker view and the grid board */
+  body:has(> p-deck:is([mode="speaker"], [mode="grid"]))
+    > :is([role="toolbar"], nav) {
+    --pill-bg: oklch(0.22 0 0 / 0.85);
+    --pill-line: oklch(1 0 0 / 0.12);
+    --pill-icon: oklch(0.85 0 0);
+    --pill-hover: oklch(1 0 0 / 0.1);
+    --pill-focus: white;
+  }
+
+  /* Over the grid they float on slides: solid, not faded */
+  body:has(> p-deck[mode="grid"]) > :is([role="toolbar"], nav) {
+    opacity: 1;
+  }
+
+  /* Never over a slide: body[controls] comes from scripts/deck.js */
+  @media (pointer: fine) {
+    /* Letterbox left and right: both pills centred in the side bands */
+    body[controls="sides"] > :is([role="toolbar"], nav) {
+      inset-block: 0;
+      block-size: fit-content;
+      margin-block: auto;
+      flex-direction: column;
+    }
+
+    /* Letterbox top and bottom: a flat toolbar fits the bottom band */
+    body[controls="bottom"] > [role="toolbar"] {
+      flex-direction: row;
+    }
+
+    /* No band: hidden while the pointer rests, back on move or Tab */
+    body[controls="collapsed"] > :is([role="toolbar"], nav) {
+      transition:
+        opacity 300ms,
+        translate 300ms;
+    }
+    body[controls="collapsed"][idle]
+      > :is([role="toolbar"], nav):not(:focus-within) {
+      opacity: 0;
+      translate: 0 1rem;
+      pointer-events: none;
+    }
+
+    /* Speaker: the toolbar in the black corner beside the next slide,
+       the arrows over the notes */
+    body[controls="speaker"] > [role="toolbar"] {
+      inset-block: 1rem auto;
+    }
+
+    /* Grid: the arrows stack up to fit the right band */
+    body[controls="grid"] > nav {
+      flex-direction: column;
+    }
+  }
+
+  /* body itself is the fullscreen element */
+  :is(:fullscreen, [electron]) > :is([role="toolbar"], nav) {
+    display: none;
+  }
+
+  body > [role="toolbar"] {
+    left: 1rem;
+    flex-direction: column;
+
+    /* Enter/exit fullscreen icons */
+    [command="--fullscreen"] path:last-child {
+      display: none;
+    }
+  }
+
+  body > nav {
+    right: 1rem;
+
+    path {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  :fullscreen > [role="toolbar"] [command="--fullscreen"] path {
+    &:first-child {
+      display: none;
+    }
+    &:last-child {
+      display: inline;
+    }
+  }
+
+  body > [role="progressbar"] {
+    --progress: 0%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 150;
+    inline-size: 100vw;
+    block-size: 0.5rem;
+    /* Same palette as the gradient text: follows the talk's tokens */
+    background: linear-gradient(
+      to right in oklch,
+      var(--gradient-from) 0%,
+      var(--gradient-to) var(--progress),
+      transparent 0
+    );
+  }
+
+  /* Coming soon (<Layout canRender={false}>): the cover floats as a preview
+     with a corner ribbon, the countdown pill sits below it. Preview it in
+     dev with ?coming-soon */
+  body[coming-soon] {
+    background: radial-gradient(
+      120% 90% at 50% 0%,
+      color-mix(in oklch, var(--brand-color) 16%, var(--surface)),
+      var(--surface) 75%
+    );
+
+    /* One slide: no progress, no slide nav, no grid or speaker mode, no
+       rotate hint */
+    > :is([role="progressbar"], nav, aside),
+    > [role="toolbar"] > [command="--mode"] {
+      display: none;
+    }
+
+    p-deck {
+      --float: -10dvh;
+      background: none;
+      scale: 0.68;
+      translate: 0 var(--float);
+      filter: drop-shadow(
+        0 2dvh 4dvh color-mix(in oklch, var(--ink) 28%, transparent)
+      );
+    }
+
+    p-slide {
+      overflow: clip;
+
+      /* Decorative: the pill below says it in words */
+      &::before {
+        content: "Coming soon" / "";
+        position: absolute;
+        inset: 0 0 auto auto;
+        z-index: 2;
+        padding: 0.35em 3.5em;
+        background: linear-gradient(
+            110deg,
+            transparent 40%,
+            color-mix(in oklch, var(--on-brand) 30%, transparent) 50%,
+            transparent 60%
+          )
+          var(--brand-color) 200% 0 / 300% 100% no-repeat;
+        box-shadow: 0 0.1em 0.4em
+          color-mix(in oklch, var(--ink) 30%, transparent);
+        color: var(--on-brand);
+        font-family: var(--font-heading);
+        font-size: 0.5em;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        transform-origin: bottom left;
+        transform: translate(29.29%, -100%) rotate(45deg);
+      }
+    }
+
+    /* Portrait: the slide is already small, keep it wide and centred */
+    @media (orientation: portrait) {
+      p-deck {
+        --float: -4dvh;
+        scale: 0.92;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      p-deck {
+        animation: coming-soon-float 6s ease-in-out infinite alternate;
+      }
+      p-slide::before {
+        animation: coming-soon-shine 5s ease-in-out infinite;
+      }
+    }
+  }
+
+  @keyframes coming-soon-float {
+    to {
+      translate: 0 calc(var(--float) - 1.2dvh);
+    }
+  }
+
+  @keyframes coming-soon-shine {
+    0%,
+    60% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  body > [release]:not([hidden]) {
+    position: fixed;
+    inset: auto 0 max(1rem, 4dvh);
+    z-index: 100;
+    display: grid;
+    /* The lock sits beside the numbers, the date below them */
+    grid-template: "icon count" auto ". date" auto / auto auto;
+    align-items: center;
+    gap: 0.75rem 1.75rem;
+    inline-size: fit-content;
+    max-inline-size: calc(100% - 2rem);
+    margin-inline: auto;
+    padding: 1.25rem 2.5rem 1.25rem 1.25rem;
+    border: 1px solid var(--pill-line);
+    /* Two rows: a rounded card rather than a full pill */
+    border-radius: min(var(--pill-radius), 2rem);
+    background: var(--pill-bg);
+    box-shadow: var(--pill-shadow);
+    backdrop-filter: blur(0.5rem);
+    color: var(--text-color);
+    font-family: var(--font-body);
+
+    > svg {
+      grid-area: icon;
+      inline-size: 3.5rem;
+      block-size: 3.5rem;
+      padding: 0.8rem;
+      border-radius: var(--control-radius);
+      background: var(--brand-color);
+      fill: none;
+      stroke: var(--on-brand);
+      stroke-width: 1.75;
+      stroke-linecap: round;
+
+      circle {
+        fill: var(--on-brand);
+        stroke: none;
+      }
+    }
+
+    > p:not([countdown]) {
+      grid-area: date;
+      margin: 0;
+      padding-block-start: 0.75rem;
+      border-block-start: 1px solid var(--line-color);
+      text-align: center;
+      color: var(--muted-color);
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    > [countdown] {
+      grid-area: count;
+      color: var(--text-color);
+      font-size: 1.5rem;
+      font-weight: 700;
+
+      &:not([hidden]) {
+        display: flex;
+        justify-content: center;
+        gap: 1.75rem;
+      }
+
+      /* One cell per unit: big number, small label, same width each */
+      > span {
+        display: grid;
+        justify-items: center;
+        gap: 0.35rem;
+        min-inline-size: 4.5rem;
+        color: var(--muted-color);
+        font-size: 0.75rem;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      b {
+        color: var(--text-color);
+        font-family: var(--font-heading);
+        font-size: 2.5rem;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.1;
+        letter-spacing: 0;
+      }
+    }
+
+    /* Phones: no lock, smaller numbers, everything centred */
+    @media (width < 40rem) {
+      grid-template: "count" auto "date" auto / auto;
+      justify-items: center;
+      /* Above the toolbar of narrow desktop windows */
+      inset-block-end: 5.5rem;
+      padding: 1rem 1.5rem;
+
+      > svg {
+        display: none;
+      }
+
+      > [countdown] {
+        &:not([hidden]) {
+          gap: 1rem;
+        }
+
+        > span {
+          min-inline-size: 3.25rem;
+          font-size: 0.625rem;
+        }
+
+        b {
+          font-size: 1.75rem;
+        }
+      }
+    }
+  }
+
+  /* Touch devices: counter and rotate hint, slimmer floating nav */
+  body > nav output,
+  body > aside {
+    display: none;
+  }
+
+  @media (pointer: coarse) {
+    /* Horizontal pans are slide swipes (scripts/deck.js), not browser scroll */
+    p-deck {
+      touch-action: pan-y pinch-zoom;
+    }
+
+    /* Only fullscreen and mode toggles live there: not needed on touch */
+    body > [role="toolbar"] {
+      display: none;
+    }
+
+    body > nav {
+      inset-inline: 0;
+      inline-size: fit-content;
+      margin-inline: auto;
+      opacity: 1;
+      transition: opacity 400ms;
+
+      output {
+        display: block;
+        min-inline-size: 3.5em;
+        font-size: 0.875rem;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+        white-space: nowrap;
+        color: var(--controls-color);
+      }
+    }
+
+    @media (orientation: portrait) {
+      body > aside {
+        display: block;
+        position: fixed;
+        inset-inline: 0;
+        top: calc(50% - 28.125vw - 3em);
+        margin: 0;
+        font-size: 0.875rem;
+        text-align: center;
+        white-space: nowrap;
+        color: var(--controls-color);
+      }
+    }
+
+    @media (orientation: landscape) {
+      body[idle] > nav:not(:focus-within) {
+        opacity: 0;
+      }
+    }
+
+    /* Wide phones letterbox the slide left and right: the nav moves into
+       the right band, so it never covers the slide */
+    @media (orientation: landscape) and (min-aspect-ratio: 16/9) {
+      body > nav {
+        inset: 0 0.5rem 0 auto;
+        block-size: fit-content;
+        margin-block: auto;
+        flex-direction: column;
+
+        output {
+          min-inline-size: 0;
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+}

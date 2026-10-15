@@ -1,0 +1,24 @@
+---
+// Running gag (AGENTS.md §3.4): the Main Thread shows up at checkpoints,
+// bottom-right corner, with a one-liner and a "time frozen" counter that grows.
+// It is a fragment: under <p-slide autoplay> pass timing-start, or no-autoplay.
+interface Props {
+  mood: string;
+  line: string;
+  /** Total ms the main thread has been frozen so far in the talk */
+  frozen: string;
+  "timing-start"?: number;
+  "no-autoplay"?: boolean;
+}
+
+const { mood, line, frozen, ...fragment } = Astro.props;
+---
+
+<p-fragment main-thread {...fragment}>
+  <span aria-hidden="true">{mood}</span>
+  <span bubble>
+    <b>Main thread:</b>
+    {line}
+    <small>frozen so far: {frozen}</small>
+  </span>
+</p-fragment>
