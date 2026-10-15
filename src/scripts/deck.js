@@ -11,6 +11,22 @@ const IDLE_DELAY = 2500;
 const deck = document.querySelector("p-deck");
 const { body } = document;
 
+/* Dev: ?coming-soon previews the page before the release date. Only the
+   first slide stays: the event cover, outside the canRender gate by
+   convention */
+if (
+  import.meta.env.DEV &&
+  new URLSearchParams(location.search).has("coming-soon")
+) {
+  body.setAttribute("coming-soon", "");
+  body.querySelector(":scope > [release]").hidden = false;
+  for (const slide of deck.querySelectorAll(
+    ":scope > p-slide:not(:first-of-type)",
+  )) {
+    slide.remove();
+  }
+}
+
 /* --- URL hash <-> deck state: #<id|index>[&mode=<mode>] --- */
 
 function parseHash() {
@@ -346,6 +362,45 @@ const commands = {
     deck.mode = deck.mode === value ? "presentation" : value;
   },
 };
+
+/* --- Coming soon: count down to <Layout releaseDate> ---
+   The page is static: at zero it says the slides are on their way, they
+   show up with the next build */
+const countdown = body.querySelector(":scope > [release] > [countdown]");
+const releaseTime = body.querySelector(":scope > [release] time");
+if (countdown && releaseTime) {
+  const release = new Date(releaseTime.dateTime).getTime();
+  const units = [
+    ["day", 86400],
+    ["hour", 3600],
+    ["minute", 60],
+    ["second", 1],
+  ];
+
+  const tick = () => {
+    let left = Math.max(0, Math.floor((release - Date.now()) / 1000));
+    if (!left) {
+      clearInterval(timer);
+      countdown.textContent = "Unlocking any minute now";
+      return;
+    }
+    countdown.replaceChildren(
+      ...units.map(([unit, seconds], index) => {
+        const amount = Math.floor(left / seconds);
+        left -= amount * seconds;
+        const cell = document.createElement("span");
+        const value = document.createElement("b");
+        value.textContent = String(amount).padStart(index ? 2 : 1, "0");
+        cell.append(value, ` ${unit}${amount === 1 ? "" : "s"}`);
+        return cell;
+      }),
+    );
+  };
+
+  const timer = setInterval(tick, 1000);
+  tick();
+  countdown.hidden = false;
+}
 
 /* --- Theme picker (dev only, tree-shaken from the build) ---
    <ThemeSwitch>: Alt+T or its button opens the menu. ↑/↓ try a theme live,

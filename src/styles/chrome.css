@@ -174,12 +174,211 @@
     );
   }
 
-  body[coming-soon] > img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    translate: -50% -50%;
-    max-inline-size: 100%;
+  /* Coming soon (<Layout canRender={false}>): the cover floats as a preview
+     with a corner ribbon, the countdown pill sits below it. Preview it in
+     dev with ?coming-soon */
+  body[coming-soon] {
+    background: radial-gradient(
+      120% 90% at 50% 0%,
+      color-mix(in oklch, var(--brand-color) 16%, var(--surface)),
+      var(--surface) 75%
+    );
+
+    /* One slide: no progress, no slide nav, no grid or speaker mode, no
+       rotate hint */
+    > :is([role="progressbar"], nav, aside),
+    > [role="toolbar"] > [command="--mode"] {
+      display: none;
+    }
+
+    p-deck {
+      --float: -10dvh;
+      background: none;
+      scale: 0.68;
+      translate: 0 var(--float);
+      filter: drop-shadow(
+        0 2dvh 4dvh color-mix(in oklch, var(--ink) 28%, transparent)
+      );
+    }
+
+    p-slide {
+      overflow: clip;
+
+      /* Decorative: the pill below says it in words */
+      &::before {
+        content: "Coming soon" / "";
+        position: absolute;
+        inset: 0 0 auto auto;
+        z-index: 2;
+        padding: 0.35em 3.5em;
+        background: linear-gradient(
+            110deg,
+            transparent 40%,
+            color-mix(in oklch, var(--on-brand) 30%, transparent) 50%,
+            transparent 60%
+          )
+          var(--brand-color) 200% 0 / 300% 100% no-repeat;
+        box-shadow: 0 0.1em 0.4em
+          color-mix(in oklch, var(--ink) 30%, transparent);
+        color: var(--on-brand);
+        font-family: var(--font-heading);
+        font-size: 0.5em;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        transform-origin: bottom left;
+        transform: translate(29.29%, -100%) rotate(45deg);
+      }
+    }
+
+    /* Portrait: the slide is already small, keep it wide and centred */
+    @media (orientation: portrait) {
+      p-deck {
+        --float: -4dvh;
+        scale: 0.92;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      p-deck {
+        animation: coming-soon-float 6s ease-in-out infinite alternate;
+      }
+      p-slide::before {
+        animation: coming-soon-shine 5s ease-in-out infinite;
+      }
+    }
+  }
+
+  @keyframes coming-soon-float {
+    to {
+      translate: 0 calc(var(--float) - 1.2dvh);
+    }
+  }
+
+  @keyframes coming-soon-shine {
+    0%,
+    60% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  body > [release]:not([hidden]) {
+    position: fixed;
+    inset: auto 0 max(1rem, 4dvh);
+    z-index: 100;
+    display: grid;
+    /* The lock sits beside the numbers, the date below them */
+    grid-template: "icon count" auto ". date" auto / auto auto;
+    align-items: center;
+    gap: 0.75rem 1.75rem;
+    inline-size: fit-content;
+    max-inline-size: calc(100% - 2rem);
+    margin-inline: auto;
+    padding: 1.25rem 2.5rem 1.25rem 1.25rem;
+    border: 1px solid var(--pill-line);
+    /* Two rows: a rounded card rather than a full pill */
+    border-radius: min(var(--pill-radius), 2rem);
+    background: var(--pill-bg);
+    box-shadow: var(--pill-shadow);
+    backdrop-filter: blur(0.5rem);
+    color: var(--text-color);
+    font-family: var(--font-body);
+
+    > svg {
+      grid-area: icon;
+      inline-size: 3.5rem;
+      block-size: 3.5rem;
+      padding: 0.8rem;
+      border-radius: var(--control-radius);
+      background: var(--brand-color);
+      fill: none;
+      stroke: var(--on-brand);
+      stroke-width: 1.75;
+      stroke-linecap: round;
+
+      circle {
+        fill: var(--on-brand);
+        stroke: none;
+      }
+    }
+
+    > p:not([countdown]) {
+      grid-area: date;
+      margin: 0;
+      padding-block-start: 0.75rem;
+      border-block-start: 1px solid var(--line-color);
+      text-align: center;
+      color: var(--muted-color);
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    > [countdown] {
+      grid-area: count;
+      color: var(--text-color);
+      font-size: 1.5rem;
+      font-weight: 700;
+
+      &:not([hidden]) {
+        display: flex;
+        justify-content: center;
+        gap: 1.75rem;
+      }
+
+      /* One cell per unit: big number, small label, same width each */
+      > span {
+        display: grid;
+        justify-items: center;
+        gap: 0.35rem;
+        min-inline-size: 4.5rem;
+        color: var(--muted-color);
+        font-size: 0.75rem;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      b {
+        color: var(--text-color);
+        font-family: var(--font-heading);
+        font-size: 2.5rem;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.1;
+        letter-spacing: 0;
+      }
+    }
+
+    /* Phones: no lock, smaller numbers, everything centred */
+    @media (width < 40rem) {
+      grid-template: "count" auto "date" auto / auto;
+      justify-items: center;
+      /* Above the toolbar of narrow desktop windows */
+      inset-block-end: 5.5rem;
+      padding: 1rem 1.5rem;
+
+      > svg {
+        display: none;
+      }
+
+      > [countdown] {
+        &:not([hidden]) {
+          gap: 1rem;
+        }
+
+        > span {
+          min-inline-size: 3.25rem;
+          font-size: 0.625rem;
+        }
+
+        b {
+          font-size: 1.75rem;
+        }
+      }
+    }
   }
 
   /* Touch devices: counter and rotate hint, slimmer floating nav */

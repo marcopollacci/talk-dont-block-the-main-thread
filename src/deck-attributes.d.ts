@@ -83,6 +83,9 @@ declare namespace astroHTML.JSX {
     "timing-start"?: DeckHook;
     "no-autoplay"?: DeckHook;
     "follow-fragments"?: DeckHook;
+    // coming soon page (Layout)
+    release?: DeckHook;
+    countdown?: DeckHook;
     "iframe-key"?: DeckHook;
     // authoring
     todo?: DeckHook;

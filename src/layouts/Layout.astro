@@ -1,10 +1,9 @@
 ---
 import "../styles/index.css";
-import { Font, Image } from "astro:assets";
+import { Font } from "astro:assets";
 import Seo from "../components/Seo.astro";
 import GridMode from "../components/GridMode.astro";
 import SpeakerMode from "../components/SpeakerMode.astro";
-import comingSoon from "../img/coming-soon.png";
 import ThemeSwitch from "../components/ThemeSwitch.astro";
 
 // One file per theme in src/styles/themes/: a new theme = a new file + its
@@ -14,6 +13,9 @@ type Theme = (typeof THEMES)[number];
 
 interface Props {
   canRender: boolean;
+  /** Day the slides unlock (same date as canRender, e.g. "2026-11-20"):
+   *  the coming soon page counts down to it */
+  releaseDate?: string;
   favIcon: string;
   metaData: Record<string, string>;
   /** Slot length, drives the pace traffic light in speaker mode */
@@ -29,6 +31,7 @@ interface Props {
 
 const {
   canRender,
+  releaseDate,
   favIcon,
   metaData,
   talkMinutes,
@@ -72,6 +75,16 @@ const rootStyle = {
   ...accentTokens,
   ...tokens,
 };
+// Coming soon: the unlock day, in words (UTC, like new Date("YYYY-MM-DD"))
+const releaseLabel =
+  releaseDate &&
+  new Date(releaseDate).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
 // Dev keeps every theme, scoped by [data-theme], for the theme switcher
 const themeCss = import.meta.env.PROD
   ? themes[theme]
@@ -92,7 +105,28 @@ const themeCss = import.meta.env.PROD
     <p-deck id="deck" talk-minutes={talkMinutes}>
       <slot />
     </p-deck>
-    {!canRender && <Image src={comingSoon} alt="Coming soon" />}
+    {/* Dev renders it hidden too: ?coming-soon previews it (scripts/deck.js) */}
+    {(!canRender || import.meta.env.DEV) && (
+      <main release aria-label="Coming soon" hidden={canRender}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4.5" y="10.5" width="15" height="10" rx="2.5" />
+          <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+          <circle cx="12" cy="15.5" r="1.25" />
+        </svg>
+        {/* Filled in by scripts/deck.js; the date below works without JS */}
+        <p countdown role="timer" hidden />
+        <p>
+          {releaseLabel ? (
+            <>
+              Slides unlock on{" "}
+              <time datetime={releaseDate}>{releaseLabel}</time>
+            </>
+          ) : (
+            "Slides coming soon"
+          )}
+        </p>
+      </main>
+    )}
     <div
       role="progressbar"
       aria-label="Presentation progress"

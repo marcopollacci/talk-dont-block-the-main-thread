@@ -17,7 +17,10 @@ import WebWorkerDeep from "../slides/web-worker-deep.astro";
 import WebWorkerIntro from "../slides/web-worker-intro.astro";
 import WebWorkerOutro from "../slides/web-worker-outro.astro";
 const favIcon = angularFav.src;
-const canRender = import.meta.env.DEV || new Date("2026-05-12") < new Date();
+// Slides unlock on this day; until then the page counts down to it
+// (in dev, preview that page with ?coming-soon)
+const releaseDate = "2026-11-20";
+const canRender = import.meta.env.DEV || new Date(releaseDate) < new Date();
 const metaData = {
   title: "Don't block the main thread",
   description: "How to avoid long tasks on the main thread.",
@@ -26,7 +29,14 @@ const metaData = {
 };
 ---
 
-<Layout {canRender} {favIcon} {metaData} talkMinutes={40} theme="angularday">
+<Layout
+  {canRender}
+  {releaseDate}
+  {favIcon}
+  {metaData}
+  talkMinutes={40}
+  theme="angularday"
+>
   <CoverAngularday2026 />
   {canRender && (
     <>
