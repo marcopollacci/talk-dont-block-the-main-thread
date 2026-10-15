@@ -119,7 +119,7 @@ import PNotes from "../components/PNotes.astro";
     </li>
     <li p-fragment p-effect="from right">
       💬 Optional string on <span gradient="sub">message</span> properties
-      <div style="margin-block-start: 1em">
+      <div style="margin-block-start: 0.5em">
         <CodeWindow is:raw lang="js">
           worker.onerror = (event) => {
             console.log(event.message);
@@ -208,7 +208,7 @@ import PNotes from "../components/PNotes.astro";
   <h4 layout="center" style="margin-block-end: 0.5em">
     Let's Code <span aria-hidden="true">👨‍💻</span>
   </h4>
-  <CodeWindow is:raw file="shared-worker.js" lang="js" size="small">
+  <CodeWindow is:raw file="shared-worker.js" lang="js" scale={0.76} indent={4}>
     const clients = [];
 
     self.onconnect = (event) => {
@@ -227,7 +227,7 @@ import PNotes from "../components/PNotes.astro";
   <p-fragment>
     <span
       sketch-circle
-      style="--sketch-height: 1.4em; position: absolute; inset-block-end: 8.64em; inline-size: 8em; inset-inline-start: 1.32em; z-index: 1"
+      style="--sketch-height: 1.4em; position: absolute; inset-block-end: 8.3em; inline-size: 8em; inset-inline-start: 1.9em; z-index: 1"
     ></span>
   </p-fragment>
 </p-slide>
@@ -235,7 +235,7 @@ import PNotes from "../components/PNotes.astro";
   <h4 layout="center" style="margin-block-end: 0.5em">
     Let's Code <span aria-hidden="true">👨‍💻</span>
   </h4>
-  <CodeWindow is:raw file="main.js" lang="js">
+  <CodeWindow is:raw file="main.js" lang="js" indent={4}>
     const sharedWorker = new SharedWorker("shared-worker.js");
     sharedWorker.port.start();
 
@@ -248,7 +248,7 @@ import PNotes from "../components/PNotes.astro";
   <p-fragment>
     <span
       sketch-circle
-      style="--sketch-height: 1.8em; position: absolute; inset-block-end: 8.29em; inline-size: 5em; inset-inline-start: 5.2em; z-index: 1"
+      style="--sketch-height: 1.8em; position: absolute; inset-block-end: 8.3em; inline-size: 5em; inset-inline-start: 5.9em; z-index: 1"
     ></span>
   </p-fragment>
 </p-slide>
@@ -262,7 +262,7 @@ import PNotes from "../components/PNotes.astro";
   <h4 layout="center" style="margin-block-end: 0.5em">
     Let's Code <span aria-hidden="true">👨‍💻</span>
   </h4>
-  <CodeWindow is:raw file="main.js" lang="js" size="small">
+  <CodeWindow is:raw file="main.js" lang="js" scale={0.92} tail={0}>
     const clients = [];
     self.onconnect = (event) => {
       // ...other stuff

@@ -41,20 +41,29 @@
       font-size: 40%;
     }
 
-    &[size="big"] {
-      font-size: 75%;
-      padding: 0.5em 0.6667em;
+    /* Without a title bar: a soft inset edge instead of the window chrome */
+    &:not([data-label-file]) {
+      border-radius: 0.5em;
+      box-shadow: inset 0 0 0.09em oklch(0 0 0 / 0.25);
     }
 
-    /* A single line of code as big as the slide text, e.g. an API signature */
+    /* A single line of code (an API signature): as wide as its code */
+    &:is([size="big"], [size="full"]) {
+      inline-size: fit-content;
+      margin: 0;
+      padding: 0.2em 0.3em;
+      border-radius: 0.3em;
+      box-shadow: inset 0 0 0.05em oklch(0 0 0 / 0.25);
+    }
+
+    &[size="big"] {
+      font-size: 70%;
+      margin-block-end: 0.5em;
+    }
+
+    /* As big as the slide text */
     &[size="full"] {
       font-size: 100%;
-      padding: 0.1em 0.4em;
-    }
-
-    /* Without a title bar the block is as wide as its code */
-    &:not([data-label-file]) {
-      inline-size: fit-content;
     }
 
     ::selection {
@@ -64,7 +73,9 @@
     /* <CodeWindow lines="N">: shows N lines, scrolls to follow the fragments */
     > code[follow-fragments] {
       display: block;
-      max-block-size: calc(var(--lines) * 1lh);
+      max-block-size: calc(
+        var(--lines) * 1lh + 1.5em + 1.1em / var(--code-scale, 1)
+      );
       overflow-y: auto;
       scrollbar-width: thin;
 
@@ -86,11 +97,21 @@
     padding: 0 0 0.5em;
     border: 1px solid oklch(0.827 0 0);
     border-radius: 1em;
+    /* Long code scrolls inside <code> (lines="N"), never the whole window */
+    overflow-y: hidden;
 
-    /* Inner padding: code never touches the window edges */
+    /* Inner padding: a blank line above and below, code indented.
+       <CodeWindow scale indent> resize the code only, not the title bar */
     > code {
       display: block;
-      padding: 0.5em 1em 0;
+      --tail-lines: var(--tail, 1);
+      padding: 1.5em 1ch
+        calc(
+          min(var(--tail-lines), 1) * 1.1em / var(--code-scale, 1) +
+            max(var(--tail-lines) - 1, 0) * 1lh
+        )
+        var(--indent, 2ch);
+      font-size: calc(var(--code-scale, 1) * 1em);
     }
 
     &::before {
@@ -137,7 +158,7 @@
     line-height: 1.4;
 
     b {
-      font-weight: 500;
+      font-weight: 700;
     }
 
     &::before,
