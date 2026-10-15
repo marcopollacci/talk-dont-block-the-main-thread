@@ -135,6 +135,25 @@
     }
   }
 
+  /* p-effect="zoom" grows from scale 0: WebKit (iOS Safari) rasterises the
+     colour emoji at that size and never redraws it, so it ends up clipped
+     or missing. Once the entrance is over, flip a discrete text property
+     (no visible change) so the glyphs are shaped and painted again */
+  [p-effect~="zoom"]:is(
+    :is(p-fragment, [p-fragment])[aria-hidden="false"],
+    :not(p-fragment, [p-fragment], p-fragment *, [p-fragment] *):not(
+      [aria-hidden="true"] *
+    )
+  ) {
+    animation: zoom-settle 0s var(--fragment-duration) forwards;
+  }
+
+  @keyframes zoom-settle {
+    to {
+      text-rendering: geometricPrecision;
+    }
+  }
+
   @keyframes speaker-fade-in {
     from {
       opacity: 0;
