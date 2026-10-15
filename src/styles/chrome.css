@@ -1,22 +1,127 @@
 /* Deck chrome outside the slides: toolbar, nav, progress bar, hints */
 @layer chrome {
+  /* Toolbar (left) and slide nav (right): floating glass pills */
   body > :is([role="toolbar"], nav) {
+    --pill-bg: oklch(1 0 0 / 0.72);
+    --pill-line: oklch(0 0 0 / 0.08);
+    --pill-icon: oklch(0.42 0 0);
+    --pill-hover: oklch(0 0 0 / 0.07);
+    --pill-focus: var(--brand-color);
     position: fixed;
-    bottom: 0.5rem;
+    bottom: 1rem;
+    z-index: 200;
     display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.25rem;
+    border: 1px solid var(--pill-line);
+    border-radius: 999px;
+    background: var(--pill-bg);
+    box-shadow: 0 0.25rem 1rem oklch(0 0 0 / 0.12);
+    backdrop-filter: blur(0.5rem);
+    opacity: 0.55;
+    transition: opacity 300ms;
+
+    &:is(:hover, :focus-within) {
+      opacity: 1;
+    }
 
     button {
-      position: relative;
-      inline-size: 1em;
-      block-size: 1em;
-      margin: 0.25em;
+      display: grid;
+      place-items: center;
+      inline-size: 3.25rem;
+      block-size: 3.25rem;
       padding: 0;
       border: none;
-      border-radius: 0;
+      border-radius: 50%;
       background: none;
-      font-size: 3rem;
-      color: var(--controls-color);
+      color: var(--pill-icon);
       cursor: pointer;
+      transition:
+        background-color 200ms,
+        color 200ms;
+
+      &:hover:not(:disabled) {
+        background: var(--pill-hover);
+        color: var(--brand-color);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--pill-focus);
+        outline-offset: 2px;
+      }
+
+      /* Active mode (grid / speaker), synced by scripts/deck.js */
+      &[aria-pressed="true"] {
+        background: var(--brand-color);
+        color: white;
+      }
+
+      &:disabled {
+        cursor: default;
+        opacity: 0.35;
+      }
+    }
+
+    svg {
+      display: block;
+      inline-size: 1.75rem;
+      block-size: 1.75rem;
+    }
+  }
+
+  /* Dark pills over the black speaker view and the grid board */
+  body:has(> p-deck:is([mode="speaker"], [mode="grid"]))
+    > :is([role="toolbar"], nav) {
+    --pill-bg: oklch(0.22 0 0 / 0.85);
+    --pill-line: oklch(1 0 0 / 0.12);
+    --pill-icon: oklch(0.85 0 0);
+    --pill-hover: oklch(1 0 0 / 0.1);
+    --pill-focus: white;
+  }
+
+  /* Over the grid they float on slides: solid, not faded */
+  body:has(> p-deck[mode="grid"]) > :is([role="toolbar"], nav) {
+    opacity: 1;
+  }
+
+  /* Never over a slide: body[controls] comes from scripts/deck.js */
+  @media (pointer: fine) {
+    /* Letterbox left and right: both pills centred in the side bands */
+    body[controls="sides"] > :is([role="toolbar"], nav) {
+      inset-block: 0;
+      block-size: fit-content;
+      margin-block: auto;
+      flex-direction: column;
+    }
+
+    /* Letterbox top and bottom: a flat toolbar fits the bottom band */
+    body[controls="bottom"] > [role="toolbar"] {
+      flex-direction: row;
+    }
+
+    /* No band: hidden while the pointer rests, back on move or Tab */
+    body[controls="collapsed"] > :is([role="toolbar"], nav) {
+      transition:
+        opacity 300ms,
+        translate 300ms;
+    }
+    body[controls="collapsed"][idle]
+      > :is([role="toolbar"], nav):not(:focus-within) {
+      opacity: 0;
+      translate: 0 1rem;
+      pointer-events: none;
+    }
+
+    /* Speaker: the toolbar in the black corner beside the next slide,
+       the arrows over the notes */
+    body[controls="speaker"] > [role="toolbar"] {
+      inset-block: 1rem auto;
+    }
+
+    /* Grid: the arrows stack up to fit the right band */
+    body[controls="grid"] > nav {
+      flex-direction: column;
     }
   }
 
@@ -26,28 +131,8 @@
   }
 
   body > [role="toolbar"] {
-    left: 0;
+    left: 1rem;
     flex-direction: column;
-
-    button {
-      opacity: 0.5;
-      transition: opacity 300ms;
-
-      &:is(:hover, :focus-visible) {
-        opacity: 1;
-      }
-    }
-
-    /* The grid icon has a wider inner padding */
-    [value="grid"] {
-      margin-inline-start: 0.5rem;
-    }
-
-    svg {
-      display: block;
-      inline-size: 100%;
-      block-size: 100%;
-    }
 
     /* Enter/exit fullscreen icons */
     [command="--fullscreen"] path:last-child {
@@ -56,43 +141,14 @@
   }
 
   body > nav {
-    right: 0;
+    right: 1rem;
 
-    button {
-      &:disabled {
-        cursor: default;
-        opacity: 0.5;
-      }
-
-      /* Chevron drawn with two bars */
-      &::before,
-      &::after {
-        content: "";
-        position: absolute;
-        top: 0.45em;
-        left: 0.45em;
-        inline-size: 0.707em;
-        block-size: 0.1em;
-        background: currentColor;
-        transform-origin: 0.05em 0.05em;
-      }
-    }
-
-    [command="--previous"] {
-      &::before {
-        rotate: 45deg;
-      }
-      &::after {
-        rotate: -45deg;
-      }
-    }
-    [command="--next"] {
-      &::before {
-        rotate: 135deg;
-      }
-      &::after {
-        rotate: -135deg;
-      }
+    path {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
   }
 
@@ -149,23 +205,10 @@
 
     body > nav {
       inset-inline: 0;
-      bottom: 1rem;
       inline-size: fit-content;
       margin-inline: auto;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.125rem 0.5rem;
-      border-radius: 999px;
-      background-color: oklch(1 0 0 / 0.75);
-      box-shadow: 0 0.125rem 0.75rem oklch(0 0 0 / 0.15);
-      backdrop-filter: blur(0.5rem);
+      opacity: 1;
       transition: opacity 400ms;
-      z-index: 200;
-
-      button {
-        font-size: 1.75rem;
-        margin: 0.5rem;
-      }
 
       output {
         display: block;
@@ -195,6 +238,22 @@
     @media (orientation: landscape) {
       body[idle] > nav:not(:focus-within) {
         opacity: 0;
+      }
+    }
+
+    /* Wide phones letterbox the slide left and right: the nav moves into
+       the right band, so it never covers the slide */
+    @media (orientation: landscape) and (min-aspect-ratio: 16/9) {
+      body > nav {
+        inset: 0 0.5rem 0 auto;
+        block-size: fit-content;
+        margin-block: auto;
+        flex-direction: column;
+
+        output {
+          min-inline-size: 0;
+          font-size: 0.75rem;
+        }
       }
     }
   }

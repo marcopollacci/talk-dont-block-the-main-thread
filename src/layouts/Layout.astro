@@ -2,9 +2,11 @@
 import "../styles/index.css";
 import { Font, Image } from "astro:assets";
 import Seo from "../components/Seo.astro";
+import GridMode from "../components/GridMode.astro";
 import SpeakerMode from "../components/SpeakerMode.astro";
 import comingSoon from "../img/coming-soon.png";
-const { canRender, favIcon, metaData } = Astro.props;
+// talkMinutes: slot length, drives the pace traffic light in speaker mode
+const { canRender, favIcon, metaData, talkMinutes } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,7 +19,7 @@ const { canRender, favIcon, metaData } = Astro.props;
     <Font cssVariable="--font-graphik" />
   </head>
   <body coming-soon={canRender ? undefined : ""}>
-    <p-deck id="deck">
+    <p-deck id="deck" talk-minutes={talkMinutes}>
       <slot />
     </p-deck>
     {!canRender && <Image src={comingSoon} alt="Coming soon" />}
@@ -30,6 +32,8 @@ const { canRender, favIcon, metaData } = Astro.props;
     ></div>
     <aside aria-hidden="true">↻ Rotate your phone for a better view</aside>
     <div role="toolbar" aria-label="Presentation controls">
+      {/* Grid overview ships in the build too, speaker mode stays dev-only */}
+      <GridMode />
       {!import.meta.env.PROD && <SpeakerMode />}
       <button
         type="button"
@@ -54,15 +58,23 @@ const { canRender, favIcon, metaData } = Astro.props;
           command="--previous"
           aria-label="Go backward"
           title="Go backward"
-        />
-        <output aria-live="polite" />
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7"></path>
+          </svg>
+        </button>
+        <output aria-live="polite"></output>
         <button
           type="button"
           commandfor="deck"
           command="--next"
           aria-label="Go forward"
           title="Go forward"
-        />
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
       </nav>
     )}
     <script>

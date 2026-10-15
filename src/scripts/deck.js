@@ -144,6 +144,115 @@ function followFragments(slide, revealed) {
 
 syncChrome();
 
+/* --- Pace: <p-deck talk-minutes="40"> adds a traffic light under the speaker
+   toolbar. Every slide is worth the same share of the slot: the drift between
+   the p-slides timer and the planned time for the current slide says whether
+   the speaker is too fast, too slow or on track --- */
+
+const PACE_ON_TRACK = 0.05;
+const PACE_WARNING = 0.12;
+
+const PACE_VERDICTS = {
+  idle: "Press ▶ to start",
+  "on-track": "✓ On track",
+  "ahead-warn": "▲ Slow down a bit",
+  "ahead-bad": "▲ Slow down!",
+  "behind-warn": "▼ Speed up a bit",
+  "behind-bad": "▼ Speed up!",
+  over: "✕ Over time",
+};
+
+function formatPace(ms) {
+  const seconds = Math.round(Math.abs(ms) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  return `${minutes}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+function setupPace() {
+  const duration = Number(deck.getAttribute("talk-minutes")) * 60_000;
+  const toolbar = deck.shadowRoot?.querySelector('[part~="toolbar"]');
+  if (!duration || !toolbar) return;
+
+  const box = document.createElement("section");
+  box.setAttribute("part", "pace");
+  box.setAttribute("aria-label", "Pace");
+  // No <span> or <header>: p-slides styles both inside its shadow root
+  box.innerHTML = `<div part="pace-verdict">
+      <div part="pace-light" aria-hidden="true"><i></i><i></i><i></i></div>
+      <strong role="status"></strong>
+    </div>
+    <div part="pace-tracks" aria-hidden="true">
+      <div track="slides"><b>Slides</b><div><i></i></div><small></small></div>
+      <div track="time"><b>Time</b><div><i></i></div><small></small></div>
+    </div>
+    <dl>
+      <div><dt>vs plan</dt><dd stat="drift"></dd></div>
+      <div><dt>Left</dt><dd stat="left"></dd></div>
+      <div><dt>Per slide</dt><dd stat="per-slide"></dd></div>
+      <div><dt>Finish ≈</dt><dd stat="finish"></dd></div>
+    </dl>`;
+  toolbar.after(box);
+  const verdict = box.querySelector("strong");
+  const track = (name) => box.querySelector(`[track="${name}"]`);
+  const stat = (name) => box.querySelector(`[stat="${name}"]`);
+
+  function setTrack(name, ratio) {
+    const percent = Math.round(Math.min(Math.max(ratio, 0), 1) * 100);
+    track(name).style.setProperty("--value", `${percent}%`);
+    track(name).querySelector("small").textContent = `${percent}%`;
+  }
+
+  function update() {
+    const elapsed = deck.clock;
+    const last = Math.max(deck.slides.length - 1, 1);
+    const planned = (deck.currentIndex / last) * duration;
+    const drift = elapsed - planned;
+    const ratio = Math.abs(drift) / duration;
+    const level =
+      ratio <= PACE_ON_TRACK ? "ok" : ratio <= PACE_WARNING ? "warn" : "bad";
+
+    let state = drift < 0 ? `ahead-${level}` : `behind-${level}`;
+    if (level === "ok") state = "on-track";
+    if (elapsed > duration) state = "over";
+    if (!elapsed && !deck.isClockRunning) state = "idle";
+
+    box.setAttribute("pace", state);
+    // Only the verdict is live: it changes on state change, not every second
+    if (verdict.textContent !== PACE_VERDICTS[state])
+      verdict.textContent = PACE_VERDICTS[state];
+
+    const left = duration - elapsed;
+    const slidesLeft = Math.max(last - deck.currentIndex, 1);
+    const signed = (ms) => `${ms < 0 ? "−" : "+"}${formatPace(ms)}`;
+    setTrack("slides", deck.currentIndex / last);
+    setTrack("time", elapsed / duration);
+    stat("drift").textContent = state === "idle" ? "0:00" : signed(drift);
+    stat("left").textContent = left < 0 ? signed(left) : formatPace(left);
+    stat("per-slide").textContent = formatPace(Math.max(left, 0) / slidesLeft);
+    // Total talk length if the current pace holds
+    const finish =
+      deck.currentIndex && elapsed ? (elapsed / deck.currentIndex) * last : 0;
+    stat("finish").textContent = finish ? formatPace(finish) : "–";
+    stat("finish").toggleAttribute("late", finish > duration);
+  }
+
+  for (const type of [
+    "slidechange",
+    "fragmenttoggle",
+    "clockstart",
+    "clockstop",
+    "clockset",
+  ]) {
+    deck.addEventListener(`p-slides.${type}`, update);
+  }
+  setInterval(() => {
+    if (deck.mode === "speaker" && deck.isClockRunning) update();
+  }, 1000);
+  update();
+}
+
+setupPace();
+
 /* --- Buttons: Invoker Commands (commandfor="deck" command="--…") ---
    p-deck runs its own commands natively (--next, --previous, --gridmode…);
    these are the project's extra ones */
@@ -163,8 +272,39 @@ deck.addEventListener("command", ({ command, source }) =>
   commands[command]?.(source),
 );
 
+// The mode toggles show (and announce) which mode is on
+function syncModeButtons() {
+  for (const button of body.querySelectorAll('[command="--mode"]')) {
+    button.ariaPressed = String(deck.mode === button.value);
+  }
+}
+
+// Opening the grid lands on the current slide, not on the first row
+function scrollGridToCurrent() {
+  if (deck.mode !== "grid") return;
+  requestAnimationFrame(() =>
+    deck.currentSlide?.scrollIntoView({ block: "center" }),
+  );
+}
+
+syncModeButtons();
+// Loading straight into the grid: the board lays out only when p-slides'
+// stylesheet (fetched asynchronously) applies, so wait until it scrolls
+if (deck.mode === "grid") {
+  const start = performance.now();
+  requestAnimationFrame(function settle() {
+    if (deck.scrollHeight > deck.clientHeight) scrollGridToCurrent();
+    else if (performance.now() - start < 2000) requestAnimationFrame(settle);
+  });
+}
+
 // Buttons and native shortcuts (Alt+M/S/G) both keep the URL in sync
-new MutationObserver(writeHash).observe(deck, {
+new MutationObserver(() => {
+  writeHash();
+  syncModeButtons();
+  scrollGridToCurrent();
+  placeControls();
+}).observe(deck, {
   attributes: true,
   attributeFilter: ["mode"],
 });
@@ -250,7 +390,40 @@ deck.addEventListener(
 body
   .querySelector(":scope > nav")
   ?.addEventListener("touchstart", markActive, { passive: true });
+// Mouse users too: collapsed controls come back while the pointer moves
+addEventListener("pointermove", markActive, { passive: true });
 markActive();
+
+/* --- Controls never cover a slide: body[controls] says where they go.
+   Speaker and grid have their own spots; in presentation they sit in the
+   letterbox band around the slide when it is wide enough, otherwise they
+   collapse and show only on pointer activity or keyboard focus --- */
+
+const CONTROLS_ROOM = 80; // a 60px pill plus its gap from the edge
+
+function placeControls() {
+  if (deck.mode !== "presentation") {
+    body.setAttribute("controls", deck.mode);
+    return;
+  }
+  const ratio =
+    Number(getComputedStyle(deck).getPropertyValue("--slide-aspect-ratio")) ||
+    16 / 9;
+  const width = Math.min(innerWidth, innerHeight * ratio);
+  const sides = (innerWidth - width) / 2;
+  const bottom = (innerHeight - width / ratio) / 2;
+  body.setAttribute(
+    "controls",
+    sides >= CONTROLS_ROOM
+      ? "sides"
+      : bottom >= CONTROLS_ROOM
+        ? "bottom"
+        : "collapsed",
+  );
+}
+
+addEventListener("resize", placeControls);
+placeControls();
 
 /* --- CSS Houdini paint worklet, loaded only when a slide uses it --- */
 

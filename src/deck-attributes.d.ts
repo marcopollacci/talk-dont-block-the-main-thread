@@ -73,5 +73,7 @@ declare namespace astroHTML.JSX {
     // authoring
     todo?: DeckHook;
     debug?: DeckHook;
+    // speaker mode: slot length in minutes, on <p-deck>
+    "talk-minutes"?: DeckHook;
   }
 }
