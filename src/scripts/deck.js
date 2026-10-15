@@ -347,6 +347,127 @@ const commands = {
   },
 };
 
+/* --- Theme picker (dev only, tree-shaken from the build) ---
+   <ThemeSwitch>: Alt+T or its button opens the menu. ↑/↓ try a theme live,
+   Enter or click keeps it (sessionStorage), Esc or a click outside goes
+   back. Event colours are checked against every theme tried */
+if (import.meta.env.DEV) {
+  const root = document.documentElement;
+  const menu = body.querySelector("#theme-menu");
+  const items = [...(menu?.querySelectorAll('[command="--theme"]') ?? [])];
+  const themes = items.map((item) => item.value);
+  // Keyed on the page's own theme: changing the prop starts over
+  const storageKey = `deck-theme:${location.pathname}:${root.dataset.theme}`;
+  let kept = root.dataset.theme;
+
+  const applyTheme = (theme) => {
+    root.dataset.theme = theme;
+    for (const item of items) item.ariaPressed = String(item.value === theme);
+    // The deck's backdrop samples the slide colour: sample it again
+    requestAnimationFrame(() => {
+      deck.style.setProperty(
+        "--current-slide-bg",
+        getComputedStyle(deck.currentSlide).backgroundColor,
+      );
+      checkContrast(theme);
+    });
+  };
+  const keepTheme = (theme) => {
+    kept = theme;
+    applyTheme(theme);
+    try {
+      sessionStorage.setItem(storageKey, theme);
+    } catch {}
+  };
+
+  if (menu) {
+    let saved = null;
+    try {
+      saved = sessionStorage.getItem(storageKey);
+    } catch {}
+    keepTheme(themes.includes(saved) ? saved : kept);
+
+    commands["--theme"] = ({ value }) => {
+      keepTheme(value);
+      menu.hidePopover();
+    };
+
+    menu.addEventListener("toggle", ({ newState }) => {
+      if (newState === "open") {
+        items.find((item) => item.value === kept)?.focus();
+      } else if (root.dataset.theme !== kept) {
+        applyTheme(kept);
+      }
+    });
+
+    // Keys stay in the menu: arrows try themes instead of changing slide
+    menu.addEventListener("keydown", (event) => {
+      event.stopPropagation();
+      const step = { ArrowDown: 1, ArrowUp: -1 }[event.key];
+      if (!step) return;
+      event.preventDefault();
+      const focused = items.indexOf(document.activeElement);
+      const index =
+        focused === -1 ? themes.indexOf(root.dataset.theme) : focused;
+      const next = items.at((index + step) % items.length);
+      next.focus();
+      applyTheme(next.value);
+    });
+
+    addEventListener("keydown", (event) => {
+      if (event.altKey && event.code === "KeyT") {
+        event.preventDefault();
+        menu.togglePopover();
+      }
+    });
+  }
+
+  // Event colours (Layout accent/tokens) can be unreadable on some themes
+  function checkContrast(theme) {
+    const style = getComputedStyle(root);
+    const surface = style.getPropertyValue("--surface");
+    const checks = [
+      ["--brand-color", 4.5, "links and emphasis"],
+      ["--gradient-sub-from", 3, "gradient headings"],
+      ["--gradient-sub-to", 3, "gradient headings"],
+    ];
+    for (const [token, min, usage] of checks) {
+      const ratio = contrast(style.getPropertyValue(token), surface);
+      if (ratio < min) {
+        console.warn(
+          `[theme ${theme}] ${token} on --surface is ${ratio.toFixed(2)}:1, ` +
+            `below ${min}:1 for ${usage}. Lighten or darken it for this ` +
+            `theme (Layout accent / tokens).`,
+        );
+      }
+    }
+  }
+
+  function contrast(a, b) {
+    const [la, lb] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (la + 0.05) / (lb + 0.05);
+  }
+
+  // Any CSS colour → relative luminance, through a 1px canvas
+  const pixel = document.createElement("canvas").getContext("2d", {
+    willReadFrequently: true,
+  });
+  function luminance(color) {
+    pixel.clearRect(0, 0, 1, 1);
+    pixel.fillStyle = "#000";
+    pixel.fillStyle = color.trim();
+    pixel.fillRect(0, 0, 1, 1);
+    const rgb = pixel.getImageData(0, 0, 1, 1).data;
+    const [r, g, b] = [...rgb.slice(0, 3)].map((value) => {
+      const channel = value / 255;
+      return channel <= 0.04045
+        ? channel / 12.92
+        : ((channel + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  }
+}
+
 deck.addEventListener("command", ({ command, source }) =>
   commands[command]?.(source),
 );

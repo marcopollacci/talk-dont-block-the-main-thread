@@ -2,10 +2,6 @@
 @layer chrome {
   /* Toolbar (left) and slide nav (right): floating glass pills */
   body > :is([role="toolbar"], nav) {
-    --pill-bg: oklch(1 0 0 / 0.72);
-    --pill-line: oklch(0 0 0 / 0.08);
-    --pill-icon: oklch(0.42 0 0);
-    --pill-hover: oklch(0 0 0 / 0.07);
     --pill-focus: var(--brand-color);
     position: fixed;
     bottom: 1rem;
@@ -15,9 +11,9 @@
     gap: 0.125rem;
     padding: 0.25rem;
     border: 1px solid var(--pill-line);
-    border-radius: 999px;
+    border-radius: var(--pill-radius);
     background: var(--pill-bg);
-    box-shadow: 0 0.25rem 1rem oklch(0 0 0 / 0.12);
+    box-shadow: var(--pill-shadow);
     backdrop-filter: blur(0.5rem);
     opacity: 0.55;
     transition: opacity 300ms;
@@ -33,7 +29,7 @@
       block-size: 3.25rem;
       padding: 0;
       border: none;
-      border-radius: 50%;
+      border-radius: var(--control-radius);
       background: none;
       color: var(--pill-icon);
       cursor: pointer;
@@ -54,7 +50,7 @@
       /* Active mode (grid / speaker), synced by scripts/deck.js */
       &[aria-pressed="true"] {
         background: var(--brand-color);
-        color: white;
+        color: var(--on-brand);
       }
 
       &:disabled {

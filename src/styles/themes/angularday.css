@@ -1,0 +1,50 @@
+/* angularday: the colours and font of angularday.it. White slides,
+   near-black ink, Angular red, the yellow only as a tint (never text: 1.2:1
+   on white). Atkinson Hyperlegible for text, like the site. Shapes, code
+   windows and controls keep the default look */
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  src: url("/fonts/atkinson-hyperlegible-regular.woff") format("woff");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  src: url("/fonts/atkinson-hyperlegible-bold.woff") format("woff");
+  font-weight: 700;
+  font-display: swap;
+}
+
+[data-theme="angularday"] {
+  color-scheme: light;
+
+  /* Site palette */
+  --angularday-red: #dd0031;
+  --angularday-yellow: #ffe900;
+
+  --surface: white;
+  --ink: #171717;
+  --text-color: var(--ink);
+  /* 5.1:1 on white */
+  --brand-color: var(--angularday-red);
+  /* Only tints inline code (10%): a pale yellow */
+  --brand-color-ant: var(--angularday-yellow);
+  --alert-color: var(--angularday-red);
+  --info-color: #4b4b4b;
+
+  /* Lightest point: the red, 5.1:1 */
+  --gradient-from: var(--ink);
+  --gradient-to: var(--angularday-red);
+  --gradient-sub-from: var(--angularday-red);
+  --gradient-sub-to: #a3001f;
+  --gradient-cover-from: var(--ink);
+  --gradient-cover-to: var(--angularday-red);
+
+  /* The site's secondary text, 8.7:1 */
+  --muted-color: #4b4b4b;
+  --soft-color: var(--muted-color);
+  --controls-color: var(--muted-color);
+
+  --font-body:
+    "Atkinson Hyperlegible", var(--font-graphik), system-ui, sans-serif;
+}

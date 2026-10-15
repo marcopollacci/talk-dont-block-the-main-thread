@@ -1,12 +1,13 @@
 @layer deck {
   p-deck {
+    color: var(--text-color);
     /* The shadow :host sets 0.5s: slide transitions stay off unless debugging */
     --sliding-duration: calc(2000ms * var(--slide-debug));
 
     &:is(:not([mode]), [mode="presentation"]) {
       transition: background-color var(--sliding-duration)
         var(--sliding-duration);
-      background-color: var(--current-slide-bg, transparent);
+      background-color: var(--backdrop, var(--current-slide-bg, transparent));
     }
 
     &[mode="speaker"] {
@@ -158,7 +159,28 @@
 
   p-slide {
     position: relative;
-    background-color: var(--current-slide-bg, white);
+    background-color: var(--slide-bg);
+    background-image: var(--slide-pattern);
+    box-shadow: var(--slide-frame);
+    padding-block-start: calc(
+      1em + var(--slide-titlebar-size) + var(--slide-titlebar-inset)
+    );
+
+    /* Theme title bar (--slide-titlebar), e.g. win311's window caption */
+    &::after {
+      content: var(--slide-titlebar) / "";
+      position: absolute;
+      inset: var(--slide-titlebar-inset) var(--slide-titlebar-inset) auto;
+      /* Sized on its own font: 1em / 0.6 = --slide-titlebar-size */
+      font-size: calc(var(--slide-titlebar-size) * 0.6);
+      block-size: calc(1em / 0.6);
+      background: var(--slide-titlebar-bg);
+      color: var(--slide-titlebar-color);
+      font-family: var(--font-caption, inherit);
+      line-height: calc(1 / 0.6);
+      text-align: center;
+      pointer-events: none;
+    }
 
     /* <p-slide follow-fragments>: content taller than the slide scrolls,
        deck.js keeps the last revealed fragment in view */

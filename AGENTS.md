@@ -16,6 +16,20 @@ Generic on purpose: they apply to every talk created from this skeleton.
 - **Lint and format (non-negotiable).** Every file you save goes through Prettier (`prettier-plugin-astro`): Claude Code does it automatically via the `PostToolUse` hook in `.claude/settings.json`; any other agent runs `pnpm exec prettier --write <file>` right after each edit. After a round of changes run `pnpm lint` (`astro check` + `prettier --check`) and fix every error and warning, never leave them for the user. A new bare attribute hook (§6) is also declared in `src/deck-attributes.d.ts`, otherwise `astro check` fails.
 - Never commit unless explicitly asked.
 
+### 1.1 Themes
+
+- Pick the theme on the page: `<Layout theme="dark">`. Available: `light` (default), `dark`, `paper`, `neon`, `retro70`, `blueprint`, `terminal`, `win311`, `angularday` (this talk only: angularday.it's look), one file each in `src/styles/themes/`.
+- **Only the chosen theme ships**: `Layout.astro` inlines that file alone in the build, and a theme's own font (`public/fonts/`) is downloaded only when that theme is on.
+- **Dev picker**: the toolbar's ◐ button or **Alt+T** opens a menu with a live tile per theme. ↑/↓ try a theme on the current slide, Enter or click keeps it (per page, in sessionStorage), Esc goes back. It never reaches the build (JS tree-shaken, inline styles).
+- **Event colours** go on the event's page, `src/pages/<event>.astro`: `<Layout theme="dark" accent={{ primary: "#e4007c", secondary: "#00a3e0" }}>`. `primary` drives `--brand-color` and the sub gradient start, `secondary` (defaults to `primary`) `--brand-color-ant` and the gradient end; `--on-brand` (text on brand fills) adapts by itself. In dev the console warns when an event colour lacks contrast on the theme you are trying: fix the colour, or pick it per theme with `tokens`.
+- **Any other tweak**: `tokens={{ "--slide-pattern": "none" }}`, custom props on `<html>` that win over the theme and over `accent`.
+- A theme is just custom props on `[data-theme="<name>"]` (any element: that's how the picker tiles preview it), unlayered on purpose.
+  - **Palette**: `--surface`, `--ink`, `--text-color`, `--brand-color`, `--brand-color-ant`, `--alert-color`, `--info-color`, the `--gradient-*` pairs, `color-scheme`. The derived tokens in `tokens.css` (`--muted-color`, `--line-color`, `--soft-color`, `--on-brand`…) follow by themselves; a theme overrides one only to fix contrast.
+  - **Shape and texture** (defaults = the light look; here `light` keeps this talk's blue → magenta gradient): `--font-body`, `--font-heading`, `--font-code`, `--font-caption` (title bars only: keep display/pixel fonts there, never on body text), `--backdrop` (outside the slides), `--slide-pattern`, `--slide-frame`, `--slide-titlebar` (+ `-size`, `-inset`, `-bg`, `-color`; `var(--talk-title)` prints the talk title), `--window-*` for `<CodeWindow>` (radius, border, shadow, title bar, `--window-controls` / `--window-controls-end` glyphs), `--pill-*` and `--control-radius` for the toolbar and nav.
+- New theme: add `src/styles/themes/<name>.css`, then its name to `THEMES` in `Layout.astro` (the build fails if they disagree). Fonts go in `public/fonts/` as subset WOFF with their licence file next to them. Check the contrast of every token against `--surface` (§7).
+- Code windows follow the theme's `color-scheme`: Shiki ships `one-light` and `one-dark-pro` as custom props, `light-dark()` picks one.
+- **No hardcoded colours** in slides, components or styles: use the tokens. The exceptions are colours that sit on media (banner, meme captions), the dark speaker view and grid board, and fixed brand colours like the `js` badge.
+
 ---
 
 ## 2. MCP servers
@@ -139,6 +153,7 @@ A new hook goes into `src/styles/components.css` as an attribute, gets a row her
 | Animated marks                          | `big-x`, `sketchy-arrow` (Houdini worklet, loaded only when used), `blink`                                                                                                                                |
 | Fragments                               | `p-fragment landing`, `invert`, `none`, sibling `group-fragment` (only the last revealed stays)                                                                                                           |
 | Entrances                               | slide in: native `p-effect="from above\|below\|left\|right"` (`--from-x/--from-y` for short distances); scale: `enter="above\|below"`                                                                     |
+| Theme / event colours / tokens          | `<Layout theme="dark" accent={{ primary: "…", secondary: "…" }} tokens={{ "--…": "…" }}>` → `<html data-theme>` (§1.1); dev-only picker: toolbar ◐ or Alt+T                                               |
 | Speaker pace traffic light              | slot length per event: `<Layout talkMinutes={40}>` → `<p-deck talk-minutes="40">`; box under the speaker toolbar, driven by the ▶ timer                                                                   |
 | Authoring placeholder                   | `todo`                                                                                                                                                                                                    |
 | Autoplay                                | `<p-slide autoplay timing="1000" timing-fragment="100">`, per fragment `timing-start`, opt out `no-autoplay`                                                                                              |
@@ -168,7 +183,7 @@ Every slide of every talk is built with accessibility in mind, both visual and m
 
 **Motor / keyboard**
 
-- The whole deck works from the keyboard alone: arrows, PageUp/PageDown, Home/End, Alt+M/S/G, and Tab to every control in a logical order.
+- The whole deck works from the keyboard alone: arrows, PageUp/PageDown, Home/End, Alt+M/S/G (Alt+T in dev), and Tab to every control in a logical order.
 - Controls are real `<button>`/`<a>`, never a clickable `div`/`span`. Deck buttons use Invoker Commands (`commandfor="deck" command="--next"`).
 - Touch targets are ≥ 44×44 px. No hover-only or time-limited interactions. Autoplay never blocks manual navigation. Live demos and iframes never trap keyboard focus.
 

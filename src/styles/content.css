@@ -6,6 +6,10 @@
     inline-size: var(--width, auto);
   }
 
+  code {
+    font-family: var(--font-code, monospace);
+  }
+
   /* Inline code */
   :not(pre) > code {
     padding: 0 0.25em;
@@ -15,21 +19,31 @@
       var(--brand-color-ant) 10%,
       transparent
     );
-    box-shadow: inset 0 0 0.05em oklch(0 0 0 / 0.25);
+    box-shadow: inset 0 0 0.05em
+      color-mix(in oklch, var(--ink) 25%, transparent);
 
     pre & {
       box-shadow: none;
     }
   }
 
-  /* Code blocks: <CodeWindow> (Shiki sets data-language and the colours) */
+  /* Code blocks: <CodeWindow>. Shiki sets data-language and both palettes
+     as custom props, the theme's color-scheme picks one */
   pre[data-language] {
+    background-color: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
     margin: 0.5em 0;
     padding: 1em;
     border-radius: 0.3em;
     overflow: auto;
-    font-family:
-      "Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    font-family: var(
+      --font-code,
+      "Fira Code",
+      "Fira Mono",
+      Menlo,
+      Consolas,
+      "DejaVu Sans Mono",
+      monospace
+    );
     font-size: 50%;
     line-height: 1.5;
     text-align: start;
@@ -44,7 +58,8 @@
     /* Without a title bar: a soft inset edge instead of the window chrome */
     &:not([data-label-file]) {
       border-radius: 0.5em;
-      box-shadow: inset 0 0 0.09em oklch(0 0 0 / 0.25);
+      box-shadow: inset 0 0 0.09em
+        color-mix(in oklch, var(--ink) 25%, transparent);
     }
 
     /* A single line of code (an API signature): as wide as its code */
@@ -53,7 +68,8 @@
       margin: 0;
       padding: 0.2em 0.3em;
       border-radius: 0.3em;
-      box-shadow: inset 0 0 0.05em oklch(0 0 0 / 0.25);
+      box-shadow: inset 0 0 0.05em
+        color-mix(in oklch, var(--ink) 25%, transparent);
     }
 
     &[size="big"] {
@@ -66,8 +82,13 @@
       font-size: 100%;
     }
 
+    &,
+    span {
+      color: light-dark(var(--shiki-light), var(--shiki-dark));
+    }
+
     ::selection {
-      background: oklch(0.92 0.002 270);
+      background: var(--selection-color);
     }
 
     /* <CodeWindow lines="N">: shows N lines, scrolls to follow the fragments */
@@ -95,8 +116,9 @@
     position: relative;
     margin: 0;
     padding: 0 0 0.5em;
-    border: 1px solid oklch(0.827 0 0);
-    border-radius: 1em;
+    border: var(--window-border);
+    border-radius: var(--window-radius);
+    box-shadow: var(--window-shadow);
     /* Long code scrolls inside <code> (lines="N"), never the whole window */
     overflow-y: hidden;
 
@@ -119,18 +141,29 @@
       display: block;
       inline-size: 100%;
       padding: 0.5em 1em;
-      border-block-end: 1px solid oklch(0.827 0 0);
+      border-block-end: 1px solid var(--line-color);
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+      background: var(--window-titlebar-bg);
+      font-family: var(--font-caption, inherit);
       font-size: 0.7em;
       text-align: center;
-      color: oklch(0.537 0.002 17.2);
+      color: var(--window-titlebar-color);
     }
 
-    &::after {
-      content: "🔴 🟡 🟢" / "";
+    /* Window buttons: start of the title bar, and an optional end set */
+    &::after,
+    > code::before {
+      content: var(--window-controls) / "";
       position: absolute;
       top: 0.5em;
       inset-inline-start: 1em;
       font-size: 0.7em;
+      color: var(--window-titlebar-color);
+    }
+    > code::before {
+      content: var(--window-controls-end) / "";
+      inset-inline: auto 1em;
     }
 
     p-slide[aria-hidden="false"] & {
@@ -167,7 +200,7 @@
       inline-size: 4rem;
       block-size: 4rem;
       font-size: 5em;
-      color: oklch(0.67 0 0);
+      color: var(--faint-color);
     }
     &::before {
       content: "“" / "";

@@ -159,6 +159,10 @@
     background: linear-gradient(90deg in oklch, var(--from), var(--to));
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    /* Room for glyphs that overhang their box (italic, bold "?" and ")"):
+       the gradient only paints inside the padding box. Same position */
+    padding-inline: 0.15em;
+    margin-inline: -0.15em;
     font-weight: 700;
   }
 
@@ -178,7 +182,7 @@
     color: var(--muted-color);
   }
   [tone="invert"] {
-    color: white;
+    color: var(--surface);
   }
 
   [weight="medium"] {
@@ -218,6 +222,10 @@
       background: linear-gradient(90deg in oklch, var(--from), var(--to));
       background-clip: text;
       -webkit-text-fill-color: transparent;
+      /* Room for glyphs that overhang their box (italic, bold "?" and ")"):
+         the gradient only paints inside the padding box. Same position */
+      padding-inline: 0.15em;
+      margin-inline: -0.15em;
       font-weight: 700;
     }
   }
@@ -256,7 +264,7 @@
     position: absolute;
     inline-size: fit-content;
     padding: 0.1em 0.6em;
-    border: 1px solid blue;
+    border: 1px solid var(--info-color);
     border-radius: 1em;
   }
 
@@ -461,7 +469,7 @@
   }
 
   [hand-drawing] {
-    --color-border: black;
+    --color-border: var(--ink);
 
     [box] {
       padding: 0.5em;
@@ -548,7 +556,7 @@
     position: absolute;
     aspect-ratio: 16 / 9;
     background: paint(sketchy-arrow);
-    filter: drop-shadow(0.075em 0.075em 0 white);
+    filter: drop-shadow(0.075em 0.075em 0 var(--surface));
     text-align: center;
   }
 
@@ -687,14 +695,14 @@
   [task-manager] {
     inline-size: 100%;
     border-collapse: collapse;
-    border: 0.04em solid oklch(0.85 0 0);
+    border: 0.04em solid var(--line-color);
     border-radius: 0.2em;
     font-size: 0.42em;
     font-variant-numeric: tabular-nums;
 
     caption {
       padding: 0.4em 0.8em;
-      background: oklch(0.95 0 0);
+      background: var(--selection-color);
       font-weight: 700;
       text-align: start;
     }
@@ -710,13 +718,13 @@
     }
 
     th {
-      border-block-end: 0.04em solid oklch(0.85 0 0);
+      border-block-end: 0.04em solid var(--line-color);
       color: var(--muted-color);
       font-weight: 500;
     }
 
     tbody tr:nth-child(even) {
-      background: oklch(0.98 0 0);
+      background: color-mix(in oklch, var(--ink) 3%, var(--surface));
     }
 
     tbody tr:last-child {

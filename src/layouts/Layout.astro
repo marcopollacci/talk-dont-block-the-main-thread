@@ -5,18 +5,88 @@ import Seo from "../components/Seo.astro";
 import GridMode from "../components/GridMode.astro";
 import SpeakerMode from "../components/SpeakerMode.astro";
 import comingSoon from "../img/coming-soon.png";
-// talkMinutes: slot length, drives the pace traffic light in speaker mode
-const { canRender, favIcon, metaData, talkMinutes } = Astro.props;
+import ThemeSwitch from "../components/ThemeSwitch.astro";
+
+// One file per theme in src/styles/themes/: a new theme = a new file + its
+// name here (this order is the dev picker's order)
+const THEMES = ["light", "angularday"] as const;
+type Theme = (typeof THEMES)[number];
+
+interface Props {
+  canRender: boolean;
+  favIcon: string;
+  metaData: Record<string, string>;
+  /** Slot length, drives the pace traffic light in speaker mode */
+  talkMinutes?: number;
+  theme?: Theme;
+  /** Event colours: primary drives the brand and the sub gradient start,
+   *  secondary (defaults to primary) the accent and the gradient end */
+  accent?: { primary: string; secondary?: string };
+  /** Per-talk token overrides, e.g. { "--brand-color": "oklch(…)" }.
+   *  They win over the theme and over accent */
+  tokens?: Record<`--${string}`, string>;
+}
+
+const {
+  canRender,
+  favIcon,
+  metaData,
+  talkMinutes,
+  theme = "light",
+  accent,
+  tokens,
+} = Astro.props;
+
+// Read at build time only: the page ships just the chosen theme's CSS
+const themeFiles = import.meta.glob<string>("../styles/themes/*.css", {
+  query: "?inline",
+  import: "default",
+  eager: true,
+});
+const themes = Object.fromEntries(
+  Object.entries(themeFiles).map(([path, css]) => [
+    path.match(/([^/]+)\.css$/)![1],
+    css,
+  ]),
+);
+if (!(theme in themes)) {
+  throw new Error(
+    `Unknown theme "${theme}". Available: ${Object.keys(themes).join(", ")}`,
+  );
+}
+for (const name of Object.keys(themes)) {
+  if (!THEMES.includes(name as Theme)) {
+    throw new Error(`Theme file "${name}.css" is missing from THEMES`);
+  }
+}
+
+const accentTokens = accent && {
+  "--brand-color": accent.primary,
+  "--gradient-sub-from": accent.primary,
+  "--brand-color-ant": accent.secondary ?? accent.primary,
+  "--gradient-sub-to": accent.secondary ?? accent.primary,
+};
+const rootStyle = {
+  // A theme can print it, e.g. win311's window caption
+  "--talk-title": JSON.stringify(metaData.title ?? ""),
+  ...accentTokens,
+  ...tokens,
+};
+// Dev keeps every theme, scoped by [data-theme], for the theme switcher
+const themeCss = import.meta.env.PROD
+  ? themes[theme]
+  : Object.values(themes).join("\n");
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme={theme} style={rootStyle}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <Seo {...metaData} />
     <link rel="icon" type="image/svg+xml" href={favIcon} />
     <Font cssVariable="--font-graphik" />
+    <style is:inline set:html={themeCss}></style>
   </head>
   <body coming-soon={canRender ? undefined : ""}>
     <p-deck id="deck" talk-minutes={talkMinutes}>
@@ -35,6 +105,7 @@ const { canRender, favIcon, metaData, talkMinutes } = Astro.props;
       {/* Grid overview ships in the build too, speaker mode stays dev-only */}
       <GridMode />
       {!import.meta.env.PROD && <SpeakerMode />}
+      {!import.meta.env.PROD && <ThemeSwitch themes={THEMES} />}
       <button
         type="button"
         commandfor="deck"

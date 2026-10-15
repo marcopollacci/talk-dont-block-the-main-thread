@@ -1,5 +1,7 @@
 ---
 // Editor-style code block, highlighted at build time by Shiki (zero JS).
+// Light and dark palettes ship as custom props: content.css picks one from
+// the theme's color-scheme.
 // Usage: <CodeWindow is:raw file="nav.css" lang="css" fragments="3-5">…</CodeWindow>
 // or pass the source through the `code` prop.
 import { Code } from "astro:components";
@@ -115,7 +117,8 @@ const transformers: CodeProps["transformers"] = [
 <Code
   code={source}
   {lang}
-  theme="one-light"
+  themes={{ light: "one-light", dark: "one-dark-pro" }}
+  defaultColor={false}
   wrap={null}
   {transformers}
   data-label-file={file}
