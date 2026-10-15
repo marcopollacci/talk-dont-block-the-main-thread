@@ -37,6 +37,22 @@
         ) {
           --fragment-progress: 1;
         }
+
+        /* A fragment revealed live ([replay], see scripts/deck.js) plays the
+           entrance the audience sees, instead of just losing its ghost look */
+        @media (prefers-reduced-motion: no-preference) {
+          :is(p-fragment, [p-fragment])[replay]:not([p-effect], [landing]) {
+            animation: speaker-fade-in var(--fragment-duration);
+          }
+          [p-effect]:is([replay], [replay] *):not(
+              :is(p-fragment, [p-fragment])[aria-hidden="true"] *
+            ) {
+            animation: speaker-effect var(--fragment-duration);
+          }
+          p-fragment[landing][replay] {
+            animation: speaker-landing var(--fragment-duration);
+          }
+        }
       }
     }
 
@@ -115,6 +131,28 @@
           }
         }
       }
+    }
+  }
+
+  @keyframes speaker-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes speaker-effect {
+    from {
+      --fragment-progress: 0;
+    }
+    to {
+      --fragment-progress: 1;
+    }
+  }
+
+  @keyframes speaker-landing {
+    from {
+      opacity: 0;
+      scale: 3;
     }
   }
 

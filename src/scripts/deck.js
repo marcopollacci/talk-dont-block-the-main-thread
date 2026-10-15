@@ -75,6 +75,7 @@ function syncChrome() {
 deck.addEventListener("p-slides.slidechange", ({ slide }) => {
   writeHash();
   syncChrome();
+  clearReplay();
   autoplay(slide);
   // Wait for the slide's own styles to apply before sampling its colour
   requestAnimationFrame(() =>
@@ -91,8 +92,29 @@ deck.addEventListener(
     syncChrome();
     followFragments(target, areActivated ? fragments : []);
     if (areActivated) pressIframeKeys(target, fragments);
+    replayFragments(fragments, areActivated);
   },
 );
+
+/* --- Speaker replay: the speaker preview keeps unrevealed fragments as
+   ghosts in their final place. A fragment revealed there gets [replay], so
+   the CSS plays the same entrance the audience sees. Only live reveals get
+   it: a slide reached with fragments already shown doesn't replay them --- */
+
+function replayFragments(fragments, areActivated) {
+  for (const fragment of fragments) {
+    fragment.removeAttribute("replay");
+    if (!areActivated || deck.mode !== "speaker") continue;
+    // Reflow, so stepping back and forth restarts the animation
+    void fragment.offsetWidth;
+    fragment.toggleAttribute("replay", true);
+  }
+}
+
+function clearReplay() {
+  for (const fragment of deck.querySelectorAll("[replay]"))
+    fragment.removeAttribute("replay");
+}
 
 /* --- Iframe key: revealing <p-fragment iframe-key="2"> presses that key
    inside the slide's iframe, so a live demo advances with the deck --- */
@@ -335,7 +357,10 @@ function autoplay(slide) {
     if (fragment.getAttribute("aria-hidden") !== "true") return;
     const start = Number(fragment.getAttribute("timing-start")) || delay;
     const timer = setTimeout(
-      () => fragment.setAttribute("aria-hidden", "false"),
+      () => {
+        fragment.setAttribute("aria-hidden", "false");
+        replayFragments([fragment], true);
+      },
       start + step * index,
     );
     signal.addEventListener("abort", () => clearTimeout(timer));

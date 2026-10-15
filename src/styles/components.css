@@ -569,6 +569,16 @@
       }
     }
 
+    /* Speaker preview: on the slide's arrival, and inside fragments revealed
+       live ([replay], see scripts/deck.js), like the audience sees it */
+    p-deck[mode="speaker"] p-slide[aria-current="page"] {
+      [enter]:not(:is(p-fragment, [p-fragment]) *),
+      [replay] [enter]:not(p-fragment[aria-hidden="true"] *) {
+        animation: var(--enter-animation) var(--fragment-duration, 300ms)
+          var(--entrance-easing) 1 forwards;
+      }
+    }
+
     [enter="above"] {
       --enter-animation: enter-above;
     }
