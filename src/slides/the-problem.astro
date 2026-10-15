@@ -4,6 +4,9 @@ import CodeWindow from "../components/CodeWindow.astro";
 import PNotes from "../components/PNotes.astro";
 import freezing from "../img/freezing-man.png";
 import spongy from "../img/problem-solution.jpg";
+import MainThread from "../components/MainThread.astro";
+import WhoWins from "../components/WhoWins.astro";
+const { playful = true } = Astro.props;
 ---
 
 <p-slide layout="center" autoplay timing="550">
@@ -38,10 +41,14 @@ import spongy from "../img/problem-solution.jpg";
     </figcaption>
   </figure>
   <PNotes>
-    Event Loop order:
-    <p>Synchronous Code Execution</p>
-    <p>Microtasks Execution (promise callbacks)</p>
-    <p>Macro Task Execution (setTimeout, setInterval)</p>
+    Event Loop, one turn:
+    <p>1. Run one task (a script, a click handler, a setTimeout callback)</p>
+    <p>2. Run ALL microtasks (promise callbacks, queueMicrotask)</p>
+    <p>3. Maybe render: rAF callbacks, style, layout, paint</p>
+    <p>
+      The point for this talk: rendering only happens between tasks, so a long
+      task delays every frame and every input.
+    </p>
   </PNotes>
 </p-slide>
 <p-slide>
@@ -64,17 +71,82 @@ import spongy from "../img/problem-solution.jpg";
   </p-fragment>
   <p-fragment timing-start="1400">
     <h4 layout="center" gradient="sub" style="margin-block-start: 0.5em">
-      block the call stack!
+      blocks the main thread!
     </h4>
   </p-fragment>
+  {playful && (
+    <>
+      <p-fragment frozen-page no-autoplay>
+        <span role="img" aria-label="Fake browser dialog: Page Unresponsive">
+          <b>Page Unresponsive</b>
+          <span>
+            You can wait for it to become responsive or exit the page.
+          </span>
+          <span dialog-buttons aria-hidden="true">
+            <span>Exit page</span>
+            <span>Wait</span>
+          </span>
+        </span>
+      </p-fragment>
+      <MainThread
+        mood="🥶"
+        line="did you see that? I was frozen"
+        frozen="3,000 ms"
+        no-autoplay
+      />
+    </>
+  )}
+  <PNotes>
+    <p>
+      Next click is the fake freeze: the deck greys out and a "Page
+      Unresponsive" dialog shows up. Act surprised, stare at the laptop, sigh,
+      wait 2 seconds. Then click: the Main Thread complains.
+    </p>
+    <p>It is CSS only: the deck never really blocks, arrows keep working.</p>
+  </PNotes>
 </p-slide>
-<p-slide>
-  <Image
-    src={spongy}
-    alt="SpongeBob meme: the problem and the solution"
-    style="--size: 8em; border-radius: 0.3em"
-  />
-</p-slide>
+{playful ? (
+  <WhoWins
+    round={1}
+    question="Which one keeps the page responsive?"
+    winner="none"
+    verdict="Nobody wins: both run on the main thread"
+  >
+    <CodeWindow is:raw slot="a" file="a.js" lang="js" dense>
+        btn.onclick = async () => {
+          await new Promise((ok) => {
+            heavyTask();
+            ok();
+          });
+        };
+      </CodeWindow>
+    <CodeWindow is:raw slot="b" file="b.js" lang="js" dense>
+        btn.onclick = () => {
+          setTimeout(heavyTask, 0);
+        };
+      </CodeWindow>
+    <PNotes slot="notes">
+      <p>Show of hands: A? B? Pause, let them argue.</p>
+      <p>
+        A: the Promise executor runs synchronously, right now. "async" is not
+        "parallel": the click handler blocks for the whole loop.
+      </p>
+      <p>
+        B: setTimeout only postpones it. The click handler returns, then the
+        next macrotask is heavyTask, on the same thread → frozen again.
+      </p>
+      <p>The punchline: we need another thread. → Web Workers.</p>
+    </PNotes>
+  </WhoWins>
+) : (
+  <p-slide>
+    <Image
+      src={spongy}
+      alt="SpongeBob meme: the problem and the solution"
+      style="--size: 8em; border-radius: 0.3em"
+    />
+  </p-slide>
+)}
 
 <style>
   /* Credits under the event loop animation */

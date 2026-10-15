@@ -4,6 +4,8 @@ import CodeWindow from "../components/CodeWindow.astro";
 import PNotes from "../components/PNotes.astro";
 import consoleLog from "../img/console_log_worker.png";
 import sofarSogood from "../img/sofar-sogood.jpg";
+import MainThread from "../components/MainThread.astro";
+const { playful = true } = Astro.props;
 ---
 
 <p-slide layout="center">
@@ -13,7 +15,7 @@ import sofarSogood from "../img/sofar-sogood.jpg";
   </h1>
 </p-slide>
 <p-slide>
-  <ul style="line-height: 1.8em">
+  <ul density="spaced" text="mid">
     <li>
       🐣 <span gradient="sub">Born in 2009</span>
     </li>
@@ -33,8 +35,9 @@ import sofarSogood from "../img/sofar-sogood.jpg";
       can only send and receive messages
     </p>
     <p>
-      Not framework related: a web worker can be used in any JavaScript
-      environment
+      Not framework related: a Web Platform API, usable with any framework or
+      none. Deno and Bun implement the same Worker API; Node.js has its own
+      worker_threads module.
     </p>
   </PNotes>
 </p-slide>
@@ -84,15 +87,15 @@ import sofarSogood from "../img/sofar-sogood.jpg";
     worker.postMessage('Hello from main thread');
   </CodeWindow>
   <PNotes>
-    Web Worker in the browser is native—in the sense that: It is managed by the
-    browser underlying engine (like V8 in Chrome, SpiderMonkey in Firefox, or
-    JavaScriptCore in Safari). The worker runs in its own OS-level thread,
-    separate from the main UI thread. This allows it to perform operations
-    concurrently without blocking the main thread. So, when you create a new
-    Worker(...), the browser spins up a separate thread using native system APIs
-    under the hood. However, from the JavaScript developer’s perspective, Web
-    Workers are not threads you control directly—you just post messages back and
-    forth using postMessage() and onmessage.
+    Web Worker in the browser is native: the browser starts a new OS-level
+    thread with its own JavaScript engine instance (a new V8 isolate in Chrome,
+    the same for SpiderMonkey in Firefox and JavaScriptCore in Safari), separate
+    from the main UI thread. This allows it to perform operations concurrently
+    without blocking the main thread. So, when you create a new Worker(...), the
+    browser spins up a separate thread using native system APIs under the hood.
+    However, from the JavaScript developer’s perspective, Web Workers are not
+    threads you control directly—you just post messages back and forth using
+    postMessage() and onmessage.
   </PNotes>
 </p-slide>
 <p-slide>
@@ -104,6 +107,13 @@ import sofarSogood from "../img/sofar-sogood.jpg";
     alt="Browser console showing the messages exchanged by the main thread and the worker"
     style="--size: 7.5em"
   />
+  {playful && (
+    <MainThread
+      mood="😌"
+      line="heavy stuff, not my problem anymore"
+      frozen="3,000 ms (still)"
+    />
+  )}
 </p-slide>
 <p-slide>
   <Image src={sofarSogood} alt="“So far so good” meme" style="--size: 8em" />

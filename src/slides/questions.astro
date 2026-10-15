@@ -10,8 +10,8 @@ import CodeWindow from "../components/CodeWindow.astro";
     self.onmessage = async (event) => {
       const { data: question } = event;
 
-      const answer = await answer(question);
-      self.postMessage(`The answer is: ${answer}`);
+      const reply = await answer(question);
+      self.postMessage(`The answer is: ${reply}`);
     };
   </CodeWindow>
 </p-slide>

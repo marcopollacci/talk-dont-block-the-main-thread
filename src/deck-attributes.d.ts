@@ -54,6 +54,20 @@ declare namespace astroHTML.JSX {
     "big-x"?: DeckHook;
     "sketchy-arrow"?: DeckHook;
     blink?: DeckHook;
+    // games and gags: <WhoWins>, <Meme>, <MainThread>
+    "who-wins"?: DeckHook;
+    duel?: DeckHook;
+    contender?: DeckHook;
+    vs?: DeckHook;
+    verdict?: DeckHook;
+    winner?: DeckHook;
+    meme?: DeckHook;
+    caption?: DeckHook;
+    "main-thread"?: DeckHook;
+    bubble?: DeckHook;
+    "frozen-page"?: DeckHook;
+    "dialog-buttons"?: DeckHook;
+    "task-manager"?: DeckHook;
     // fragments, entrances, autoplay
     "p-fragment"?: DeckHook;
     "p-effect"?: DeckHook;

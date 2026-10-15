@@ -3,6 +3,9 @@ import { defineConfig, fontProviders } from "astro/config";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
+  // Keep the whitespace between inline elements written on separate lines
+  // (emoji + title, text + <code>): compression glues them together
+  compressHTML: false,
   fonts: [
     {
       provider: fontProviders.local(),

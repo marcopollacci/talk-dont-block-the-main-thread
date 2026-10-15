@@ -67,7 +67,7 @@ Feedback that shaped these rules: _"a list of new things, it gets flat and repet
 
 - Put the meme **on the problem slide (or right after it)**, never on a neutral title slide. Pattern: pain → laugh → code as the payoff.
 - **At most one per section**, otherwise it becomes noise.
-- Use classic, instantly recognizable templates (This is fine, Drake, Two buttons, Distracted boyfriend…). The agent sources the image itself (e.g. imgflip templates → `src/img/memes/`), checks it, and never asks the user to go find images.
+- **Don't recycle the same templates across talks.** Prefer gags born from the talk's own subject (e.g. a deck that fakes a frozen page, a fake Task Manager) and recognizable but less worn templates (Gru's plan, Expanding brain…). The overused ones (This is fine, Drake, Two buttons, Distracted boyfriend) only if nothing better fits and no other talk uses them. The agent sources the image itself (e.g. imgflip templates → `src/img/memes/`), checks it, and never asks the user to go find images.
 - **Captions are HTML/CSS overlaid on the image**, not baked into it: editable, themeable, accessible (`alt` on the image). Captions with code use a monospace font; break lines explicitly, never inside a token.
 - Short captions, in English. Speaker note: "don't explain the meme, pause, move on".
 - If the user dislikes a meme, remove it completely (slide, import, asset). Don't argue for it.
@@ -102,6 +102,8 @@ Slides shared with talks that already happened get a `playful` prop (default `tr
 
 - **Titles, labels, questions and verdicts never wrap onto two lines.** Use `white-space: nowrap` and **shorten the text** until it fits. Don't shrink the font to unreadable sizes.
 - Nothing overflows the slide at 1600×900.
+- **Nothing is ever glued together**: emoji and text, text and `<code>`, `❌` and its label always have a space between them. `compressHTML` stays `false` in `astro.config.mjs` (compression drops the whitespace between inline elements written on separate lines); in the markup write the space explicitly (`❌ <span>`, `{" "}` at line ends next to an element).
+- **Lists all look the same**: `<ul density="spaced" text="mid">`, one line per item (shorten the text, details go in the notes), no inline `line-height`/`row-gap`/`font-weight` overrides.
 - In side-by-side layouts (A vs B), both sides line up (same rows, same heights), and separators like "VS" are centred on the content.
 - Overlaid captions are centred on their target (button, panel, person) unless they're indented code.
 
@@ -144,6 +146,11 @@ A new hook goes into `src/styles/components.css` as an attribute, gets a row her
 | Live demo key press                     | `<p-fragment iframe-key="2">`: revealing it presses that key inside the slide's `<iframe>`                                                                                                                |
 | Scroll to revealed fragments (non-code) | `<p-slide follow-fragments>`                                                                                                                                                                              |
 | Misc blocks                             | `unpadded` (no padding), `info` (narrow centred note with inline icons), `final-link` (closing link + big image)                                                                                          |
+| "Who wins?" round                       | `<WhoWins round={1} question="…" winner="a\|b\|none" verdict="…">` with `slot="a"`/`slot="b"` code windows and `slot="notes"`; hooks `who-wins`, `duel`, `contender`, `vs`, `verdict`, `winner`           |
+| Meme with HTML captions                 | `<Meme src alt size captionSize captionBg>` + children `<span caption style="--x: 50%; --y: 20%">` (centred on x/y of the image)                                                                          |
+| Running-gag mascot                      | `<MainThread mood="🥶" line="…" frozen="3,000 ms" no-autoplay />` (fragment, bottom-right, `main-thread` + `bubble`)                                                                                      |
+| Fake frozen page                        | `<p-fragment frozen-page>` (direct child of the slide): greys the slide out under a fake dialog; `dialog-buttons`                                                                                         |
+| Fake task manager                       | `<table task-manager>` with `<caption>`, rows as `<tr p-fragment>`                                                                                                                                        |
 
 ---
 

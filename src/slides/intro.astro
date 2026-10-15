@@ -77,7 +77,10 @@ import octo from "../img/octo-multi.png";
   <p-fragment p-effect="from left">📍 Event Handling</p-fragment>
   <p-fragment p-effect="zoom">📍 Rendering</p-fragment>
   <p-fragment p-effect="from below">📍 DOM Manipulation</p-fragment>
-  <PNotes>All the above tasks can be performed in main thread.</PNotes>
+  <PNotes>
+    All of these run on the main thread. Rendering here means style, layout and
+    paint; rasterization and compositing happen on other threads.
+  </PNotes>
 </p-slide>
 <p-slide>
   <h3 layout="center" with-emoji>
@@ -98,14 +101,14 @@ import octo from "../img/octo-multi.png";
         I/O.
       </li>
       <li>
-        GPU: Rendering and compositing tasks are often offloaded to the GPU,
-        which uses multiple threads internally
+        GPU: rasterization and compositing run off the main thread (compositor
+        thread, raster threads, GPU process)
       </li>
       <li>
         HTML5 APIs: APIs like WebRTC, Web Audio API, and File API often use
         multiple threads internally
       </li>
-      <li>Web worker: Web workers can also use multiple threads internally</li>
+      <li>Web worker: each Web Worker runs on its own OS-level thread</li>
     </ul>
   </PNotes>
 </p-slide>

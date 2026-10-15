@@ -1,0 +1,46 @@
+---
+// "Who wins?" recurring game (AGENTS.md §3.3): A/B snippets side by side,
+// show of hands, then a fragment reveals the winner.
+// Usage: <WhoWins round={1} question="…" winner="b" verdict="B wins: …">
+//          <CodeWindow slot="a" …>…</CodeWindow>
+//          <CodeWindow slot="b" …>…</CodeWindow>
+//          <PNotes slot="notes">…</PNotes>
+//        </WhoWins>
+interface Props {
+  round: number;
+  question: string;
+  /** "none": nobody wins, both sides are dimmed */
+  winner: "a" | "b" | "none";
+  /** Real text naming the winner: colour is never the only carrier */
+  verdict: string;
+}
+
+const { round, question, winner, verdict } = Astro.props;
+---
+
+<p-slide who-wins>
+  <h3 layout="center" with-emoji>
+    <span aria-hidden="true">🥊</span>
+    <span gradient>Who wins? Round {round}</span>
+  </h3>
+  <p layout="center" text="mid" weight="medium">
+    {question}
+  </p>
+  <div duel>
+    <div contender="a">
+      <b>A</b>
+      <slot name="a" />
+    </div>
+    <span vs aria-hidden="true">
+      VS
+    </span>
+    <div contender="b">
+      <b>B</b>
+      <slot name="b" />
+    </div>
+  </div>
+  <p p-fragment verdict {winner} layout="center" text="mid">
+    <span aria-hidden="true">{winner === "none" ? "🤷" : "🏆"}</span> {verdict}
+  </p>
+  <slot name="notes" />
+</p-slide>

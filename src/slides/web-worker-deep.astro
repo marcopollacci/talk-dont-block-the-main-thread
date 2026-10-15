@@ -1,6 +1,8 @@
 ---
 import CodeWindow from "../components/CodeWindow.astro";
 import PNotes from "../components/PNotes.astro";
+import WhoWins from "../components/WhoWins.astro";
+const { playful = true } = Astro.props;
 ---
 
 <p-slide>
@@ -18,7 +20,7 @@ import PNotes from "../components/PNotes.astro";
   <CodeWindow is:raw lang="js" size="big">
     self.onmessage = (event) => {};
   </CodeWindow>
-  <ul style="margin-block-start: 0.5em">
+  <ul density="spaced" text="mid" style="margin-block-start: 0.5em">
     <li p-fragment p-effect="from left">
       📌 data
     </li>
@@ -41,8 +43,8 @@ import PNotes from "../components/PNotes.astro";
         data: The data sent from the main thread to the web worker
       </li>
       <li style="margin-block-end: 0.5em">
-        origin: Indicates the origin of the message, i.e., the URL of the
-        context that sent the message
+        origin: The origin of the sender. For dedicated workers it is an empty
+        string: it only matters for window/iframe messaging
       </li>
       <li style="margin-block-end: 0.5em">
         source: Represents the context that sent the message. In the case of Web
@@ -104,6 +106,36 @@ import PNotes from "../components/PNotes.astro";
     </ul>
   </PNotes>
 </p-slide>
+{playful && (
+  <WhoWins
+    round={2}
+    question="Which one logs 0?"
+    winner="b"
+    verdict="B logs 0: the buffer moved to the worker"
+  >
+    <CodeWindow is:raw slot="a" file="main.js" lang="js" dense>
+        const buf = new ArrayBuffer(1e8);
+        worker.postMessage(buf);
+        console.log(buf.byteLength);
+      </CodeWindow>
+    <CodeWindow is:raw slot="b" file="main.js" lang="js" dense>
+        const buf = new ArrayBuffer(1e8);
+        worker.postMessage(buf, [buf]);
+        console.log(buf.byteLength);
+      </CodeWindow>
+    <PNotes slot="notes">
+      <p>Show of hands: A, B, or "both print 100000000"?</p>
+      <p>
+        A: structured clone, 100 MB copied, the main thread still owns its
+        buffer → 100000000 (and you paid for the copy).
+      </p>
+      <p>
+        B: transferred, zero-copy. The buffer is now detached on the main thread
+        → byteLength is 0. Touching it afterwards is a bug.
+      </p>
+    </PNotes>
+  </WhoWins>
+)}
 <p-slide>
   <CodeWindow is:raw lang="js" size="full">
     worker.onerror = (event) => {};
@@ -113,12 +145,13 @@ import PNotes from "../components/PNotes.astro";
   <CodeWindow is:raw lang="js" size="big">
     worker.onerror = (event) => {};
   </CodeWindow>
-  <ul density="spaced" style="margin-block-start: 0.7em">
+  <ul density="spaced" text="mid" style="margin-block-start: 0.7em">
     <li p-fragment p-effect="from left">
       ⛔ ErrorEvent
     </li>
     <li p-fragment p-effect="from right">
-      💬 Optional string on <span gradient="sub">message</span> properties
+      💬 <span gradient="sub">message</span>, <code>filename</code>,{" "}
+      <code>lineno</code>: what went wrong, and where
       <div style="margin-block-start: 0.5em">
         <CodeWindow is:raw lang="js">
           worker.onerror = (event) => {
@@ -171,18 +204,35 @@ import PNotes from "../components/PNotes.astro";
       same origin
     </li>
     <li p-fragment p-effect="zoom">
-      😎 <span gradient="sub">Keep alive</span> until all tabs are closed (even
-      if the page is reloaded)
+      😎 <span gradient="sub">Alive</span> while at least one tab is connected
     </li>
     <li p-fragment p-effect="from below">
       💬 Communicate through the <span gradient="sub">MessagePort API</span>
     </li>
+    <li p-fragment p-effect="from right">
+      📱 <span gradient="sub">Back on Chrome for Android</span> in 2026
+    </li>
   </ul>
   <PNotes>
+    <p>
+      Lifetime: the worker dies when its last connected document goes away. A
+      single tab that reloads gets a brand new SharedWorker (state lost); it
+      survives a reload only if another tab keeps it alive.
+    </p>
     <p>
       MessagePort API:
       https://developer.mozilla.org/en-US/docs/Web/API/MessagePort : similar to
       postMessage but more powerful and flexible
+    </p>
+    <p>
+      Android: SharedWorker was disabled for years over process-lifecycle
+      concerns; Chrome re-enabled it starting from 148 beta (April 2026). Safari
+      and Firefox have it.
+    </p>
+    <p>
+      Chrome origin trial: new SharedWorker(url, {"{"} extendedLifetime: true
+      {"}"}) keeps it alive up to 30s after the last page unloads (save state,
+      send analytics).
     </p>
   </PNotes>
 </p-slide>
@@ -217,9 +267,7 @@ import PNotes from "../components/PNotes.astro";
       port.postMessage("Worker connected");
       port.onmessage = (e) => {
         clients.forEach((client) =>
-          client.postMessage(
-            `New client connected with message: "${e.data}"`
-          )
+          client.postMessage(`Broadcast: "${e.data}"`)
         );
       };
     };
@@ -245,6 +293,13 @@ import PNotes from "../components/PNotes.astro";
 
     sharedWorker.port.postMessage("Hello from Tab 1");
   </CodeWindow>
+  <PNotes>
+    <p>
+      port.start() is strictly needed only with addEventListener("message").
+      Assigning port.onmessage starts the port implicitly; calling start()
+      anyway is harmless and makes the intent explicit.
+    </p>
+  </PNotes>
   <p-fragment>
     <span
       sketch-circle
@@ -255,38 +310,95 @@ import PNotes from "../components/PNotes.astro";
 <p-slide>
   <h2>
     <span aria-hidden="true">⛓️‍💥</span>
-    <span gradient>when client disconnect</span>
+    <span gradient>When a client disconnects</span>
   </h2>
 </p-slide>
+{playful && (
+  <WhoWins
+    round={3}
+    question="Which one notices a closed tab?"
+    winner="b"
+    verdict="B wins: the close event never shipped"
+  >
+    <CodeWindow is:raw slot="a" file="shared-worker.js" lang="js" dense>
+        port.onclose = () => {
+          clients.splice(
+            clients.indexOf(port), 1
+          );
+        };
+      </CodeWindow>
+    <CodeWindow is:raw slot="b" file="main.js" lang="js" dense>
+        addEventListener("pagehide", () => {
+          sharedWorker.port
+            .postMessage("bye");
+        });
+      </CodeWindow>
+    <PNotes slot="notes">
+      <p>
+        Show of hands first. A looks right: a close event on MessagePort was
+        added to the HTML spec a few years ago.
+      </p>
+      <p>
+        The trap: no browser ever shipped it (Chrome only behind a test flag),
+        and on 2 October 2026 it was removed from the spec (whatwg/html #13016).
+        A never fires.
+      </p>
+      <p>
+        B: the page says goodbye itself. Caveats: pagehide also fires when the
+        page goes into the back/forward cache (say hello again on pageshow when
+        event.persisted), and it never fires on a crash, so a heartbeat is the
+        belt-and-braces option.
+      </p>
+    </PNotes>
+  </WhoWins>
+)}
 <p-slide>
   <h4 layout="center" style="margin-block-end: 0.5em">
     Let's Code <span aria-hidden="true">👨‍💻</span>
   </h4>
-  <CodeWindow is:raw file="main.js" lang="js" scale={0.92} tail={0}>
-    const clients = [];
+  <CodeWindow
+    is:raw
+    file="shared-worker.js"
+    lang="js"
+    scale={0.92}
+    tail={0}
+    fragments="5-9"
+  >
     self.onconnect = (event) => {
-      // ...other stuff
-      port.onclose = () => {
+      const [port] = event.ports;
+      clients.push(port);
+      port.onmessage = ({ data }) => {
+        if (data !== "bye") return; // ...other messages
         clients.splice(clients.indexOf(port), 1);
         clients.forEach((client) =>
-          client.postMessage(
-            `Client disconnected. Total clients remaining: ${clients.length}`
-          )
+          client.postMessage(`Clients left: ${clients.length}`)
         );
       };
-    }
+    };
   </CodeWindow>
   <PNotes>
     <p>
-      When the client disconnects (closing the tab or window), the onclose event
-      is triggered.
+      There is no reliable "port closed" event: MessagePort's close event was
+      removed from the HTML spec in October 2026, no browser shipped it.
     </p>
     <p>
-      The worker removes the client from the list and broadcasts a "Client
-      disconnected" message to all remaining clients.
+      So the client says goodbye on pagehide and the worker removes it from the
+      list, then broadcasts the new count to the remaining clients.
     </p>
   </PNotes>
 </p-slide>
+{!playful && (
+  <p-slide>
+    <h4 layout="center" style="margin-block-end: 0.5em">
+      Let's Code <span aria-hidden="true">👨‍💻</span>
+    </h4>
+    <CodeWindow is:raw file="main.js" lang="js">
+        addEventListener("pagehide", () => {
+          sharedWorker.port.postMessage("bye");
+        });
+      </CodeWindow>
+  </p-slide>
+)}
 <p-slide layout="center">
   <h2>
     <span gradient>Web Worker limitations</span>
@@ -294,41 +406,45 @@ import PNotes from "../components/PNotes.astro";
   </h2>
 </p-slide>
 <p-slide>
-  <ul density="spaced" style="line-height: 1em">
+  <ul density="spaced" text="mid">
     <li>
       ❌ <span gradient="sub">No access to the DOM</span>
     </li>
     <li p-fragment p-effect="from right">
-      ❌
+      ❌{" "}
       <span gradient="sub">
-        No access to global variables like{" "}
-        <code style="font-size: 0.8em">window</code>,{" "}
-        <code style="font-size: 0.8em">document</code>, or
+        No <code style="font-size: 0.8em">window</code>,{" "}
+        <code style="font-size: 0.8em">document</code> or{" "}
         <code style="font-size: 0.8em">parent</code>
       </span>
     </li>
     <li p-fragment p-effect="from left">
-      ❌
+      ❌{" "}
       <span gradient="sub">
-        No synchronous APIs like <code style="font-size: 0.8em">alert()</code>,{" "}
-        <code style="font-size: 0.8em">confirm()</code>, or
+        No <code style="font-size: 0.8em">alert()</code>,{" "}
+        <code style="font-size: 0.8em">confirm()</code> or{" "}
         <code style="font-size: 0.8em">prompt()</code>
       </span>
     </li>
     <li p-fragment p-effect="zoom">
-      ❌ <span gradient="sub">No access to storage APIs</span>
+      ❌{" "}
+      <span gradient="sub">
+        No <code style="font-size: 0.8em">localStorage</code> or{" "}
+        <code style="font-size: 0.8em">sessionStorage</code>
+      </span>
     </li>
   </ul>
   <PNotes>
     <ul style="font-size: 0.8em">
       <li>
-        ❌ Some APIs like localStorage, sessionStorage, and cookies are not
-        accessible. IndexedDB is only partially available.
+        ❌ localStorage, sessionStorage and document.cookie are not available
+        (they are synchronous). ✅ IndexedDB, the Cache API and OPFS work fine
+        in workers, and OPFS createSyncAccessHandle() works only in a worker.
       </li>
       <li>
-        ❌ No synchronous import of ES modules - Modules must be imported
-        explicitly and asynchronously (importScripts() works only in classic
-        workers, not module workers).
+        Modules: classic workers load scripts with importScripts()
+        (synchronous); module workers, new Worker(url, {"{"} type: 'module'
+        {"}"}), use import instead and importScripts() throws there.
       </li>
       <li>
         ❌ Restricted access to certain JavaScript APIs - Web Workers cannot use

@@ -1,5 +1,8 @@
 ---
 import CodeWindow from "../components/CodeWindow.astro";
+import Meme from "../components/Meme.astro";
+import PNotes from "../components/PNotes.astro";
+import grusPlan from "../img/memes/grus-plan.jpg";
 ---
 
 <p-slide layout="center" autoplay timing="550">
@@ -20,21 +23,66 @@ import CodeWindow from "../components/CodeWindow.astro";
   </h3>
   <ul density="spaced" text="mid">
     <li p-fragment p-effect="from right">
-      ⚡ <span gradient="sub">OnPush</span> is the default change detection
-      strategy
+      ⚡ <span gradient="sub">OnPush</span> is the default (old
+      <code>Default</code> is now <code>Eager</code>)
     </li>
     <li p-fragment p-effect="from left">
       🚫 No more <span gradient="sub">Zone.js</span> patching your async
       callbacks
     </li>
     <li p-fragment p-effect="zoom">
-      ⚠️ <code>worker.onmessage</code> updating a plain property
+      ⚠️ <code>onmessage</code> setting a plain field
       <span gradient="sub"> won't refresh the UI</span>
     </li>
     <li p-fragment p-effect="from below">
       ✅ Writing into a <span gradient="sub">signal</span> will
     </li>
   </ul>
+  <PNotes>
+    <p>
+      Zoneless is the default for new apps since v21; v22 makes OnPush the
+      default and renames the old Default strategy to Eager (ng update adds
+      Eager to components that had no strategy).
+    </p>
+    <p>
+      ng g service now generates @Service() (use --injectable for the old
+      decorator). @Service() services must use inject(), no constructor DI.
+    </p>
+  </PNotes>
+</p-slide>
+
+<p-slide layout="center">
+  <Meme
+    src={grusPlan}
+    alt="Gru's plan meme: Gru presents a four-step plan on a flip chart and stares at the last step in horror"
+    size="8.5em"
+    captionSize="0.3em"
+    captionBg="transparent"
+  >
+    <span caption style="--x: 38%; --y: 30%">
+      Move heavyTask
+      <br />
+      to a worker
+    </span>
+    <span caption style="--x: 88%; --y: 30%">
+      <code>onmessage</code>
+      <br />
+      sets a field
+    </span>
+    <span caption style="--x: 38.5%; --y: 78%">
+      The UI
+      <br />
+      never updates
+    </span>
+    <span caption style="--x: 88%; --y: 78%">
+      The UI
+      <br />
+      never updates
+    </span>
+  </Meme>
+  <PNotes>
+    <p>Don't explain the meme. Pause, let it land, move on.</p>
+  </PNotes>
 </p-slide>
 
 <p-slide>
@@ -51,7 +99,7 @@ import CodeWindow from "../components/CodeWindow.astro";
       <span gradient="sub">params signal</span> changes
     </li>
     <li p-fragment p-effect="from below">
-      🎁 <code>isLoading()</code>, <code>error()</code>,<code>value()</code> —{" "}
+      🎁 <code>isLoading()</code>, <code>error()</code>, <code>value()</code> —{" "}
       <span gradient="sub">for free</span>
     </li>
     <li p-fragment p-effect="from right">
@@ -69,7 +117,6 @@ import CodeWindow from "../components/CodeWindow.astro";
     is:raw
     file="worker-resource.service.ts"
     lang="ts"
-
     lines={10}
     fragments="7-9, 10-18"
   >
@@ -92,6 +139,20 @@ import CodeWindow from "../components/CodeWindow.astro";
       }
     }
   </CodeWindow>
+  <PNotes>
+    <p>
+      resource() needs an injection context: it works here because run() is
+      called from a component field initializer. Called anywhere else, pass{" "}
+      {"{"}
+      injector {"}"} in the options.
+    </p>
+    <p>
+      Production tip: the loader also receives an abortSignal. If params change
+      while the worker is busy, the previous promise never settles here: listen
+      to abortSignal and reject, and tag messages with an id if requests can
+      overlap.
+    </p>
+  </PNotes>
 </p-slide>
 
 <p-slide>
@@ -129,22 +190,20 @@ import CodeWindow from "../components/CodeWindow.astro";
   </CodeWindow>
 </p-slide>
 
-<p-slide layout="center">
-  <h3 style="margin-block-end: 0.5em">
-    <span gradient>resource()</span> in a nutshell
+<p-slide>
+  <h3>
+    <span aria-hidden="true">🌰</span>
+    <span gradient>resource() in a nutshell</span>
   </h3>
   <ul density="spaced" text="mid">
     <li p-fragment p-effect="zoom">
-      📨 Perfect for <span gradient="sub">one-shot</span> request / response
-      work — loading &amp; error states built-in
+      📨 <span gradient="sub">One-shot</span> work: loading &amp; error built in
     </li>
     <li p-fragment p-effect="from below">
-      🌊 Still reach for <span gradient="sub">Observable / rxResource</span>{" "}
-      when you need streams or multiple emissions
+      🌊 Streams? Still <span gradient="sub">Observable / rxResource</span>
     </li>
     <li p-fragment p-effect="from right">
-      🧭 Pick based on the <span gradient="sub">shape of your data</span>, not
-      habit
+      🧭 Pick by the <span gradient="sub">shape of your data</span>, not habit
     </li>
   </ul>
 </p-slide>

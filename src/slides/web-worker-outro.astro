@@ -18,15 +18,15 @@ import PNotes from "../components/PNotes.astro";
   </h4>
 </p-slide>
 <p-slide>
-  <ul density="spaced" style="line-height: 1em">
+  <ul density="spaced" text="mid">
     <li>
       ❌ <span gradient="sub">Too Many Workers</span>
     </li>
     <li p-fragment p-effect="from right">
-      ❌<span gradient="sub">Passing Large Data Objects</span>
+      ❌ <span gradient="sub">Passing Large Data Objects</span>
     </li>
     <li p-fragment p-effect="from left">
-      ❌<span gradient="sub">Memory and performance impact</span>
+      ❌ <span gradient="sub">Memory and performance impact</span>
     </li>
     <li p-fragment p-effect="zoom">
       ❌ <span gradient="sub">Using Workers for Small, Frequent Tasks</span>
@@ -39,7 +39,7 @@ import PNotes from "../components/PNotes.astro";
         system: ✅ Reuse Workers instead of creating a new one each time; ✅ Use
         a Worker Pool
       </li>
-      <li>Passing Large Data Objects: use transfer parameter in postMessge</li>
+      <li>Passing Large Data Objects: use transfer parameter in postMessage</li>
       <li>
         ❌ Communication overhead - Data exchange with the main thread happens
         asynchronously via postMessage(), which can introduce complexity and

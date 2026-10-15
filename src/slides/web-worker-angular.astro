@@ -12,13 +12,13 @@ import angularLogo from "../img/angular-logo.png";
   </h3>
 </p-slide>
 <p-slide cover>
-  <h1 gradient="sub">Angular CLI allows us to generate new Web Worker</h1>
+  <h1 gradient="sub">Angular CLI allows us to generate a new Web Worker</h1>
 </p-slide>
 <p-slide>
   <h3 style="margin-block-end: 0.9em">
     <span aria-hidden="true">⚙️</span> <span gradient="sub">Angular CLI</span>
   </h3>
-  <ul density="spaced" style="font-weight: 100">
+  <ul density="spaced" text="mid">
     <li>
       🆕 <span gradient>Create new file</span>
     </li>
@@ -63,7 +63,7 @@ import angularLogo from "../img/angular-logo.png";
   </CodeWindow>
   <PNotes>
     <p>
-      <b>angular.json:</b> new property WebWorkerTsConfig inside build -->
+      <b>angular.json:</b> new property webWorkerTsConfig inside build -->
       options that refer to tsconfig.worker.json
     </p>
   </PNotes>
@@ -85,15 +85,15 @@ import angularLogo from "../img/angular-logo.png";
     What is it for? By default, TypeScript uses DOM types, which include APIs
     like document, window, etc. However, Web Workers do not have access to these
     APIs (for example, window does not exist in a worker). In Angular, when you
-    create a Web Worker, this directive ensures that TypeScript uses the correct
-    set of types, providing only the APIs available in a Web Worker, such as
-    postMessage, onmessage, and other global objects typical of a worker.
+    create a Web Worker, this directive adds the worker types (postMessage,
+    onmessage, self…), and tsconfig.worker.json drops the DOM lib, so together
+    they expose only the APIs available in a Web Worker.
   </PNotes>
 </p-slide>
 <p-slide>
   <CodeWindow
     is:raw
-    file="worker-test.worker.ts"
+    file="worker-test.service.ts"
     lang="ts"
     scale={0.7}
     indent={6}
@@ -163,7 +163,7 @@ import angularLogo from "../img/angular-logo.png";
 
       createWorker() {
         this.#worker = new Worker(
-          new URL('./worker-test.worker.ts', import.meta.url)
+          new URL('./worker-test.worker', import.meta.url)
         );
       }
 
@@ -191,6 +191,14 @@ import angularLogo from "../img/angular-logo.png";
       style="--sketch-height: 2.3em; position: absolute; inset-block-end: 6.2em; inline-size: 8em; inset-inline-start: 15em; z-index: 1"
     ></span>
   </p-fragment>
+  <PNotes>
+    <p>
+      Limit of this version: one worker, and every call overwrites onmessage.
+      Two calls in parallel → the first Observable never completes and the
+      second may get the first answer. Fine for one task at a time; that's
+      exactly the problem the pool solves next.
+    </p>
+  </PNotes>
 </p-slide>
 <p-slide>
   <h4 layout="center" style="margin-block-end: 0.5em">
@@ -228,7 +236,7 @@ import angularLogo from "../img/angular-logo.png";
     <span aria-hidden="true">📚</span>{" "}
     <span gradient="sub">Web Worker Pool</span>
   </h3>
-  <ul density="spaced" style="font-weight: 100">
+  <ul density="spaced" text="mid">
     <li>
       ♻️ <span gradient>Reduced Overhead</span>
     </li>
@@ -253,12 +261,13 @@ import angularLogo from "../img/angular-logo.png";
         and resources. A pool avoids repeatedly creating and destroying workers.
       </li>
       <li>
-        Efficient Resource Management: Workers are reused, preventing memory
-        leaks and excessive resource consumption.
+        Efficient Resource Management: a fixed number of workers keeps memory
+        and threads bounded, no matter how many tasks arrive.
       </li>
       <li>
-        Scalability: You can control the number of active workers, ensuring the
-        application adapts to the device's capabilities.
+        Scalability: size the pool on the device, e.g. from
+        navigator.hardwareConcurrency (logical cores, minus one for the main
+        thread).
       </li>
     </ul>
   </PNotes>
@@ -311,7 +320,7 @@ import angularLogo from "../img/angular-logo.png";
       createPoolWorkers() {
         for (let i = 0; i < POOL_SIZE; i++) {
           const worker = new Worker(
-            new URL('./worker-test.worker.ts', import.meta.url)
+            new URL('./worker-test.worker', import.meta.url)
           );
           this.#increaseWorkerPool(worker);
         }
@@ -339,10 +348,9 @@ import angularLogo from "../img/angular-logo.png";
     lang="ts"
     scale={0.7}
     indent={4}
-    lines={15}
+    lines={16}
   >
     export class WorkerPoolService {
-      //...
       getWorker(data: string): Observable<string> | null {
         const worker = this.#workers.pop();
         if (!worker) return null;
@@ -350,10 +358,11 @@ import angularLogo from "../img/angular-logo.png";
           worker.onmessage = ({ data }: MessageEvent<string>) => {
             observer.next(data);
             observer.complete();
-            this.#increaseWorkerPool(worker);
           };
           worker.onerror = (error) => observer.error(error);
           worker.postMessage(data);
+          // teardown: runs on complete, error and unsubscribe
+          return () => this.#increaseWorkerPool(worker);
         });
       }
     }
@@ -361,15 +370,29 @@ import angularLogo from "../img/angular-logo.png";
   <p-fragment>
     <span
       sketch-circle
-      style="--sketch-height: 1.3em; position: absolute; inset-block-end: 8.2em; inline-size: 5em; inset-inline-start: 6em; z-index: 1"
+      style="--sketch-height: 1.3em; position: absolute; inset-block-end: 9em; inline-size: 5em; inset-inline-start: 6em; z-index: 1"
     ></span>
   </p-fragment>
   <p-fragment>
     <span
       sketch-circle
-      style="--sketch-height: 1.3em; position: absolute; inset-block-end: 4.6em; inline-size: 7em; inset-inline-start: 3.5em; z-index: 1"
+      style="--sketch-height: 1.3em; position: absolute; inset-block-end: 4.1em; inline-size: 8.6em; inset-inline-start: 5.4em; z-index: 1"
     ></span>
   </p-fragment>
+  <PNotes>
+    <p>
+      The worker goes back to the pool in the Observable teardown, so it is
+      released on success, on error and if the subscriber unsubscribes.
+    </p>
+    <p>
+      getWorker() returns null when the pool is empty: in production, queue the
+      task instead and run it when a worker is released.
+    </p>
+    <p>
+      Caveat: the worker leaves the pool when getWorker() is called, but the
+      Observable is lazy. If nobody subscribes, the worker never comes back.
+    </p>
+  </PNotes>
 </p-slide>
 
 <style>

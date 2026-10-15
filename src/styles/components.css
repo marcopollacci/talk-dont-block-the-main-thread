@@ -311,7 +311,7 @@
   ul[density="spaced"] {
     display: flex;
     flex-direction: column;
-    row-gap: 1.5rem;
+    row-gap: 0.6em;
   }
 
   [density="loose"] li {
@@ -550,6 +550,247 @@
     background: paint(sketchy-arrow);
     filter: drop-shadow(0.075em 0.075em 0 white);
     text-align: center;
+  }
+
+  /* ---------- Games and gags ---------- */
+
+  /* <WhoWins>: A/B duel, the revealed [verdict] picks the winner */
+  [duel] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: stretch;
+    column-gap: 0.5em;
+    margin-block: 0.4em;
+  }
+
+  [contender] {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    justify-items: stretch;
+    row-gap: 0.15em;
+
+    > b {
+      justify-self: center;
+      font-size: 0.7em;
+    }
+
+    /* Both code windows as tall as the taller one, code a bit smaller
+       to fit half a slide */
+    > pre {
+      --code-scale: 0.82;
+      block-size: 100%;
+      margin: 0;
+    }
+  }
+
+  [vs] {
+    align-self: center;
+    margin-block-start: 0.5em;
+    font-weight: 800;
+    color: var(--brand-color);
+  }
+
+  [verdict] {
+    white-space: nowrap;
+  }
+
+  /* winner="none": nobody wins, both are dimmed */
+  p-slide:has([verdict][winner="a"][aria-hidden="false"]) [contender="b"],
+  p-slide:has([verdict][winner="b"][aria-hidden="false"]) [contender="a"],
+  p-slide:has([verdict][winner="none"][aria-hidden="false"]) [contender] {
+    /* The loser fades out; the ✗ label stays fully visible */
+    > b::after {
+      content: " ✗" / "";
+    }
+
+    > pre {
+      outline: 0.06em dashed var(--muted-color);
+      outline-offset: 0.1em;
+      opacity: 0.25;
+      filter: grayscale(1);
+    }
+  }
+
+  p-slide:has([verdict][winner="a"][aria-hidden="false"]) [contender="a"],
+  p-slide:has([verdict][winner="b"][aria-hidden="false"]) [contender="b"] {
+    > b::after {
+      content: " 🏆" / "";
+    }
+
+    > pre {
+      outline: 0.08em solid var(--brand-color);
+      outline-offset: 0.1em;
+    }
+  }
+
+  /* Fake freeze: the slide greys out under a "Page Unresponsive" dialog.
+     CSS only, the deck keeps working */
+  p-slide:has(> [frozen-page][aria-hidden="false"])
+    > :not([frozen-page], [main-thread], p-notes) {
+    filter: grayscale(1);
+    opacity: 0.35;
+    transition:
+      opacity var(--fragment-duration, 300ms),
+      filter var(--fragment-duration, 300ms);
+  }
+
+  [frozen-page] {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+
+    > [role="img"] {
+      display: grid;
+      gap: 0.5em;
+      inline-size: 20em;
+      padding: 1em 1.2em;
+      border-radius: 0.5em;
+      background: white;
+      box-shadow: 0 0.2em 1.5em oklch(0 0 0 / 0.3);
+      color: oklch(0.25 0 0);
+      font-size: 0.4em;
+      line-height: 1.3;
+      text-align: start;
+
+      > b {
+        font-size: 1.2em;
+        white-space: nowrap;
+      }
+    }
+
+    [dialog-buttons] {
+      display: flex;
+      justify-content: end;
+      gap: 0.5em;
+      margin-block-start: 0.3em;
+
+      > span {
+        padding: 0.3em 0.9em;
+        border: 0.06em solid oklch(0.8 0 0);
+        border-radius: 1em;
+        color: oklch(0.45 0.18 260);
+        font-size: 0.9em;
+        white-space: nowrap;
+      }
+
+      > :last-child {
+        border-color: transparent;
+        background: oklch(0.45 0.18 260);
+        color: white;
+      }
+    }
+  }
+
+  /* Fake task manager: rows pile up as fragments */
+  [task-manager] {
+    inline-size: 100%;
+    border-collapse: collapse;
+    border: 0.04em solid oklch(0.85 0 0);
+    border-radius: 0.2em;
+    font-size: 0.42em;
+    font-variant-numeric: tabular-nums;
+
+    caption {
+      padding: 0.4em 0.8em;
+      background: oklch(0.95 0 0);
+      font-weight: 700;
+      text-align: start;
+    }
+
+    :is(th, td) {
+      padding: 0.25em 0.8em;
+      text-align: end;
+      white-space: nowrap;
+
+      &:first-child {
+        text-align: start;
+      }
+    }
+
+    th {
+      border-block-end: 0.04em solid oklch(0.85 0 0);
+      color: var(--muted-color);
+      font-weight: 500;
+    }
+
+    tbody tr:nth-child(even) {
+      background: oklch(0.98 0 0);
+    }
+
+    tbody tr:last-child {
+      color: var(--alert-color);
+      font-weight: 700;
+    }
+  }
+
+  /* <Meme>: image with captions overlaid as real text */
+  [meme] {
+    position: relative;
+    inline-size: fit-content;
+    margin: 0 auto;
+
+    > img {
+      display: block;
+      block-size: var(--size, 8em);
+      inline-size: auto;
+      border-radius: 0.2em;
+    }
+  }
+
+  [caption] {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: var(--y, 50%);
+    translate: -50% -50%;
+    padding: 0.1em 0.3em;
+    border-radius: 0.15em;
+    background: var(--caption-bg, oklch(1 0 0 / 0.9));
+    color: oklch(0.2 0 0);
+    font-size: var(--caption-size, 0.42em);
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+
+    code {
+      font-size: 0.95em;
+    }
+  }
+
+  /* <MainThread>: running-gag mascot, bottom-right corner */
+  [main-thread] {
+    position: absolute;
+    /* Above the deck's prev/next buttons (em of the 0.4em font-size) */
+    inset-block-end: 3.4em;
+    inset-inline-end: 1.6em;
+    z-index: 2;
+    display: flex;
+    align-items: end;
+    gap: 0.2em;
+    font-size: 0.4em;
+
+    > [aria-hidden] {
+      font-size: 2.4em;
+      line-height: 1;
+    }
+
+    > [bubble] {
+      display: grid;
+      padding: 0.4em 0.7em;
+      border: 0.08em solid var(--brand-color);
+      border-radius: 0.8em 0.8em 0 0.8em;
+      background: white;
+      color: oklch(0.2 0 0);
+      white-space: nowrap;
+
+      small {
+        color: var(--muted-color);
+        font-size: 0.8em;
+        font-variant-numeric: tabular-nums;
+      }
+    }
   }
 
   @media (prefers-reduced-motion: no-preference) {
