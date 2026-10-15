@@ -1,81 +1,50 @@
 ---
 import { Image } from "astro:assets";
-import fourtyFactory from "../img/40factory.svg";
-import me from "../img/me.png";
-const { qrLink, urlLink, qrLinkRating, QuestionsSlide, meReloaded, RepoSlide } =
+import Speaker from "../components/Speaker.astro";
+const { qrLink, urlLink, qrLinkRating, QuestionsSlide, RepoSlide, meReloaded } =
   Astro.props;
 ---
 
 <p-slide>
   <img
-    alt="thatsall"
+    alt="Animated “That's all folks!” closing card"
     src="/img/thatsall.gif"
-    style="--image-start-size: 100%"
-    class="alter-image-size"
+    style="--size: 100%"
   />
 </p-slide>
-<p-slide class="center">
+<p-slide layout="center">
   <h2 style="margin-block-end: 0.3em">You can see this slide on</h2>
-  {
-    !qrLink ? (
-      <p-note class="to-do" style="margin-block-end: 0.5em">
-        adding qr image!
-      </p-note>
-    ) : (
-      <p-note style="margin-block-end: 0.5em">
-        <Image src={qrLink} alt="qrcode slide" class="alter-image-size" />
-      </p-note>
-    )
-  }
-  {
-    !urlLink ? (
-      <p-note class="to-do">
-        <a href="">adding link</a>
-      </p-note>
-    ) : (
-      <p-note>
-        <a href={urlLink}>{urlLink}</a>
-      </p-note>
-    )
-  }
+  {qrLink ? (
+    <p-note style="margin-block-end: 0.5em">
+      <Image src={qrLink} alt="QR code to these slides" style="--size: 8em" />
+    </p-note>
+  ) : (
+    <p-note todo style="margin-block-end: 0.5em">
+      adding qr image!
+    </p-note>
+  )}
+  {urlLink ? (
+    <p-note>
+      <a href={urlLink}>{urlLink}</a>
+    </p-note>
+  ) : (
+    <p-note todo>adding link</p-note>
+  )}
 </p-slide>
 {RepoSlide && <RepoSlide />}
 {QuestionsSlide && <QuestionsSlide />}
-<p-slide class="two-columns">
-  <p-note class="text-cover my-data my-presentation">
-    <h5 class="text-cover">Thank you again!</h5>
-    <Image
-      src={meReloaded || me}
-      class="my-face alter-image-size"
-      alt="me"
-      style="--image-start-size: 6em"
-    />
-
-    <span>Marco Pollacci</span>
-    <span>Senior Frontend Developer</span>
-    <div role="generic">
-      <span>@</span>
-      <Image
-        src={fourtyFactory}
-        alt="40factory logo"
-        class="alter-image-size"
-        style="--image-start-size: .6em"
-      />
-    </div>
-  </p-note>
-  <p-note class="text-cover my-data my-presentation">
+<p-slide layout="two-columns">
+  <Speaker heading="Thank you again!" {meReloaded} />
+  <p-note card gradient="cover">
     <h5>Leave some feedback</h5>
-    {
-      !qrLinkRating ? (
-        <span class="to-do">adding qr image!</span>
-      ) : (
-        <Image
-          src={qrLinkRating}
-          style="--image-start-size: 8.5em; background-color: #ffffff"
-          alt="qrcode slide"
-          class="alter-image-size"
-        />
-      )
-    }
+    {qrLinkRating ? (
+      <Image
+        src={qrLinkRating}
+        alt="QR code to rate this talk"
+        style="--size: 8.5em; background-color: white"
+      />
+    ) : (
+      <span todo>adding qr image!</span>
+    )}
   </p-note>
 </p-slide>

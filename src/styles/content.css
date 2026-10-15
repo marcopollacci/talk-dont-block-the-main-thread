@@ -1,0 +1,220 @@
+/* Plain HTML elements inside slides */
+@layer content {
+  /* Images: set the size inline, e.g. style="--size: 6em; --width: 10em" */
+  p-slide img {
+    block-size: var(--size, auto);
+    inline-size: var(--width, auto);
+  }
+
+  /* Inline code */
+  :not(pre) > code {
+    padding: 0 0.25em;
+    border-radius: 0.25em;
+    background-color: color-mix(
+      in oklch,
+      var(--brand-color-ant) 10%,
+      transparent
+    );
+    box-shadow: inset 0 0 0.05em oklch(0 0 0 / 0.25);
+
+    pre & {
+      box-shadow: none;
+    }
+  }
+
+  /* Code blocks: <CodeWindow> (Shiki sets data-language and the colours) */
+  pre[data-language] {
+    margin: 0.5em 0;
+    padding: 1em;
+    border-radius: 0.3em;
+    overflow: auto;
+    font-family:
+      "Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    font-size: 50%;
+    line-height: 1.5;
+    text-align: start;
+    white-space: pre;
+    tab-size: 2;
+    hyphens: none;
+
+    &[size="small"] {
+      font-size: 40%;
+    }
+
+    &[size="big"] {
+      font-size: 75%;
+      padding: 0.5em 0.6667em;
+    }
+
+    /* A single line of code as big as the slide text, e.g. an API signature */
+    &[size="full"] {
+      font-size: 100%;
+      padding: 0.1em 0.4em;
+    }
+
+    /* Without a title bar the block is as wide as its code */
+    &:not([data-label-file]) {
+      inline-size: fit-content;
+    }
+
+    ::selection {
+      background: oklch(0.92 0.002 270);
+    }
+
+    /* <CodeWindow lines="N">: shows N lines, scrolls to follow the fragments */
+    > code[follow-fragments] {
+      display: block;
+      max-block-size: calc(var(--lines) * 1lh);
+      overflow-y: auto;
+      scrollbar-width: thin;
+
+      &:focus-visible {
+        outline: 0.1em solid var(--brand-color);
+        outline-offset: -0.1em;
+      }
+    }
+  }
+
+  :is(pre, code)[dense] {
+    line-height: 1.1em;
+  }
+
+  /* <pre data-label-file="main.css">: editor window with title bar */
+  pre[data-label-file] {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0.5em;
+    border: 1px solid oklch(0.827 0 0);
+    border-radius: 1em;
+
+    /* Inner padding: code never touches the window edges */
+    > code {
+      display: block;
+      padding: 0.5em 1em 0;
+    }
+
+    &::before {
+      content: attr(data-label-file);
+      display: block;
+      inline-size: 100%;
+      padding: 0.5em 1em;
+      border-block-end: 1px solid oklch(0.827 0 0);
+      font-size: 0.7em;
+      text-align: center;
+      color: oklch(0.537 0.002 17.2);
+    }
+
+    &::after {
+      content: "🔴 🟡 🟢" / "";
+      position: absolute;
+      top: 0.5em;
+      inset-inline-start: 1em;
+      font-size: 0.7em;
+    }
+
+    p-slide[aria-hidden="false"] & {
+      p-fragment {
+        &[aria-hidden="true"][aria-current="false"] {
+          opacity: 0.2;
+        }
+        &[aria-hidden="false"] {
+          opacity: 1;
+        }
+      }
+
+      code {
+        white-space: pre;
+      }
+    }
+  }
+
+  /* Quotes: <figure><blockquote>…</blockquote><figcaption><cite>…</cite></figcaption></figure> */
+  blockquote {
+    position: relative;
+    margin: 0;
+    padding: 1.2em;
+    font-size: 0.5em;
+    line-height: 1.4;
+
+    b {
+      font-weight: 500;
+    }
+
+    &::before,
+    &::after {
+      position: absolute;
+      inline-size: 4rem;
+      block-size: 4rem;
+      font-size: 5em;
+      color: oklch(0.67 0 0);
+    }
+    &::before {
+      content: "“" / "";
+      inset-inline-start: -0.1em;
+      top: -0.3em;
+    }
+    &::after {
+      content: "”" / "";
+      inset-inline-end: 0;
+      bottom: 0.15em;
+    }
+  }
+
+  figure:has(> blockquote) {
+    margin: 0;
+
+    figcaption {
+      margin-inline-start: 1em;
+      font-size: 0.5em;
+      line-height: 3;
+      text-align: start;
+
+      a {
+        color: inherit;
+      }
+    }
+  }
+
+  /* Slide heading block with a brand accent */
+  p-slide > header {
+    margin: 0 0 0.5em;
+    padding: 0.5em;
+    border-inline-start: var(--brand-color) solid 0.15em;
+  }
+
+  /* Browser support matrix: <table support> */
+  table[support] {
+    inline-size: 12em;
+    margin: auto;
+    border-collapse: collapse;
+    font-size: 150%;
+
+    img {
+      block-size: 2em;
+      filter: saturate(0) drop-shadow(0.1em 0.1em 0.1em oklch(0 0 0 / 0.33));
+    }
+
+    th {
+      border-block-end: 0.1em solid;
+    }
+
+    :is(td, th) {
+      padding: 0.5em;
+      text-align: center;
+
+      &:not(:first-child) {
+        border-inline-start: 0.1em solid;
+      }
+    }
+
+    span {
+      font-size: 150%;
+    }
+
+    caption {
+      margin-block-end: 0.5em;
+      font-family: "Old Newspaper Types", serif;
+      font-size: 60%;
+    }
+  }
+}

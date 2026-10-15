@@ -1,0 +1,201 @@
+/* Deck chrome outside the slides: toolbar, nav, progress bar, hints */
+@layer chrome {
+  body > :is([role="toolbar"], nav) {
+    position: fixed;
+    bottom: 0.5rem;
+    display: flex;
+
+    button {
+      position: relative;
+      inline-size: 1em;
+      block-size: 1em;
+      margin: 0.25em;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      background: none;
+      font-size: 3rem;
+      color: var(--controls-color);
+      cursor: pointer;
+    }
+  }
+
+  /* body itself is the fullscreen element */
+  :is(:fullscreen, [electron]) > :is([role="toolbar"], nav) {
+    display: none;
+  }
+
+  body > [role="toolbar"] {
+    left: 0;
+    flex-direction: column;
+
+    button {
+      opacity: 0.5;
+      transition: opacity 300ms;
+
+      &:is(:hover, :focus-visible) {
+        opacity: 1;
+      }
+    }
+
+    /* The grid icon has a wider inner padding */
+    [value="grid"] {
+      margin-inline-start: 0.5rem;
+    }
+
+    svg {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+    }
+
+    /* Enter/exit fullscreen icons */
+    [command="--fullscreen"] path:last-child {
+      display: none;
+    }
+  }
+
+  body > nav {
+    right: 0;
+
+    button {
+      &:disabled {
+        cursor: default;
+        opacity: 0.5;
+      }
+
+      /* Chevron drawn with two bars */
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0.45em;
+        left: 0.45em;
+        inline-size: 0.707em;
+        block-size: 0.1em;
+        background: currentColor;
+        transform-origin: 0.05em 0.05em;
+      }
+    }
+
+    [command="--previous"] {
+      &::before {
+        rotate: 45deg;
+      }
+      &::after {
+        rotate: -45deg;
+      }
+    }
+    [command="--next"] {
+      &::before {
+        rotate: 135deg;
+      }
+      &::after {
+        rotate: -135deg;
+      }
+    }
+  }
+
+  :fullscreen > [role="toolbar"] [command="--fullscreen"] path {
+    &:first-child {
+      display: none;
+    }
+    &:last-child {
+      display: inline;
+    }
+  }
+
+  body > [role="progressbar"] {
+    --progress: 0%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 150;
+    inline-size: 100vw;
+    block-size: 0.5rem;
+    /* Same palette as the gradient text: follows the talk's tokens */
+    background: linear-gradient(
+      to right in oklch,
+      var(--gradient-from) 0%,
+      var(--gradient-to) var(--progress),
+      transparent 0
+    );
+  }
+
+  body[coming-soon] > img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    max-inline-size: 100%;
+  }
+
+  /* Touch devices: counter and rotate hint, slimmer floating nav */
+  body > nav output,
+  body > aside {
+    display: none;
+  }
+
+  @media (pointer: coarse) {
+    /* Horizontal pans are slide swipes (scripts/deck.js), not browser scroll */
+    p-deck {
+      touch-action: pan-y pinch-zoom;
+    }
+
+    /* Only fullscreen and mode toggles live there: not needed on touch */
+    body > [role="toolbar"] {
+      display: none;
+    }
+
+    body > nav {
+      inset-inline: 0;
+      bottom: 1rem;
+      inline-size: fit-content;
+      margin-inline: auto;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: 999px;
+      background-color: oklch(1 0 0 / 0.75);
+      box-shadow: 0 0.125rem 0.75rem oklch(0 0 0 / 0.15);
+      backdrop-filter: blur(0.5rem);
+      transition: opacity 400ms;
+      z-index: 200;
+
+      button {
+        font-size: 1.75rem;
+        margin: 0.5rem;
+      }
+
+      output {
+        display: block;
+        min-inline-size: 3.5em;
+        font-size: 0.875rem;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+        white-space: nowrap;
+        color: var(--controls-color);
+      }
+    }
+
+    @media (orientation: portrait) {
+      body > aside {
+        display: block;
+        position: fixed;
+        inset-inline: 0;
+        top: calc(50% - 28.125vw - 3em);
+        margin: 0;
+        font-size: 0.875rem;
+        text-align: center;
+        white-space: nowrap;
+        color: var(--controls-color);
+      }
+    }
+
+    @media (orientation: landscape) {
+      body[idle] > nav:not(:focus-within) {
+        opacity: 0;
+      }
+    }
+  }
+}

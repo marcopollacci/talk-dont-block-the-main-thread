@@ -1,0 +1,71 @@
+/* Registered so the Houdini worklet (public/js/sketchy-arrow.js) gets typed values */
+@property --sketchy-arrow-width {
+  syntax: "<length>";
+  initial-value: 1px;
+  inherits: true;
+}
+@property --sketchy-arrow-tip-spread {
+  syntax: "<angle>";
+  initial-value: 45deg;
+  inherits: true;
+}
+@property --sketchy-arrow-tip-size {
+  syntax: "<number>";
+  initial-value: 40;
+  inherits: true;
+}
+@property --sketchy-arrow-point-approx {
+  syntax: "<number>";
+  initial-value: 3;
+  inherits: true;
+}
+@property --sketchy-arrow-count {
+  syntax: "<integer>";
+  initial-value: 3;
+  inherits: true;
+}
+@property --sketchy-arrow-color {
+  syntax: "<color>";
+  initial-value: black;
+  inherits: true;
+}
+@property --sketchy-arrow-random-seed {
+  syntax: "<integer>";
+  initial-value: 1234;
+  inherits: true;
+}
+
+@layer tokens {
+  :root {
+    /* p-slides */
+    --slide-debug: 0;
+    --slide-aspect-ratio: calc(16 / 9);
+    --slide-font-size: 4;
+    --slide-print-width: 297mm;
+    --slide-bg: white;
+    --fragment-duration: calc(300ms + 1200ms * var(--slide-debug));
+
+    /* Brand */
+    --brand-color: oklch(0.449 0.156 330.7);
+    --brand-color-ant: oklch(0.696 0.204 43.5);
+    --controls-color: oklch(0.6 0 0);
+    --muted-color: oklch(0.402 0 0);
+    --alert-color: oklch(0.628 0.258 29.2);
+
+    /* Gradient text: override per slide with --gradient-from / --gradient-to */
+    /* Talk palette: blue → magenta (lightest point ≥ 3:1 on white) */
+    --gradient-from: oklch(0.65 0.18 249.6);
+    --gradient-to: oklch(0.697 0.318 330.1);
+    --gradient-sub-from: oklch(0.68 0.299 337.3);
+    --gradient-sub-to: oklch(0.677 0.213 33.7);
+    --gradient-cover-from: var(--gradient-from);
+    --gradient-cover-to: var(--gradient-to);
+
+    --sketchy-arrow-width: 0.1em;
+    --sketchy-arrow-tip-size: 20;
+
+    --entrance-easing: cubic-bezier(0.3, 1.21, 0.79, 0.91);
+
+    font-family: var(--font-graphik), system-ui, sans-serif;
+  }
+}

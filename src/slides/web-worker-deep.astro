@@ -1,27 +1,41 @@
 ---
+import CodeWindow from "../components/CodeWindow.astro";
 import PNotes from "../components/PNotes.astro";
 ---
 
 <p-slide>
-  <h3><span class="main-gradient">Let's go further</span> ᯓ🏃🏻‍♀️‍➡️</h3>
+  <h3>
+    <span gradient>Let's go further</span>
+    <span aria-hidden="true">ᯓ🏃🏻‍♀️‍➡️</span>
+  </h3>
 </p-slide>
 <p-slide>
-  <code style="width: fit-content" class="language-javascript"
-    >self.onmessage = (event) => {};</code
-  >
+  <CodeWindow is:raw lang="js" size="full">
+    self.onmessage = (event) => {};
+  </CodeWindow>
 </p-slide>
 <p-slide>
-  <code style="width: fit-content" class="language-javascript mid-dimension"
-    >self.onmessage = (event) => {};</code
-  >
+  <CodeWindow is:raw lang="js" size="big">
+    self.onmessage = (event) => {};
+  </CodeWindow>
   <ul style="margin-block-start: 0.5em">
-    <li p-fragment p-effect="from left">📌 data</li>
-    <li p-fragment p-effect="from right">📌 origin</li>
-    <li p-fragment p-effect="from below">📌 source</li>
-    <li p-fragment p-effect="zoom">📌 ports</li>
+    <li p-fragment p-effect="from left">
+      📌 data
+    </li>
+    <li p-fragment p-effect="from right">
+      📌 origin
+    </li>
+    <li p-fragment p-effect="from below">
+      📌 source
+    </li>
+    <li p-fragment p-effect="zoom">
+      📌 ports
+    </li>
   </ul>
   <PNotes>
-    <p><b is:raw>-->all of these properties are read-only<--</b></p>
+    <p>
+      <b is:raw>-->all of these properties are read-only<--</b>
+    </p>
     <ul style="font-size: 0.8em">
       <li style="margin-block-end: 0.5em">
         data: The data sent from the main thread to the web worker
@@ -43,31 +57,36 @@ import PNotes from "../components/PNotes.astro";
   </PNotes>
 </p-slide>
 <p-slide>
-  <code style="width: fit-content" class="language-javascript"
-    >postMessage(message, transfer)</code
-  >
+  <CodeWindow is:raw lang="js" size="full">
+    postMessage(message, transfer)
+  </CodeWindow>
 </p-slide>
-<p-slide class="center">
-  <code style="width: fit-content" class="language-javascript mid-dimension"
-    >postMessage(message, transfer)</code
-  >
-  <div
-    class="flex two-columns-divided-vertically"
-    style="margin-block-start: 1em"
-  >
+<p-slide layout="center">
+  <CodeWindow is:raw lang="js" size="big">
+    postMessage(message, transfer)
+  </CodeWindow>
+  <div layout="two-columns" style="margin-block-start: 1em">
     <div>
-      <p>💬 <span class="main-sub-gradient">message</span></p>
+      <p>
+        💬 <span gradient="sub">message</span>
+      </p>
       <p p-fragment p-effect="from left">
         📨 will be in the data field in the message object
       </p>
-      <p p-fragment p-effect="zoom">🚩 required</p>
+      <p p-fragment p-effect="zoom">
+        🚩 required
+      </p>
     </div>
     <div>
-      <p>🚚 <span class="main-gradient">transfer</span></p>
+      <p>
+        🚚 <span gradient>transfer</span>
+      </p>
       <p p-fragment p-effect="from right">
         🚌 only transferable objects like ArrayBuffer or ImageBitmap
       </p>
-      <p p-fragment p-effect="zoom">😶‍🌫️ optional</p>
+      <p p-fragment p-effect="zoom">
+        😶‍🌫️ optional
+      </p>
     </div>
   </div>
   <PNotes>
@@ -86,40 +105,55 @@ import PNotes from "../components/PNotes.astro";
   </PNotes>
 </p-slide>
 <p-slide>
-  <code style="width: fit-content" class="language-javascript"
-    >worker.onerror = (event) => {};</code
-  >
+  <CodeWindow is:raw lang="js" size="full">
+    worker.onerror = (event) => {};
+  </CodeWindow>
 </p-slide>
 <p-slide>
-  <code style="width: fit-content" class="language-javascript mid-dimension"
-    >worker.onerror = (event) => {};</code
-  >
-  <ul class="space" style="margin-block-start: 0.7em">
-    <li p-fragment p-effect="from left">⛔ ErrorEvent</li>
+  <CodeWindow is:raw lang="js" size="big">
+    worker.onerror = (event) => {};
+  </CodeWindow>
+  <ul density="spaced" style="margin-block-start: 0.7em">
+    <li p-fragment p-effect="from left">
+      ⛔ ErrorEvent
+    </li>
     <li p-fragment p-effect="from right">
-      💬 Optional string on <span class="main-sub-gradient">message</span> properties
-      <pre
-        style="margin-block-start: 1em; border-radius: 0.5em; box-shadow: inset 0 0 0.09em rgba(0, 0, 0, 0.25)"><code is:raw class="language-javascript">worker.onerror = (event) => {
-  console.log(event.message);
-};</code></pre>
+      💬 Optional string on <span gradient="sub">message</span> properties
+      <div style="margin-block-start: 1em">
+        <CodeWindow is:raw lang="js">
+          worker.onerror = (event) => {
+            console.log(event.message);
+          };
+        </CodeWindow>
+      </div>
     </li>
   </ul>
 </p-slide>
 <p-slide>
   <h3>
-    🤝🏻 <span class="main-gradient">Web Worker - Practical Use Cases</span>
+    <span aria-hidden="true">🤝🏻</span>
+    <span gradient>Web Worker - Practical Use Cases</span>
   </h3>
-  <ul style="--web-day-ul-space: 0.1em" class="space mid-dimension">
+  <ul density="spaced" text="mid">
     <li>🖼️ Image compression and processing</li>
-    <li p-fragment p-effect="from below">🧾 CSV data processing and formatting</li>
-    <li p-fragment p-effect="zoom">🧮 Complex algorithms</li>
+    <li p-fragment p-effect="from below">
+      🧾 CSV data processing and formatting
+    </li>
+    <li p-fragment p-effect="zoom">
+      🧮 Complex algorithms
+    </li>
   </ul>
 </p-slide>
 <p-slide>
-  <h3><span class="main-gradient">Let's go further</span> ᯓᯓ🏃🏻‍♀️‍➡️🏃🏻‍♀️‍➡️</h3>
+  <h3>
+    <span gradient>Let's go further</span>
+    <span aria-hidden="true">ᯓᯓ🏃🏻‍♀️‍➡️🏃🏻‍♀️‍➡️</span>
+  </h3>
 </p-slide>
 <p-slide>
-  <h2>🤝🏻 <span class="main-gradient">Shared Worker</span></h2>
+  <h2>
+    <span aria-hidden="true">🤝🏻</span> <span gradient>Shared Worker</span>
+  </h2>
   <PNotes>
     Dedicated Workers are the most common: They are created from a single page
     with new Worker(). Each instance is independent (if you open two tabs of the
@@ -128,20 +162,20 @@ import PNotes from "../components/PNotes.astro";
   </PNotes>
 </p-slide>
 <p-slide>
-  <h3>🤝🏻 <span class="main-gradient">Shared Worker</span></h3>
-  <ul style="--web-day-ul-space: 0.2em" class="space mid-dimension">
+  <h3>
+    <span aria-hidden="true">🤝🏻</span> <span gradient>Shared Worker</span>
+  </h3>
+  <ul density="spaced" text="mid">
     <li>
-      🌍 <span class="main-sub-gradient">Can be shared</span> across multiple tabs
-      of the same origin
+      🌍 <span gradient="sub">Can be shared</span> across multiple tabs of the
+      same origin
     </li>
     <li p-fragment p-effect="zoom">
-      😎 <span class="main-sub-gradient">Keep alive</span> until all tabs are closed
-      (even if the page is reloaded)
+      😎 <span gradient="sub">Keep alive</span> until all tabs are closed (even
+      if the page is reloaded)
     </li>
     <li p-fragment p-effect="from below">
-      💬 Communicate through the <span class="main-sub-gradient"
-        >MessagePort API</span
-      >
+      💬 Communicate through the <span gradient="sub">MessagePort API</span>
     </li>
   </ul>
   <PNotes>
@@ -154,26 +188,29 @@ import PNotes from "../components/PNotes.astro";
 </p-slide>
 <p-slide>
   <h3>
-    🤝🏻 <span class="main-gradient">Shared Worker - Practical Use Cases</span>
+    <span aria-hidden="true">🤝🏻</span>
+    <span gradient>Shared Worker - Practical Use Cases</span>
   </h3>
-  <ul style="--web-day-ul-space: 0.1em" class="space mid-dimension">
+  <ul density="spaced" text="mid">
     <li>
-      🗣️ Cross-tab communication through the <span class="main-sub-gradient"
-        >MessagePort API</span
-      >
+      🗣️ Cross-tab communication through the{" "}
+      <span gradient="sub">MessagePort API</span>
     </li>
-    <li p-fragment p-effect="from right">🗃️ Shared Cache or Data Storage</li>
-    <li p-fragment p-effect="from left">👥 Session Management</li>
+    <li p-fragment p-effect="from right">
+      🗃️ Shared Cache or Data Storage
+    </li>
+    <li p-fragment p-effect="from left">
+      👥 Session Management
+    </li>
   </ul>
 </p-slide>
 <p-slide>
-  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
-  <pre
-    class="small-line"
-    data-label-file="shared-worker.js">
- <code is:raw class="language-javascript" style="font-size: 0.76em;"> 
+  <h4 layout="center" style="margin-block-end: 0.5em">
+    Let's Code <span aria-hidden="true">👨‍💻</span>
+  </h4>
+  <CodeWindow is:raw file="shared-worker.js" lang="js" size="small">
     const clients = [];
-    
+
     self.onconnect = (event) => {
       const [port] = event.ports;
       clients.push(port);
@@ -185,20 +222,20 @@ import PNotes from "../components/PNotes.astro";
           )
         );
       };
-    };</code>
-</pre>
-  <p-fragment
-    ><span
-      style="--circle-sketch-height: 1.4em; position: absolute; inset-block-end: 8.3em; width: 8em; inset-inline-start: 1.9em; z-index: 1"
-      class="circle-sketch-highlight"></span></p-fragment
-  >
+    };
+  </CodeWindow>
+  <p-fragment>
+    <span
+      sketch-circle
+      style="--sketch-height: 1.4em; position: absolute; inset-block-end: 8.64em; inline-size: 8em; inset-inline-start: 1.32em; z-index: 1"
+    ></span>
+  </p-fragment>
 </p-slide>
 <p-slide>
-  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
-  <pre
-    class="small-line language-javascript"
-    data-label-file="main.js">
-    <code is:raw class="language-javascript">
+  <h4 layout="center" style="margin-block-end: 0.5em">
+    Let's Code <span aria-hidden="true">👨‍💻</span>
+  </h4>
+  <CodeWindow is:raw file="main.js" lang="js">
     const sharedWorker = new SharedWorker("shared-worker.js");
     sharedWorker.port.start();
 
@@ -206,35 +243,39 @@ import PNotes from "../components/PNotes.astro";
       console.log(e.data);
     };
 
-    sharedWorker.port.postMessage("Hello from Tab 1");</code>
-  </pre>
-  <p-fragment
-    ><span
-      style="--circle-sketch-height: 1.8em; position: absolute; inset-block-end: 8.3em; width: 5em; inset-inline-start: 5.9em; z-index: 1"
-      class="circle-sketch-highlight"></span></p-fragment
-  >
+    sharedWorker.port.postMessage("Hello from Tab 1");
+  </CodeWindow>
+  <p-fragment>
+    <span
+      sketch-circle
+      style="--sketch-height: 1.8em; position: absolute; inset-block-end: 8.29em; inline-size: 5em; inset-inline-start: 5.2em; z-index: 1"
+    ></span>
+  </p-fragment>
 </p-slide>
 <p-slide>
-  <h2>⛓️‍💥 <span class="main-gradient">when client disconnect</span></h2>
+  <h2>
+    <span aria-hidden="true">⛓️‍💥</span>
+    <span gradient>when client disconnect</span>
+  </h2>
 </p-slide>
 <p-slide>
-  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
-  <pre
-    class="small-line language-javascript"
-    data-label-file="main.js">
-    <code is:raw class="language-javascript" style="font-size: 0.92em;">
-  const clients = [];
-  self.onconnect = (event) => {
-    // ...other stuff
-    port.onclose = () => {
-      clients.splice(clients.indexOf(port), 1);
-      clients.forEach((client) =>
-        client.postMessage(
-          `Client disconnected. Total clients remaining: ${clients.length}`
-        )
-      );
-    };
-  }</code></pre>
+  <h4 layout="center" style="margin-block-end: 0.5em">
+    Let's Code <span aria-hidden="true">👨‍💻</span>
+  </h4>
+  <CodeWindow is:raw file="main.js" lang="js" size="small">
+    const clients = [];
+    self.onconnect = (event) => {
+      // ...other stuff
+      port.onclose = () => {
+        clients.splice(clients.indexOf(port), 1);
+        clients.forEach((client) =>
+          client.postMessage(
+            `Client disconnected. Total clients remaining: ${clients.length}`
+          )
+        );
+      };
+    }
+  </CodeWindow>
   <PNotes>
     <p>
       When the client disconnects (closing the tab or window), the onclose event
@@ -246,31 +287,36 @@ import PNotes from "../components/PNotes.astro";
     </p>
   </PNotes>
 </p-slide>
-<p-slide class="center">
-  <h2><span class="main-gradient">Web Worker limitations</span> ❌</h2>
+<p-slide layout="center">
+  <h2>
+    <span gradient>Web Worker limitations</span>
+    <span aria-hidden="true">❌</span>
+  </h2>
 </p-slide>
 <p-slide>
-  <ul class="space" style="line-height: 1em">
-    <li>❌ <span class="main-sub-gradient">No access to the DOM</span></li>
+  <ul density="spaced" style="line-height: 1em">
+    <li>
+      ❌ <span gradient="sub">No access to the DOM</span>
+    </li>
     <li p-fragment p-effect="from right">
       ❌
-      <span class="main-sub-gradient"
-        >No access to global variables like <code style="font-size: 0.8em"
-          >window</code
-        >, <code style="font-size: 0.8em">document</code>, or
-        <code style="font-size: 0.8em">parent</code></span
-      >
+      <span gradient="sub">
+        No access to global variables like{" "}
+        <code style="font-size: 0.8em">window</code>,{" "}
+        <code style="font-size: 0.8em">document</code>, or
+        <code style="font-size: 0.8em">parent</code>
+      </span>
     </li>
     <li p-fragment p-effect="from left">
       ❌
-      <span class="main-sub-gradient"
-        >No synchronous APIs like <code style="font-size: 0.8em">alert()</code
-        >, <code style="font-size: 0.8em">confirm()</code>, or
-        <code style="font-size: 0.8em">prompt()</code></span
-      >
+      <span gradient="sub">
+        No synchronous APIs like <code style="font-size: 0.8em">alert()</code>,{" "}
+        <code style="font-size: 0.8em">confirm()</code>, or
+        <code style="font-size: 0.8em">prompt()</code>
+      </span>
     </li>
     <li p-fragment p-effect="zoom">
-      ❌ <span class="main-sub-gradient">No access to storage APIs</span>
+      ❌ <span gradient="sub">No access to storage APIs</span>
     </li>
   </ul>
   <PNotes>
@@ -292,11 +338,3 @@ import PNotes from "../components/PNotes.astro";
     </ul>
   </PNotes>
 </p-slide>
-<style lang="scss">
-  .two-columns-divided-vertically {
-    display: flex;
-    flex-direction: row;
-    align-content: center;
-    align-items: center;
-  }
-</style>

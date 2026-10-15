@@ -28,33 +28,24 @@ const metaData = {
 
 <Layout {canRender} {favIcon} {metaData}>
   <CoverAngularday2026 />
-  {
-    canRender && (
-      <>
-        <Cover />
-        <Intro />
-        <TheProblem />
-        <WebWorkerIntro />
-        <WebWorkerDeep />
-        <WebWorkerAngular />
-        <SignalsSection />
-        <Ai />
-        <WebWorkerOutro />
-        <Thanks
-          QuestionsSlide={Questions}
-          RepoSlide={Repo}
-          qrLinkRating={qrRating}
-          qrLink={qrSlide}
-          urlLink={metaData.site}
-        />
-      </>
-    )
-  }
+  {canRender && (
+    <>
+      <Cover />
+      <Intro />
+      <TheProblem />
+      <WebWorkerIntro />
+      <WebWorkerDeep />
+      <WebWorkerAngular />
+      <SignalsSection />
+      <Ai />
+      <WebWorkerOutro />
+      <Thanks
+        QuestionsSlide={Questions}
+        RepoSlide={Repo}
+        qrLinkRating={qrRating}
+        qrLink={qrSlide}
+        urlLink={metaData.site}
+      />
+    </>
+  )}
 </Layout>
-<style lang="scss" is:global>
-  ul.space {
-    display: flex;
-    flex-direction: column;
-    row-gap: 1.5rem;
-  }
-</style>

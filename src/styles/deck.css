@@ -1,0 +1,74 @@
+@layer deck {
+  p-deck {
+    /* The shadow :host sets 0.5s: slide transitions stay off unless debugging */
+    --sliding-duration: calc(2000ms * var(--slide-debug));
+
+    &:is(:not([mode]), [mode="presentation"]) {
+      transition: background-color var(--sliding-duration)
+        var(--sliding-duration);
+      background-color: var(--current-slide-bg, transparent);
+    }
+
+    &[mode="speaker"] {
+      p-slide:not([aria-current="page"]) {
+        transform: scale(calc(1 - var(--speaker-next-scale)));
+        top: calc(var(--speaker-next-scale) * -50%);
+        left: calc(var(--speaker-next-scale) * 50% - 50%);
+        opacity: 0.5;
+      }
+      p-slide[aria-current="page"] {
+        transform: scale(var(--speaker-next-scale));
+        top: calc(50% - var(--speaker-next-scale) * 50%);
+        left: calc(var(--speaker-next-scale) * 50% - 50%);
+        opacity: 1;
+
+        :is(
+            p-fragment,
+            [p-fragment]
+          )[aria-hidden="true"][aria-current="false"] {
+          opacity: 0.5;
+        }
+      }
+    }
+
+    /* <p-fragment none>: keeps its space, only toggles visibility */
+    &:not([mode="speaker"]) p-fragment[none] {
+      visibility: hidden;
+      &[aria-hidden="false"] {
+        visibility: visible;
+      }
+    }
+  }
+
+  p-slide {
+    position: relative;
+    background-color: var(--current-slide-bg, white);
+
+    /* <p-slide follow-fragments>: content taller than the slide scrolls,
+       deck.js keeps the last revealed fragment in view */
+    &[follow-fragments] {
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    &[debug] {
+      box-shadow:
+        inset 0 0 0 1em red,
+        inset 0 0 0 1.1em green;
+    }
+  }
+
+  /* Sibling fragments with group-fragment replace each other:
+     only the last revealed one stays on screen */
+  [group-fragment]:has(~ [group-fragment][aria-hidden="false"]) {
+    display: none;
+  }
+
+  /* Safari doesn't lay out fragments inside lists as list items */
+  @supports (font: -apple-system-body) and (-webkit-appearance: none) {
+    ul:has(p-fragment) {
+      display: flex;
+      flex-direction: var(--safari-ul-fragment-direction, column);
+    }
+  }
+}

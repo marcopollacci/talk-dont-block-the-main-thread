@@ -2,10 +2,8 @@
 const isProdmode = import.meta.env.PROD;
 ---
 
-{
-  !isProdmode && (
-    <p-notes>
-      <slot />
-    </p-notes>
-  )
-}
+{!isProdmode && (
+  <p-notes>
+    <slot />
+  </p-notes>
+)}

@@ -1,39 +1,11 @@
 ---
 import { Image } from "astro:assets";
-import fourtyFactory from "../img/40factory.svg";
-import me from "../img/me.png";
+import Speaker from "../components/Speaker.astro";
 import qrLink from "../img/qr_link.svg";
 const { meReloaded } = Astro.props;
 ---
 
-<p-slide class="two-columns" autoplay>
-  <p-note
-    style="position: relative;"
-    class="text-cover my-data my-presentation"
-  >
-    <h5>Hello Folks!</h5>
-    <Image
-      src={meReloaded || me}
-      class="my-face alter-image-size"
-      alt="me"
-      style="--image-start-size: 6em"
-    />
-    <span>Marco Pollacci</span>
-    <span>Senior Frontend Developer</span>
-    <div role="generic">
-      <span>@</span>
-      <Image
-        src={fourtyFactory}
-        alt="40factory logo"
-        class="alter-image-size"
-        style="--image-start-size: .6em"
-      />
-    </div>
-  </p-note>
-  <Image
-    style="--image-start-size: 10.5em"
-    class="alter-image-size"
-    src={qrLink}
-    alt="qr"
-  />
+<p-slide layout="two-columns" autoplay>
+  <Speaker heading="Hello Folks!" {meReloaded} />
+  <Image src={qrLink} alt="Speaker's QR code" style="--size: 10.5em" />
 </p-slide>

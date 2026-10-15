@@ -10,19 +10,22 @@
     "astro": "astro",
     "astro:enable-toolbar": "astro preferences enable devToolbar",
     "astro:disable-toolbar": "astro preferences disable devToolbar",
-    "prepare": "husky"
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "lint": "astro check && prettier --check ."
   },
   "dependencies": {
-    "astro": "^7.1.3",
-    "p-slides": "^1.5.1"
+    "astro": "^7.3.8",
+    "p-slides": "^1.6.0"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.6.5",
     "husky": "^9.1.7",
-    "sass": "^1.101.3",
-    "sharp": "^0.35.3",
-    "prettier": "^3.9.6",
-    "prettier-plugin-astro": "^0.14.1",
+    "prettier": "^3.9.10",
+    "prettier-plugin-astro": "^1.1.1",
+    "sharp": "^0.35.5",
+    "typescript": "^6.0.3",
     "vite-plugin-static-copy": "^4.1.1"
   }
 }

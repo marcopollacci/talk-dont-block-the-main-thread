@@ -1,0 +1,10 @@
+/* Adopted inside <p-deck>'s shadow root (see scripts/deck.js) */
+header {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+
+  :nth-child(3) {
+    margin-inline-end: -0.35em;
+  }
+}

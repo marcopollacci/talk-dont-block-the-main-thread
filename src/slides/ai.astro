@@ -1,24 +1,23 @@
 ---
+import CodeWindow from "../components/CodeWindow.astro";
 import PNotes from "../components/PNotes.astro";
 ---
 
-<p-slide autoplay="true" timing="800">
-  <h4 style="margin-block-end: 0.5em" class="center">
-    Remember our heavy task? 🤔
+<p-slide autoplay timing="800">
+  <h4 layout="center" style="margin-block-end: 0.5em">
+    Remember our heavy task? <span aria-hidden="true">🤔</span>
   </h4>
-  <pre
-    class="small-line"
-    data-label-file="heavy-task.js">
-    <code is:raw class="language-javascript">
-  const heavyTask = () => {
-    for (let i = 0; i < 10000000000; i++) {
-      //do something useful
-    }
-  };</code>
-  </pre>
+  <CodeWindow is:raw file="heavy-task.js" lang="js">
+    const heavyTask = () => {
+      for (let i = 0; i < 10000000000; i++) {
+        //do something useful
+      }
+    };
+  </CodeWindow>
   <p-fragment timing-start="1200">
-    <h4 style="margin-block-start: 0.5em" class="center">
-      Cute. <span class="main-sub-gradient">Now meet the real one</span> 🤖
+    <h4 layout="center" style="margin-block-start: 0.5em">
+      Cute. <span gradient="sub">Now meet the real one</span>
+      <span aria-hidden="true">🤖</span>
     </h4>
   </p-fragment>
   <PNotes>
@@ -31,22 +30,23 @@ import PNotes from "../components/PNotes.astro";
 </p-slide>
 
 <p-slide>
-  <h3>🤗 <span class="main-gradient">transformers.js</span></h3>
-  <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
+  <h3>
+    <span aria-hidden="true">🤗</span> <span gradient>transformers.js</span>
+  </h3>
+  <ul density="spaced" text="mid">
     <li p-fragment p-effect="from right">
-      🧠 <span class="main-sub-gradient">Hugging Face models</span> directly in the
-      browser — no server
+      🧠 <span gradient="sub">Hugging Face models</span> directly in the browser
+      — no server
     </li>
     <li p-fragment p-effect="from left">
-      🔌 Runs on <span class="main-sub-gradient">ONNX Runtime</span> — WASM (CPU)
-      or WebGPU
+      🔌 Runs on <span gradient="sub">ONNX Runtime</span> — WASM (CPU) or WebGPU
     </li>
     <li p-fragment p-effect="zoom">
       📦 Model downloaded once, then
-      <span class="main-sub-gradient"> cached by the browser</span>
+      <span gradient="sub"> cached by the browser</span>
     </li>
     <li p-fragment p-effect="from right">
-      ✈️ Works <span class="main-sub-gradient">offline</span> — no API keys, no per-token
+      ✈️ Works <span gradient="sub">offline</span> — no API keys, no per-token
       billing
     </li>
   </ul>
@@ -64,20 +64,18 @@ import PNotes from "../components/PNotes.astro";
 </p-slide>
 
 <p-slide>
-  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
-  <pre
-    class="small-line"
-    data-label-file="sentiment.js">
-    <code is:raw class="language-javascript">
-  import { pipeline } from '@huggingface/transformers';
+  <h4 layout="center" style="margin-block-end: 0.5em">
+    Let's Code <span aria-hidden="true">👨‍💻</span>
+  </h4>
+  <CodeWindow is:raw file="sentiment.js" lang="js" fragments="5, 7">
+    import { pipeline } from '@huggingface/transformers';
 
+    const classifier = await pipeline('sentiment-analysis');
 
-  const classifier = await pipeline('sentiment-analysis');</code>
-    <p-fragment><code is:raw class="language-javascript">
-  const result = await classifier('I love web workers!');</code></p-fragment><p-fragment><code is:raw class="language-javascript">
-  // [{ label: 'POSITIVE', score: 0.9998 }]</code>
-    </p-fragment>
-  </pre>
+    const result = await classifier('I love web workers!');
+
+    // [{ label: 'POSITIVE', score: 0.9998 }]
+  </CodeWindow>
   <PNotes>
     <p>
       pipeline() does everything: download, cache, tokenization, inference,
@@ -91,23 +89,26 @@ import PNotes from "../components/PNotes.astro";
 </p-slide>
 
 <p-slide>
-  <h3>📍 <span class="main-gradient">But where does it run?</span></h3>
-  <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
+  <h3>
+    <span aria-hidden="true">📍</span>{" "}
+    <span gradient>But where does it run?</span>
+  </h3>
+  <ul density="spaced" text="mid">
     <li p-fragment p-effect="from left">
-      🧮 <span class="main-sub-gradient">WASM backend</span>: inference runs on
+      🧮 <span gradient="sub">WASM backend</span>: inference runs on
       <b>the thread that calls it</b>
     </li>
     <li p-fragment p-effect="zoom">
       💀 Call it from the main thread →
-      <span class="main-sub-gradient">it IS heavyTask()</span>, for real
+      <span gradient="sub">it IS heavyTask()</span>, for real
     </li>
     <li p-fragment p-effect="from right">
-      ⚡ <span class="main-sub-gradient">WebGPU</span> helps, but tokenization &amp;
+      ⚡ <span gradient="sub">WebGPU</span> helps, but tokenization &amp;
       post-processing stay on CPU
     </li>
     <li p-fragment p-effect="from left">
       📣 Every official HF demo runs the pipeline
-      <span class="main-sub-gradient"> inside a Web Worker</span>
+      <span gradient="sub"> inside a Web Worker</span>
     </li>
   </ul>
   <PNotes>
@@ -122,36 +123,34 @@ import PNotes from "../components/PNotes.astro";
   </PNotes>
 </p-slide>
 
-<p-slide follow-fragments>
-  <h4 style="margin-block-end: 0.5em" class="center">Let&#39;s Code 👨‍💻</h4>
-  <pre
-    class="small-line"
-    data-label-file="ai.worker.ts">
-    <code is:raw class="language-javascript">
-  /// &lt;reference lib="webworker" />
-  import { pipeline } from '@huggingface/transformers';
+<p-slide>
+  <h4 layout="center" style="margin-block-end: 0.5em">
+    Let's Code <span aria-hidden="true">👨‍💻</span>
+  </h4>
+  <CodeWindow is:raw file="ai.worker.ts" lang="ts" lines={8} fragments="10-13">
+    /// <reference lib="webworker" />
+    import { pipeline } from '@huggingface/transformers';
 
-  const classifier = await pipeline(
-    'sentiment-analysis',
-    'Xenova/distilbert-base-uncased-finetuned-sst-2-english',
-    { dtype: 'q8' }
-  );</code>
-    <p-fragment>
-      <code is:raw class="language-javascript">
-  addEventListener('message', async ({ data }) => {
-    const result = await classifier(data); // 🤖 the REAL heavy task
-    postMessage(result);
-  });</code>
-    </p-fragment>
-  </pre>
+    const classifier = await pipeline(
+      'sentiment-analysis',
+      'Xenova/distilbert-base-uncased-finetuned-sst-2-english',
+      { dtype: 'q8' }
+    );
+
+    addEventListener('message', async ({ data }) => {
+      const result = await classifier(data); // 🤖 the REAL heavy task
+      postMessage(result);
+    });
+  </CodeWindow>
   <p
     p-fragment
     p-effect="from below"
-    class="center mid-dimension"
+    layout="center"
+    text="mid"
     style="margin-block-start: 0.5em"
   >
     😏 Same worker, same <code>postMessage</code>, same
-    <span class="main-sub-gradient"> resource()</span> pattern as before
+    <span gradient="sub"> resource()</span> pattern as before
   </p>
   <PNotes>
     <p>
@@ -169,7 +168,7 @@ import PNotes from "../components/PNotes.astro";
   <iframe
     src="/demo/ai-live-demo.html"
     title="AI inference live demo: main thread vs worker"
-    style="width: 92%; aspect-ratio: 16 / 9; border: 1px solid #e4e4ee; border-radius: 0.3em; background: #fff; margin-inline: auto; display: block;"
+    style="display: block; inline-size: 92%; aspect-ratio: 16 / 9; margin-inline: auto; border: 1px solid oklch(0.93 0.01 285); border-radius: 0.3em; background: white"
   ></iframe>
   <p-fragment iframe-key="1" p-effect="none"></p-fragment>
   <p-fragment iframe-key="2" p-effect="none"></p-fragment>
@@ -188,21 +187,22 @@ import PNotes from "../components/PNotes.astro";
 </p-slide>
 
 <p-slide>
-  <h3>🎒 <span class="main-gradient">Good to know</span></h3>
-  <ul class="space mid-dimension" style="--web-day-ul-space: 0.2em">
+  <h3>
+    <span aria-hidden="true">🎒</span> <span gradient>Good to know</span>
+  </h3>
+  <ul density="spaced" text="mid">
     <li p-fragment p-effect="zoom">
       📥 First load downloads the model —
-      <span class="main-sub-gradient">show progress</span>
-      (<code>progress_callback</code>) and pre-cache
+      <span gradient="sub">show progress</span>(<code>progress_callback</code>)
+      and pre-cache
     </li>
     <li p-fragment p-effect="from right">
-      🎚️ <span class="main-sub-gradient">Quantization</span> (<code
-        >dtype: 'q8'</code
-      >/<code>'q4'</code>) — smaller download, less RAM
+      🎚️ <span gradient="sub">Quantization</span> (<code>dtype: 'q8'</code>/
+      <code>'q4'</code>) — smaller download, less RAM
     </li>
     <li p-fragment p-effect="from left">
       🚚 Tensors are <code>ArrayBuffer</code>s —
-      <span class="main-sub-gradient">transferable objects</span>, remember?
+      <span gradient="sub">transferable objects</span>, remember?
     </li>
   </ul>
   <PNotes>
