@@ -1,11 +1,11 @@
 ---
-import { Image } from "astro:assets";
 import Speaker from "../components/Speaker.astro";
-import qrLink from "../img/qr_link.svg";
+// Inlined (not <Image>) so the gradient follows the theme's cover tokens
+import QrLink from "../img/qr_link.svg";
 const { meReloaded } = Astro.props;
 ---
 
 <p-slide layout="two-columns" autoplay>
   <Speaker heading="Hello Folks!" {meReloaded} />
-  <Image src={qrLink} alt="Speaker's QR code" style="--size: 10.5em" />
+  <QrLink role="img" aria-label="Speaker's QR code" style="--size: 10.5em" />
 </p-slide>

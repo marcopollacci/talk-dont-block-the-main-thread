@@ -1,7 +1,8 @@
 /* Plain HTML elements inside slides */
 @layer content {
-  /* Images: set the size inline, e.g. style="--size: 6em; --width: 10em" */
-  p-slide img {
+  /* Images (and inline SVG images): set the size inline,
+     e.g. style="--size: 6em; --width: 10em" */
+  p-slide :is(img, svg[role="img"]) {
     block-size: var(--size, auto);
     inline-size: var(--width, auto);
   }
