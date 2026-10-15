@@ -388,7 +388,14 @@
   }
 
   @media (pointer: coarse) {
-    /* Horizontal pans are slide swipes (scripts/deck.js), not browser scroll */
+    /* Quick taps advance the deck: no double-tap zoom anywhere (pinch-zoom
+       stays, for accessibility) */
+    :root {
+      touch-action: manipulation;
+    }
+
+    /* Horizontal pans are slide swipes (scripts/deck.js), not browser scroll.
+       Like manipulation, this list leaves out double-tap zoom */
     p-deck {
       touch-action: pan-y pinch-zoom;
     }

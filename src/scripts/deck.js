@@ -6,6 +6,12 @@ import {
 import deckShadowCss from "../styles/deck-shadow.css?raw";
 
 const SWIPE_THRESHOLD = 50;
+const TAP_SLOP = 10; // px a finger may drift and still be a tap
+const TAP_TIME = 300; // ms; longer presses are not taps (text selection)
+const TAP_BACK_ZONE = 0.25; // left share of the screen where a tap goes back
+// Taps on these keep their own behaviour
+const INTERACTIVE =
+  "pre, a, button, input, select, textarea, label, summary, iframe, video, [contenteditable]";
 const IDLE_DELAY = 2500;
 
 const deck = document.querySelector("p-deck");
@@ -608,7 +614,8 @@ if (/electron/i.test(navigator.userAgent) && !location.hash.includes("mode=")) {
   body.toggleAttribute("electron", true);
 }
 
-/* --- Touch: horizontal swipe navigates, nav fades out when idle --- */
+/* --- Touch: horizontal swipe or tap navigates (tap on the left edge goes
+   back), nav fades out when idle --- */
 
 let touchStart = null;
 let idleTimer;
@@ -621,29 +628,36 @@ function markActive() {
 
 deck.addEventListener(
   "touchstart",
-  ({ changedTouches: [touch], target }) => {
+  ({ touches, changedTouches: [touch], target, timeStamp }) => {
     markActive();
-    const ignored = target.closest("pre, a, button");
+    const ignored = target.closest(INTERACTIVE);
+    // A second finger means pinch-zoom: neither a swipe nor a tap
     touchStart =
-      deck.mode === "presentation" && !ignored
-        ? { x: touch.clientX, y: touch.clientY }
+      deck.mode === "presentation" && !ignored && touches.length === 1
+        ? { x: touch.clientX, y: touch.clientY, time: timeStamp }
         : null;
   },
   { passive: true },
 );
 
-deck.addEventListener(
-  "touchend",
-  ({ changedTouches: [touch] }) => {
-    if (!touchStart) return;
-    const dx = touch.clientX - touchStart.x;
-    const dy = touch.clientY - touchStart.y;
-    touchStart = null;
-    if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
-    dx < 0 ? deck.next() : deck.previous();
-  },
-  { passive: true },
-);
+deck.addEventListener("touchend", (event) => {
+  if (!touchStart) return;
+  const [touch] = event.changedTouches;
+  const dx = touch.clientX - touchStart.x;
+  const dy = touch.clientY - touchStart.y;
+  const isTap =
+    Math.hypot(dx, dy) < TAP_SLOP &&
+    event.timeStamp - touchStart.time < TAP_TIME;
+  touchStart = null;
+  if (isTap) {
+    // Handled here: no synthetic click, no double-tap zoom
+    event.preventDefault();
+    touch.clientX < innerWidth * TAP_BACK_ZONE ? deck.previous() : deck.next();
+    return;
+  }
+  if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
+  dx < 0 ? deck.next() : deck.previous();
+});
 
 body
   .querySelector(":scope > nav")
