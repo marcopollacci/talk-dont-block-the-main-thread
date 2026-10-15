@@ -188,16 +188,26 @@ import PNotes from "../components/PNotes.astro";
   <p-fragment iframe-key="1" p-effect="none"></p-fragment>
   <p-fragment iframe-key="2" p-effect="none"></p-fragment>
   <PNotes>
-    <p>Click INSIDE the iframe first, then [2] worker → [1] main.</p>
     <p>
-      While main runs, spam the click button — clicks replay all at once when
-      the thread frees up.
+      Just press next, also from the speaker view: the deck presses the demo
+      keys in the presentation window (never in the speaker view, so notes and
+      timer don't freeze). Open the page before the talk so the model is cached.
+    </p>
+    <p>
+      Next #1 → [2] worker: the ball keeps moving. Next #2 → [1] main: freeze.
+    </p>
+    <p>
+      While main runs, spam the "click me" button: clicks replay all at once
+      when the thread frees up.
     </p>
     <p>
       The ball is rAF-driven on purpose: a CSS animation runs on the compositor
       and would keep moving even with a blocked main thread.
     </p>
-    <p>Click OUTSIDE the iframe before using arrow keys to advance the deck.</p>
+    <p>
+      If you click inside the iframe, click outside it again before using the
+      arrow keys: keyboard focus inside the iframe doesn't reach the deck.
+    </p>
   </PNotes>
 </p-slide>
 

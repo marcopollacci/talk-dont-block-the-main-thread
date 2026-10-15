@@ -120,6 +120,9 @@ function clearReplay() {
    inside the slide's iframe, so a live demo advances with the deck --- */
 
 function pressIframeKeys(slide, revealed) {
+  // The demo runs where the audience looks: in the speaker view a main-thread
+  // demo would freeze the notes and the timer
+  if (deck.mode === "speaker") return;
   const iframe = slide.querySelector("iframe");
   for (const fragment of revealed) {
     const key = fragment.getAttribute("iframe-key");
@@ -163,6 +166,60 @@ function followFragments(slide, revealed) {
     box.scrollTo({ top, behavior });
   }
 }
+
+/* --- Sync between windows: p-slides applies the state broadcast by another
+   window (e.g. the speaker view) without firing fragmenttoggle, so the
+   fragment side effects above would run only where the speaker pressed the
+   key. Listen to the same channel and replay them for what changed: newly
+   revealed fragments scroll into view, press their iframe keys and replay;
+   a different slide (or hidden fragments) only realigns the scroll --- */
+
+const activeFragments = (slide) =>
+  slide
+    ? [...slide.fragments].filter(
+        (fragment) => fragment.getAttribute("aria-hidden") === "false",
+      )
+    : [];
+
+let synced = {
+  slide: deck.currentSlide,
+  shown: activeFragments(deck.currentSlide),
+};
+const rememberShown = () =>
+  (synced = {
+    slide: deck.currentSlide,
+    shown: activeFragments(deck.currentSlide),
+  });
+
+// A remote state fires slidechange before applying the fragments: snapshot
+// after it, so landing on a slide with fragments already shown replays nothing
+deck.addEventListener("p-slides.slidechange", () => setTimeout(rememberShown));
+deck.addEventListener("p-slides.fragmenttoggle", rememberShown);
+
+new BroadcastChannel("p-slides").addEventListener("message", ({ data }) => {
+  if (!data || data.deckId !== deck.id) return;
+  // The deck applies the state in its own listener: run after it
+  setTimeout(() => {
+    const slide = deck.currentSlide;
+    const shown = activeFragments(slide);
+    const sameSlide = slide === synced.slide;
+    const added = sameSlide
+      ? shown.filter((fragment) => !synced.shown.includes(fragment))
+      : [];
+    // Our own broadcast echoes here too: nothing changed, nothing to do
+    if (sameSlide && !added.length && shown.length === synced.shown.length)
+      return;
+    if (added.length) {
+      followFragments(slide, added);
+      pressIframeKeys(slide, added);
+      replayFragments(added, true);
+    } else {
+      followFragments(slide, []);
+    }
+    syncChrome();
+    rememberShown();
+  });
+});
 
 syncChrome();
 
